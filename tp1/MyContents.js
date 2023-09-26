@@ -20,11 +20,12 @@ class MyContents  {
         this.boxEnabled = true
         this.lastBoxEnabled = null
         this.boxDisplacement = new THREE.Vector3(0,2,0)
+        this.spotLight = null
 
         // plane related attributes
-        this.diffusePlaneColor = "#808080"
-        this.specularPlaneColor = "#000000"
-        this.planeShininess = 0
+        this.diffusePlaneColor = "#00ffff"
+        this.specularPlaneColor = "#777777"
+        this.planeShininess = 30
         this.planeMaterial = new THREE.MeshPhongMaterial({ color: this.diffusePlaneColor, 
             specular: this.specularPlaneColor, emissive: "#000000", shininess: this.planeShininess })
     }
@@ -56,17 +57,53 @@ class MyContents  {
         }
 
         // add a point light on top of the model
-        const pointLight = new THREE.PointLight( 0xffffff, 5,20, 0 );
-        pointLight.position.set( 0,20, 0 );
+        /*
+        const pointLight = new THREE.PointLight( 0xffffff, 500, 0 );
+        pointLight.position.set( 0, 20, 0 );
         this.app.scene.add( pointLight );
 
         // add a point light helper for the previous point light
         const sphereSize = 0.5;
         const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
-        this.app.scene.add( pointLightHelper );
+        this.app.scene.add( pointLightHelper );*/
+        
+        this.spotLight = new THREE.SpotLight( 0xffffff, 15 );
+        this.spotLight.position.set(2,5,1);
+        this.spotLight.angle = Math.PI *2 / 9;
+        this.spotLight.penumbra = 0
+        this.spotLight.decay = 0
+        this.spotLight.distance = 8
+
+        this.spotLightTarget = new THREE.Object3D()
+        this.spotLightTarget.position.set(1,0,1)
+        this.app.scene.add(this.spotLightTarget)
+
+        this.spotLight.target = this.spotLightTarget
+        this.app.scene.add(this.spotLight)
+
+        const sphereSize = 0.5
+        this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight,sphereSize)
+        this.app.scene.add(this.spotLightHelper)
+
+        /*
+        const light2 = new THREE.DirectionalLight(0xffffff,1)
+        light2.position.set(-5,10,-2)
+        this.app.scene.add(light2)
+
+        const lightTarget2 = new THREE.Object3D()
+        lightTarget2.position.set(2, 2, 2);
+        this.app.scene.add(lightTarget2)
+
+        light2.target = lightTarget2
+        this.app.scene.add(light2)
+
+        const sphereSize = 0.5
+        const pointLightHelper2 = new THREE.DirectionalLightHelper(light2,sphereSize)
+        this.app.scene.add(pointLightHelper2)
+        */
 
         // add an ambient light
-        const ambientLight = new THREE.AmbientLight( 0x6f6f6f );
+        const ambientLight = new THREE.AmbientLight( 0x555555,4 );
         this.app.scene.add( ambientLight );
 
         this.buildBox()
@@ -150,6 +187,13 @@ class MyContents  {
         this.boxMesh.position.z = this.boxDisplacement.z
         
     }
+
+    updateSpotLightAngle(value) {
+        //convert value from degrees to radians
+        value = value * Math.PI / 180
+        this.spotLight.angle = value
+    }
+
 
 }
 
