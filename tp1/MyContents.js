@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { MyAxis } from './MyAxis.js';
+import { MyTable } from './MyTable.js';
 
 /**
  *  This class contains the contents of out application
@@ -51,7 +52,7 @@ class MyContents  {
         // create once 
         if (this.axis === null) {
             // create and attach the axis to the scene
-            //this.axis = new MyAxis(this)
+            this.axis = new MyAxis(this)
             //this.app.scene.add(this.axis)
         }
 
@@ -73,7 +74,7 @@ class MyContents  {
         
         this.createWalls()
 
-        this.createTable()
+        let table = new MyTable(this.app)
 
         this.createPlate()
 
@@ -99,30 +100,6 @@ class MyContents  {
         this.addWall(5,2.5,0,0,Math.PI/2,0)
 
 
-    }
-
-    createTable() {
-        let tampo = new THREE.BoxGeometry(2.5, 0.1, 2.5);
-        let tampoMaterial = new THREE.MeshPhongMaterial({ color: "#d2b48c",specular: "#000000", emissive: "#000000", shininess: 90 });
-        this.tampoMesh = new THREE.Mesh( tampo, tampoMaterial);
-        this.tampoMesh.position.y = 1.25;
-        this.app.scene.add( this.tampoMesh);
-
-        this.addLeg(-1,0,-1.)
-        this.addLeg(-1,0,1)
-        this.addLeg(1,0,-1)
-        this.addLeg(1,0,1)
-
-    }
-
-    addLeg(x,y,z) {
-        let leg = new THREE.CylinderGeometry(0.05, 0.05, 2.5, 32);
-        let legMaterial = new THREE.MeshPhongMaterial({ color: "#d2b48c",specular: "#000000", emissive: "#000000", shininess: 90});
-        this.legMesh = new THREE.Mesh( leg, legMaterial);
-        this.legMesh.position.x = x
-        this.legMesh.position.y = y;
-        this.legMesh.position.z = z;
-        this.app.scene.add( this.legMesh );
     }
 
     addWall(x,y,z,rx,ry,rz) {
