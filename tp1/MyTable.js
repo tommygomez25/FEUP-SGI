@@ -11,7 +11,7 @@ class MyTable {
     }
     createTable() {
         let tampo = new THREE.BoxGeometry(2.5, 0.1, 2.5);
-        let tampoMaterial = new THREE.MeshPhongMaterial({ color: "#d2b48c",specular: "#000000", emissive: "#000000", shininess: 90 });
+        let tampoMaterial = new THREE.MeshPhongMaterial({ color: "#A56627",specular: "#A56627", emissive: "#000444", shininess: 30 });
         this.tampoMesh = new THREE.Mesh( tampo, tampoMaterial);
         this.tampoMesh.position.y = 1;
         this.app.scene.add( this.tampoMesh);
