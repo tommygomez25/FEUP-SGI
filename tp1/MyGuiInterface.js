@@ -32,24 +32,31 @@ class MyGuiInterface  {
         // add a folder to the gui interface for the box
         const boxFolder = this.datgui.addFolder( 'Box' );
         // note that we are using a property from the contents object 
+        /*
         boxFolder.add(this.contents, 'boxMeshSize', 0, 10).name("size").onChange( () => { this.contents.rebuildBox() } );
         boxFolder.add(this.contents, 'boxEnabled', true).name("enabled");
         boxFolder.add(this.contents.boxDisplacement, 'x', -5, 5)
         boxFolder.add(this.contents.boxDisplacement, 'y', -5, 5)
         boxFolder.add(this.contents.boxDisplacement, 'z', -5, 5)
         boxFolder.open()
-        
+        */
         const data = {  
             'diffuse color': this.contents.diffusePlaneColor,
             'specular color': this.contents.specularPlaneColor,
         };
-
+        /*
         // adds a folder to the gui interface for the plane
         const planeFolder = this.datgui.addFolder( 'Plane' );
         planeFolder.addColor( data, 'diffuse color' ).onChange( (value) => { this.contents.updateDiffusePlaneColor(value) } );
         planeFolder.addColor( data, 'specular color' ).onChange( (value) => { this.contents.updateSpecularPlaneColor(value) } );
         planeFolder.add(this.contents, 'planeShininess', 0, 1000).name("shininess").onChange( (value) => { this.contents.updatePlaneShininess(value) } );
         planeFolder.open();
+        */
+
+        // adds a folder to the gui interface for the nurbs
+        const nurbsFolder = this.datgui.addFolder( 'Nurbs' );
+        nurbsFolder.add(this.contents, 'samplesU', 1, 8).name("samplesU").onChange( (value) => { this.contents.rebuildNurbsSamplesU(value) } );
+        nurbsFolder.add(this.contents, 'samplesV', 1, 8).name("samplesV").onChange( (value) => { this.contents.rebuildNurbsSamplesV(value) } );
 
         // adds a folder to the gui interface for the camera
         const cameraFolder = this.datgui.addFolder('Camera')
@@ -57,19 +64,6 @@ class MyGuiInterface  {
         // note that we are using a property from the app 
         cameraFolder.add(this.app.activeCamera.position, 'x', 0, 10).name("x coord")
         cameraFolder.open()
-
-        // add a folder to the gui interface for the lights
-        const lightsFolder = this.datgui.addFolder('Spot Light')
-        console.log(this.contents.spotLight)
-        lightsFolder.add(this.contents.spotLight.color, 'r', 0, 1).name("red");
-        lightsFolder.add(this.contents.spotLight.color, 'g', 0, 1).name("green");
-        lightsFolder.add(this.contents.spotLight.color, 'b', 0, 1).name("blue");
-        lightsFolder.add(this.contents.spotLight, 'intensity', 0, 10).name("intensity");
-        lightsFolder.add(this.contents.spotLight, 'distance', 0, 100).name("distance");
-        lightsFolder.add(this.contents.spotLight, 'angle', 0,180).name("angle").onChange( (value) => { this.contents.updateSpotLightAngle(value) } );
-        lightsFolder.add(this.contents.spotLight, 'penumbra', 0, 1).name("penumbra");
-        lightsFolder.add(this.contents.spotLight.position,'y', 0, 10).name("y coord");
-        lightsFolder.open()
     }
 }
 

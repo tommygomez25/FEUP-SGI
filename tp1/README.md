@@ -1,42 +1,27 @@
-## TP1 Ilumination
+### Quadratic Bezier Curve
 
-### 0.1.1
+#### Corra o programa e verifique o resultado obtido; é desenhada a branco uma polyline constituída por dois segmentos de reta e três vértices. A que corresponde esta linha?
+    Corresponde ao convex hull da curva de Bezier.
 
-#### Altere a posição da fonte de luz de para (0, 20, 0) para (0, -20, 0):
-    Tanto o plano, como as faces laterais e superior do cubo ficaram mais escuras, uma vez que apenas estão iluminadas por uma luz ambiente.
+### Catmull Rom Curve
 
-#### Altere a intensidade da fonte de luz para 5 e a sua posição para (0, 2, 0); repita os pontos anteriores.
-    O plano está pouco iluminado, relevando compoonente especular ao centro. As faces laterais e superior do cubo continuam escuras, uma vez que apenas estão iluminadas por uma luz ambiente. A fonte de luz mencionada no enunciado não ilumina o cubo.
+#### O que conclui sobre a influência ou não do número de pontos sobre o número de amostras?
+    O número de pontos não influencia o número de amostras. O número de amostras determina a suavidade da representação da curva, independetemente do número de pontos.
 
-#### Faça ```this.diffusePlaneColor = "rgb(0,0,0)``` Que componente(s) de iluminação encontra no plano?
-    O plano apenas tem componente especular.
+![Alt text](./screenshots/6.png)
 
-#### Faça também ```this.planeShininess = 400``` Que diferenças encontra? (experimente outros valores…)
-    A intensidade da reflexão especular é proporcional a cos^n(α). Quanto maior o valor de n, mais concentrada é a reflexão especular.
+### Superfícies Curvas
 
-#### Faça agora (note que há mais um parâmetro em PointLight): ```this.diffusePlaneColor =  "rgb(128,128,128)" this.specularPlaneColor = "rgb(0,0,0)" this.planeShininess = 0 pointLight = new THREE.PointLight(0xffffff, 5, 0, 0); pointLight.position.set( 0, 20, 0 )```; Veja e memorize o resultado
+#### Faça variar o número de amostras, em ambas as direções; 3 … 4 … 6 … 8 … 12 … 16 … 24 … Consegue observar alterações?
+    Não, não se observam alterações.
 
-#### Faça agora: ```pointLight = new THREE.PointLight(0xffffff, 5, 15, 0)``` Comente sobre as alterações observadas.Reponha o penúltimo parâmetro em 0 (intensity) e faça variar o último parâmetro entre 0, 1 e 2 (decay); comente os resultados
-    Como se alterou a distância máxima a que a luz chega, o plano ficou mais escuro.
-    Quanto ao decay, nota-se a diminuição da intensidade da luminosidade que chega ao plano.
+#### Análise de resultados. Qual é o grau em U? E em V? Corrija, em acordo, a declaração de this.orderU e this.orderV
+    Como se pode ver na imagem, o grau em U ( curvas horizontais) é 2, pelo que a curva é parabólica. O grau em V (curvas verticais) é 1, pelo que a curva é linear.
+![Alt text](./screenshots/7.png)
 
-### 0.1.2
-Posição (0,10,0)
-![Alt text](screenshots/1.png)
+#### Faça variar o número de amostras, em ambas as direções; 3 … 4 … 6 … 8 … 12 … 16 … 24 … Que alterações observa? Porquê a diferença de comportamento, se é que existe, para o caso da superfície retângulo plano?
+    Ao variar o número de amostras, verifica-se que apenas a amostra U sofre alterações. Como a amostra V tem grau 1, trata-se de uma curva linear, pelo que variar o número de amostrar não vai provocar qualquer alteração visual. Já no caso da amostra U, como tem grau 2, trata-se de uma curva parabólica, pelo que ao variar o número de amostras, a curva vai ser mais ou menos suave, dependendo do número de amostras.
 
-#### Altere a posição da fonte de luz para (5, 10, 2). Comente sobre a nova iluminação obtida.
-Nota-se maior iluminação na parte direita do plano.
-![Alt text](screenshots/2.png)
-
-#### Altere a posição da fonte de luz para (-5, 10, -2). Comente sobre a nova iluminação obtida.
-Nota-se maior iluminação na parte esquerda do plano.
-![Alt text](screenshots/3.png)
-
-#### Consulte a documentação sobre o parâmetro ```.target``` desta classe e acrescente um target diferente do de default.
-Target alterado para (2,2,2).
-![Alt text](screenshots/4.png)
-
-#### Fonte de Luz "Foco" - Compare, nas 3 faces iluminadas do cubo, as respectivas iluminações.
-A face superior do cubo é a face mais iluminada. A face da direita é a segunda mais iluminada e a face da esquerda é a menos iluminada.
-![Alt text](screenshots/5.png)
+#### Aumente para 10 o peso do último ponto fornecido. Qual será o vértice afetado na superfície?
+    Vértice superior direito.
 
