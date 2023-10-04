@@ -79,8 +79,6 @@ class MyContents  {
 
         this.createCake()
 
-        this.createCandle()
-
     }
 
     createWalls() {
@@ -105,24 +103,38 @@ class MyContents  {
         let tampo = new THREE.BoxGeometry(2.5, 0.1, 2.5);
         let tampoMaterial = new THREE.MeshPhongMaterial({ color: "#d2b48c",specular: "#000000", emissive: "#000000", shininess: 90 });
         this.tampoMesh = new THREE.Mesh( tampo, tampoMaterial);
-        this.tampoMesh.position.y = 1.25;
+        this.tampoMesh.position.y = 1;
         this.app.scene.add( this.tampoMesh);
 
-        this.addLeg(-1,0,-1.)
-        this.addLeg(-1,0,1)
-        this.addLeg(1,0,-1)
-        this.addLeg(1,0,1)
+        this.addLegs(this.tampoMesh);
 
     }
 
-    addLeg(x,y,z) {
-        let leg = new THREE.CylinderGeometry(0.05, 0.05, 2.5, 32);
-        let legMaterial = new THREE.MeshPhongMaterial({ color: "#d2b48c",specular: "#000000", emissive: "#000000", shininess: 90});
-        this.legMesh = new THREE.Mesh( leg, legMaterial);
-        this.legMesh.position.x = x
-        this.legMesh.position.y = y;
-        this.legMesh.position.z = z;
-        this.app.scene.add( this.legMesh );
+    addLegs(tampoMesh) {
+        const legHeight = 1; 
+        const legWidth = 0.1; 
+    
+        
+        const legPositions = [
+            { x: tampoMesh.geometry.parameters.width / 2 - legWidth / 2, z: tampoMesh.geometry.parameters.depth / 2 - legWidth / 2 },
+            { x: -tampoMesh.geometry.parameters.width / 2 + legWidth / 2, z: tampoMesh.geometry.parameters.depth / 2 - legWidth / 2 },
+            { x: tampoMesh.geometry.parameters.width / 2 - legWidth / 2, z: -tampoMesh.geometry.parameters.depth / 2 + legWidth / 2 },
+            { x: -tampoMesh.geometry.parameters.width / 2 + legWidth / 2, z: -tampoMesh.geometry.parameters.depth / 2 + legWidth / 2 },
+        ];
+    
+        
+        legPositions.forEach(position => {
+            const leg = this.addLeg(legWidth, legHeight, legWidth); // create leg mesh
+            leg.position.set(position.x, -legHeight / 2, position.z); 
+            tampoMesh.add(leg);
+        });
+    }
+    
+    addLeg(width, height, depth) {
+        const legGeometry = new THREE.BoxGeometry(width, height, depth);
+        const legMaterial = new THREE.MeshPhongMaterial({ color: "#d2b48c", specular: "#000000", emissive: "#000000", shininess: 90 });
+        const legMesh = new THREE.Mesh(legGeometry, legMaterial);
+        return legMesh;
     }
 
     addWall(x,y,z,rx,ry,rz) {
@@ -141,33 +153,34 @@ class MyContents  {
     createPlate() {
         const plateGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.05, 32); // Raio superior, raio inferior, altura e segmentos
         const plateMaterial = new THREE.MeshPhongMaterial({ color: "#d3d3d3", specular: "#000000", emissive: "#000000", shininess: 90 }); 
-        const prato = new THREE.Mesh(plateGeometry, plateMaterial);
-        prato.position.y = 1.3;
-        this.app.scene.add(prato);       
+        this.plate = new THREE.Mesh(plateGeometry, plateMaterial);
+        this.plate.position.y = this.tampoMesh.position.y + this.tampoMesh.geometry.parameters.height / 2 + this.plate.geometry.parameters.height / 2;
+        
+        this.app.scene.add(this.plate);       
     }
 
     createCake() {
         const cakeGeometry = new THREE.CylinderGeometry(0.35, 0.35, 0.1, 32, 1, false, 0, 1/(2 * Math.PI/32)); // Raio superior, raio inferior, altura, segmentos, stacks, openEnded, abertura inicial e ângulo thetaLength
         const cakeMaterial = new THREE.MeshPhongMaterial({ color: "#ffd700", specular: "#ffd700", emissive: "#ffd700", shininess: 90 });
-        const cake = new THREE.Mesh(cakeGeometry, cakeMaterial);
-        cake.position.y = 1.35;
-        this.app.scene.add(cake);
-    }
+        this.cake = new THREE.Mesh(cakeGeometry, cakeMaterial);
+        this.cake.position.y = this.plate.position.y + this.plate.geometry.parameters.height / 2 + this.cake.geometry.parameters.height / 2;
 
-    createCandle() {
         const candleGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 32);
         const candleMaterial = new THREE.MeshPhongMaterial({ color: "#ffffff", specular: "#ffffff", emissive: "#ffffff", shininess: 90 });
-        const candle = new THREE.Mesh(candleGeometry, candleMaterial);
-        candle.position.y = 1.40 + 0.05;
-        this.app.scene.add(candle);
+        this.candle = new THREE.Mesh(candleGeometry, candleMaterial);
+        this.candle.position.y = this.cake.geometry.parameters.height;
+        this.cake.add(this.candle);
 
         const flameGeometry = new THREE.ConeGeometry(0.01, 0.07, 32);
         const flameMaterial = new THREE.MeshPhongMaterial({ color: "#F1C40F" }); 
-        const flame = new THREE.Mesh(flameGeometry, flameMaterial);
-        flame.position.y = 1.40 + 0.05 + 0.05 + 0.07
-        this.app.scene.add(flame);
+        this.flame = new THREE.Mesh(flameGeometry, flameMaterial);
+        this.flame.position.y = this.candle.geometry.parameters.height;
+        this.candle.add(this.flame);
 
+        this.app.scene.add(this.cake);
     }
+
+
     
     /**
      * updates the diffuse plane color and the material
