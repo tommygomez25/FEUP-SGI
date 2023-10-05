@@ -29,7 +29,7 @@ class MyContents  {
         this.diffusePlaneColor = "#00ffff"
         this.specularPlaneColor = "#777777"
         this.planeShininess = 30
-        this.planeMaterial = new THREE.MeshPhongMaterial({ color: this.diffusePlaneColor, 
+        this.planeMaterial = new THREE.MeshStandardMaterial({ color: this.diffusePlaneColor, roughness:0.1,
             specular: this.diffusePlaneColor, emissive: "#000000", shininess: this.planeShininess, side: THREE.DoubleSide })
 
         this.tampoTexture = new THREE.TextureLoader().load( 'textures/wood.jpg' );
@@ -83,12 +83,12 @@ class MyContents  {
         if (this.axis === null) {
             // create and attach the axis to the scene
             this.axis = new MyAxis(this)
-            this.app.scene.add(this.axis)
+            //this.app.scene.add(this.axis)
         }
 
         // add a point light on top of the model
-        const pointLight = new THREE.PointLight( 0xffffff, 500, 0 );
-        pointLight.position.set( 0, 20, 0 );
+        const pointLight = new THREE.PointLight( 0xffffff, 50, 0 );
+        pointLight.position.set( 0, 10, 0 );
         this.app.scene.add( pointLight );
 
         // add a point light helper for the previous point light
@@ -163,27 +163,14 @@ class MyContents  {
 
         this.spotLight3.target = this.spotLightTarget3
         this.app.scene.add(this.spotLight3)
-
-
-        this.spotLight4 = new THREE.SpotLight( 0xffffff, 15 );
-        this.spotLight4.position.set(0,6,-2);
-        this.spotLight4.angle = Math.PI/12;
-        this.spotLight4.penumbra = 1
-        this.spotLight4.decay = 0
-        this.spotLight4.distance = 10
-        this.spotLight4.intensity = 1.2
-
-        this.spotLightTarget4 = new THREE.Object3D()
-        this.spotLightTarget4.position.set(0,2.8,-5)
-        this.app.scene.add(this.spotLightTarget4)
-
-        this.spotLight4.target = this.spotLightTarget4
-        this.app.scene.add(this.spotLight4)
         
-        this.rectLight = new THREE.RectAreaLight( 0xdcdcdc, 30,  3, 3 );
+        this.rectLight = new THREE.RectAreaLight( 0xdcdcdc, 20,  3, 3 );
         this.rectLight.position.set( 0, 2.5, -5.1 );
         this.rectLight.lookAt( 0, 2.5, 0 );
         this.app.scene.add( this.rectLight );
+
+        this.RectAreaLightHelper = new RectAreaLightHelper( this.rectLight );
+        this.app.scene.add( this.RectAreaLightHelper );
 
 
     }
@@ -224,12 +211,11 @@ class MyContents  {
 
         this.app.scene.add( this.tampoMesh);
 
-        this.addLegs(this.tampoMesh);
+        this.addLegs(this.tampoMesh,1);
 
     }
 
-    addLegs(tampoMesh) {
-        const legHeight = 1; 
+    addLegs(tampoMesh,legHeight) {
         const legWidth = 0.1; 
     
         
@@ -272,7 +258,7 @@ class MyContents  {
 
         this.app.scene.add( this.tampoChairMesh);
 
-        this.addLegs(this.tampoChairMesh);
+        this.addLegs(this.tampoChairMesh,0.8);
 
         const otherTampoChair = new THREE.BoxGeometry(0.75, 0.1, 0.75);
         this.otherTampoChairMesh = new THREE.Mesh( otherTampoChair, this.tampoPlaneMaterial);
@@ -284,7 +270,7 @@ class MyContents  {
 
     addWall(x,y,z,rx,ry,rz) {
         let wall = new THREE.PlaneGeometry( 10, 5 );
-        let wallMaterial = new THREE.MeshPhongMaterial({ color: "#ffffff", specular: "#000000",shininess: 150, emissive: "#000000", side: THREE.DoubleSide});
+        let wallMaterial = new THREE.MeshStandardMaterial({ roughness:0.1,color: "#ffffff", specular: "#000000",shininess: 150, emissive: "#000000", side: THREE.DoubleSide});
         this.wallMesh = new THREE.Mesh( wall, wallMaterial );
         this.wallMesh.position.x = x;
         this.wallMesh.position.y = y;
