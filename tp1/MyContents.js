@@ -33,7 +33,7 @@ class MyContents  {
         this.meshes = []
         this.samplesU = 8         // maximum defined in MyGuiInterface
         this.samplesV = 8         // maximum defined in MyGuiInterface
-        this.createNurbsSurfaces()
+        //this.createNurbsSurfaces()
         
         // textures
         this.wallTexture = new THREE.TextureLoader().load( 'textures/wall.jpg' );
