@@ -106,7 +106,7 @@ class MyContents  {
         
         this.createWalls()
 
-        this.createTable()
+        let table = new MyTable(this.app)
 
         this.createPlate()
 
@@ -176,7 +176,6 @@ class MyContents  {
     }
 
     createWalls() {
-        
         // create floor
         let plane = new THREE.PlaneGeometry( 10, 10 );
         let floorMaterial = new THREE.MeshPhongMaterial({ color: "#ffffff",specular: "#000000", emissive: "#000000", shininess: 90, side: THREE.DoubleSide });
@@ -435,14 +434,6 @@ class MyContents  {
      * 
      */
     update() {
-        // check if box mesh needs to be updated
-        this.updateBoxIfRequired()
-
-        // sets the box mesh position based on the displacement vector
-        
-        this.boxMesh.position.x = this.boxDisplacement.x
-        this.boxMesh.position.y = this.boxDisplacement.y
-        this.boxMesh.position.z = this.boxDisplacement.z
         
     }
 

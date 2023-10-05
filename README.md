@@ -3,7 +3,7 @@
 ## Group T0xG0y
 | Name             | Number    | E-Mail             |
 | ---------------- | --------- | ------------------ |
-| John Doe         | 201901010 | ...                |
+| Francisco Pimentel Serra         | 202007723 | ...                |
 | Jane Doe         | 201901011 | ...                |
 
 ----
