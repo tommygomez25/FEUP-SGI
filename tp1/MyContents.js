@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { MyAxis } from './MyAxis.js';
+import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
 /**
  *  This class contains the contents of out application
@@ -11,6 +12,7 @@ class MyContents  {
        @param {MyApp} app The application object
     */ 
     constructor(app) {
+        
         this.app = app
         this.axis = null
 
@@ -33,7 +35,8 @@ class MyContents  {
         this.tampoTexture = new THREE.TextureLoader().load( 'textures/wood.jpg' );
         this.tampoTexture.wrapS = THREE.RepeatWrapping;
         this.tampoTexture.wrapT = THREE.RepeatWrapping;
-        this.tampoPlaneMaterial = new THREE.MeshPhongMaterial({ map: this.tampoTexture, specular: "#dcdcdc", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
+        //this.tampoPlaneMaterial = new THREE.MeshPhongMaterial({ map: this.tampoTexture, specular: "#dcdcdc", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
+        this.tampoPlaneMaterial = new THREE.MeshStandardMaterial({ map: this.tampoTexture, roughness: 0.1, side: THREE.DoubleSide });
         
         this.tomasTexture = new THREE.TextureLoader().load( 'textures/tomas.jpg' );
         this.tomasTexture.wrapS = THREE.RepeatWrapping;
@@ -79,8 +82,8 @@ class MyContents  {
         // create once 
         if (this.axis === null) {
             // create and attach the axis to the scene
-            //this.axis = new MyAxis(this)
-            //this.app.scene.add(this.axis)
+            this.axis = new MyAxis(this)
+            this.app.scene.add(this.axis)
         }
 
         // add a point light on top of the model
@@ -108,6 +111,8 @@ class MyContents  {
         this.createPlate()
 
         this.createCake()
+
+        this.createChair()
 
         this.addBoards()
 
@@ -175,6 +180,11 @@ class MyContents  {
         this.spotLight4.target = this.spotLightTarget4
         this.app.scene.add(this.spotLight4)
         
+        this.rectLight = new THREE.RectAreaLight( 0xdcdcdc, 30,  3, 3 );
+        this.rectLight.position.set( 0, 2.5, -5.1 );
+        this.rectLight.lookAt( 0, 2.5, 0 );
+        this.app.scene.add( this.rectLight );
+
 
     }
 
@@ -242,6 +252,34 @@ class MyContents  {
         const legGeometry = new THREE.BoxGeometry(width, height, depth);
         const legMesh = new THREE.Mesh(legGeometry, this.tampoPlaneMaterial);
         return legMesh;
+    }
+
+    createChair() {
+        let planeSizeU = 10;
+        let planeSizeV = 7;
+        let planeUVRate = planeSizeV / planeSizeU;
+        let tampoTextureUVRate = 350 / 268; // image dimensions
+        let tampoTextureRepeatU = 1;
+        let tampoTextureRepeatV =tampoTextureRepeatU * planeUVRate * tampoTextureUVRate;
+        this.tampoTexture.repeat.set(tampoTextureRepeatU, tampoTextureRepeatV );
+        this.tampoTexture.rotation = 0;
+        this.tampoTexture.offset = new THREE.Vector2(0,0);
+
+        let tampoChair = new THREE.BoxGeometry(0.75, 0.1, 0.75);
+        this.tampoChairMesh = new THREE.Mesh( tampoChair, this.tampoPlaneMaterial);
+        this.tampoChairMesh.position.y = 0.8;
+        this.tampoChairMesh.position.x = 1.5;
+
+        this.app.scene.add( this.tampoChairMesh);
+
+        this.addLegs(this.tampoChairMesh);
+
+        const otherTampoChair = new THREE.BoxGeometry(0.75, 0.1, 0.75);
+        this.otherTampoChairMesh = new THREE.Mesh( otherTampoChair, this.tampoPlaneMaterial);
+        this.otherTampoChairMesh.rotation.z = Math.PI / 2;
+        this.otherTampoChairMesh.position.x += this.tampoChairMesh.geometry.parameters.width / 2 - this.otherTampoChairMesh.geometry.parameters.height / 2
+        this.otherTampoChairMesh.position.y += this.tampoChairMesh.geometry.parameters.width / 2
+        this.tampoChairMesh.add( this.otherTampoChairMesh);
     }
 
     addWall(x,y,z,rx,ry,rz) {
