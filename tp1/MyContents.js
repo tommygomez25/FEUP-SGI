@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { MyAxis } from './MyAxis.js';
 import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+
 /**
  *  This class contains the contents of out application
  */
@@ -106,7 +107,7 @@ class MyContents  {
         
         this.createWalls()
 
-        let table = new MyTable(this.app)
+        this.createTable()
 
         this.createPlate()
 
