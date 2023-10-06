@@ -23,11 +23,31 @@ class MyContents  {
         this.spotLight = null
 
         // plane related attributes
-        this.diffusePlaneColor = "#00ffff"
-        this.specularPlaneColor = "#777777"
-        this.planeShininess = 30
-        this.planeMaterial = new THREE.MeshPhongMaterial({ color: this.diffusePlaneColor, 
-            specular: this.specularPlaneColor, emissive: "#000000", shininess: this.planeShininess })
+        //texture
+        this.planeTexture = new THREE.TextureLoader().load('textures/feup_b.jpg');
+        this.planeTexture.wrapS = THREE.ClampToEdgeWrapping;
+        this.planeTexture.wrapT = THREE.ClampToEdgeWrapping;
+        // material
+        this.diffusePlaneColor =  "rgb(128,0,0)"
+        this.specularPlaneColor = "#000000"
+        this.planeShininess = 0
+        // relating texture and material:
+        // two alternatives with different results
+
+        // alternative 1
+        // this.planeMaterial = new THREE.MeshPhongMaterial({
+        //         color: this.diffusePlaneColor,
+        //         specular: this.specularPlaneColor,
+        //         emissive: "#000000", shininess: this.planeShininess,
+        //         map: this.planeTexture 
+        // })
+        // end of alternative 1
+
+        // alternative 2
+        this.planeMaterial = new THREE.MeshLambertMaterial({ map : this.planeTexture });
+        // end of alternative 2
+        
+        let plane = new THREE.PlaneGeometry( 10, 10 );
     }
 
     /**
@@ -109,12 +129,26 @@ class MyContents  {
         this.buildBox()
         
         // Create a Plane Mesh with basic material
-        
-        let plane = new THREE.PlaneGeometry( 10, 10 );
+        let planeSizeU = 10;
+        let planeSizeV = 3;
+        let planeUVRate = planeSizeV / planeSizeU;
+        let planeTextureUVRate = 3354 / 2385; // image dimensions
+        let planeTextureRepeatU = 1;
+        let planeTextureRepeatV = planeTextureRepeatU * planeUVRate * planeTextureUVRate;
+        this.planeTexture.repeat.set( planeTextureRepeatU, planeTextureRepeatV );
+        this.planeTexture.rotation = 0;
+        this.planeTexture.offset = new THREE.Vector2(0,0);
+        var plane = new THREE.PlaneGeometry( planeSizeU, planeSizeV );
         this.planeMesh = new THREE.Mesh( plane, this.planeMaterial );
         this.planeMesh.rotation.x = -Math.PI / 2;
-        this.planeMesh.position.y = -0;
+        this.planeMesh.position.y = 0;
         this.app.scene.add( this.planeMesh );
+        
+        // let plane = new THREE.PlaneGeometry( 10, 10 );
+        // this.planeMesh = new THREE.Mesh( plane, this.planeMaterial );
+        // this.planeMesh.rotation.x = -Math.PI / 2;
+        // this.planeMesh.position.y = -0;
+        // this.app.scene.add( this.planeMesh );
     }
     
     /**
