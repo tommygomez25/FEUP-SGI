@@ -115,14 +115,19 @@ class MyContents  {
         this.carMesh = this.objects[3].create()
         this.chairMesh = this.objects[4].create()
         this.jarMesh = this.objects[5].create()
-        this.tampoMesh.add(this.jarMesh)
-        this.flowerMesh = this.objects[6].create(this.jarMesh)
+        this.flowerMesh = this.objects[6].create()
+
+        let sanityCheck = new THREE.Mesh();
+        console.log("- Tampo Mesh::: " + typeof (this.tampoMesh) + "- Jar Mesh::: " + typeof (this.jarMesh) + " - sanity check::: " + typeof (sanityCheck))
 
         this.boards = new MyBoards(this.app)
         this.boardTomas = this.boards.create(this.tomasTexture,this.tomasPlaneMaterial, 10,10,800/800,1,this.wallMeshes[0].position.x + 0.01,2.5,2.5,0,Math.PI/2,0,0,3,3)
         this.boardFrancisco = this.boards.create(this.franciscoTexture,this.franciscoPlaneMaterial, 10,10,800/800,1,this.wallMeshes[0].position.x + 0.01,2.5,-2.5,0,Math.PI/2,0,0,3,3)
         this.boardView = this.boards.create(this.viewTexture,this.viewPlaneMaterial, 10,10,800/800,1,0,2.5,this.wallMeshes[2].position.z + 0.01,0,0,0,0,3,3)
         
+        this.tampoMesh.add(this.jarMesh)
+        this.jarMesh.add(this.flowerMesh)
+
         this.app.scene.add(this.boardTomas)
         this.app.scene.add(this.boardFrancisco)
         this.app.scene.add(this.boardView)
@@ -131,8 +136,6 @@ class MyContents  {
         this.app.scene.add(this.cakeMesh)
         this.app.scene.add(this.carMesh)
         this.app.scene.add(this.chairMesh)
-        this.app.scene.add(this.jarMesh)
-        this.app.scene.add(this.flowerMesh)
 
         this.recompute()
 

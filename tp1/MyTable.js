@@ -27,7 +27,7 @@ class MyTable {
         this.tampoMesh.position.y = 1;
 
         this.addLegs(this.tampoMesh, 1);
-
+        
         return this.tampoMesh;
     }
 

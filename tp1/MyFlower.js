@@ -14,7 +14,7 @@ class MyFlower {
             this.flowerStalkMaterial = new THREE.MeshPhongMaterial({ color: "#000000", specular: "#000000", emissive: "#000000", shininess: 90, side: THREE.DoubleSide });
         }
     
-    create(jarMesh) {
+    create() {
         const points = []
         const length = 3
         const curveHeight =0.5 // this controls the curve of the stalk
@@ -33,7 +33,7 @@ class MyFlower {
         const stalkMaterial = new THREE.LineBasicMaterial({ color: 0x006400 })
         this.stalk = new THREE.Line(stalkGeometry, stalkMaterial)
         this.stalk.position.set(0, 0, -0.2)
-        this.stalk.scale.set(0.1,0.1,0.1)
+        this.stalk.scale.set(0.9,0.9,0.9)
 
         const flowerLeafs = []
         const leaf1 = this.drawLeaf(new THREE.Vector3(-0.5,0,0),0.5)
@@ -58,7 +58,6 @@ class MyFlower {
         center.add(...flowerLeafs)
         this.stalk.add(center)
 
-        jarMesh.add(this.stalk)
 
         return this.stalk
     }
