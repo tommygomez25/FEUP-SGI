@@ -61,6 +61,8 @@ class MyJar {
         this.leftJarMesh.add(this.rightJarMesh)
         this.rightJarMesh.scale.set( 1,1,-1)
 
+        this.app.scene.add(this.leftJarMesh)
+
         return this.leftJarMesh
     }
 

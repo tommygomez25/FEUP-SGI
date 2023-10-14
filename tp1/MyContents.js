@@ -53,12 +53,6 @@ class MyContents  {
         this.wallTexture.wrapT = THREE.RepeatWrapping;
         this.wallPlaneMaterial = new THREE.MeshStandardMaterial({ map: this.wallTexture, emissive: "#000000", side: THREE.DoubleSide });
 
-        this.tampoTexture = new THREE.TextureLoader().load( 'textures/wood.jpg' );
-        this.tampoTexture.wrapS = THREE.RepeatWrapping;
-        this.tampoTexture.wrapT = THREE.RepeatWrapping;
-        //this.tampoPlaneMaterial = new THREE.MeshPhongMaterial({ map: this.tampoTexture, specular: "#dcdcdc", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
-        this.tampoPlaneMaterial = new THREE.MeshStandardMaterial({ map: this.tampoTexture, roughness: 0.1, side: THREE.DoubleSide });
-        
         this.tomasTexture = new THREE.TextureLoader().load( 'textures/tomas.jpg' );
         this.tomasTexture.wrapS = THREE.RepeatWrapping;
         this.tomasTexture.wrapT = THREE.RepeatWrapping;
@@ -74,10 +68,6 @@ class MyContents  {
         this.viewTexture.wrapT = THREE.RepeatWrapping;
         this.viewPlaneMaterial = new THREE.MeshPhongMaterial({ map: this.viewTexture, specular: "#dcdcdc", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
         
-        this.cakeTexture = new THREE.TextureLoader().load( 'textures/cake.jpg' );
-        this.cakeTexture.wrapS = THREE.RepeatWrapping;
-        this.cakeTexture.wrapT = THREE.RepeatWrapping;
-        this.cakePlaneMaterial = new THREE.MeshPhongMaterial({ map: this.cakeTexture, specular: "#000000", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
 
         this.boardTexture = new THREE.TextureLoader().load( 'textures/board.jpg' );
         this.boardTexture.wrapS = THREE.RepeatWrapping;
@@ -90,7 +80,6 @@ class MyContents  {
         this.jornalMaterial = new THREE.MeshBasicMaterial({ map: this.jornalTexture, side: THREE.DoubleSide });
 
         
-        this.flowerStalkMaterial = new THREE.MeshPhongMaterial({ color: "#000000", specular: "#000000", emissive: "#000000", shininess: 90, side: THREE.DoubleSide });
     }   
 
 
@@ -126,6 +115,7 @@ class MyContents  {
         this.carMesh = this.objects[3].create()
         this.chairMesh = this.objects[4].create()
         this.jarMesh = this.objects[5].create()
+        this.tampoMesh.add(this.jarMesh)
         this.flowerMesh = this.objects[6].create(this.jarMesh)
 
         this.boards = new MyBoards(this.app)
@@ -299,61 +289,7 @@ class MyContents  {
 
 
     
-    /**
-     * updates the diffuse plane color and the material
-     * @param {THREE.Color} value 
-     */
-    updateDiffusePlaneColor(value) {
-        this.diffusePlaneColor = value
-        this.planeMaterial.color.set(this.diffusePlaneColor)
-    }
-    /**
-     * updates the specular plane color and the material
-     * @param {THREE.Color} value 
-     */
-    updateSpecularPlaneColor(value) {
-        this.specularPlaneColor = value
-        this.planeMaterial.specular.set(this.specularPlaneColor)
-    }
-    /**
-     * updates the plane shininess and the material
-     * @param {number} value 
-     */
-    updatePlaneShininess(value) {
-        this.planeShininess = value
-        this.planeMaterial.shininess = this.planeShininess
-    }
     
-    /**
-     * rebuilds the box mesh if required
-     * this method is called from the gui interface
-     */
-    rebuildBox() {
-        // remove boxMesh if exists
-        if (this.boxMesh !== undefined && this.boxMesh !== null) {  
-            this.app.scene.remove(this.boxMesh)
-        }
-        this.buildBox();
-        this.lastBoxEnabled = null
-    }
-    
-    /**
-     * updates the box mesh if required
-     * this method is called from the render method of the app
-     * updates are trigered by boxEnabled property changes
-     */
-    updateBoxIfRequired() {
-        if (this.boxEnabled !== this.lastBoxEnabled) {
-            this.lastBoxEnabled = this.boxEnabled
-            if (this.boxEnabled) {
-                this.app.scene.add(this.boxMesh)
-            }
-            else {
-                this.app.scene.remove(this.boxMesh)
-            }
-        }
-    }
-
     /**
      * updates the contents
      * this method is called from the render method of the app
@@ -364,19 +300,11 @@ class MyContents  {
     }
 
     drawHull(position, points) {
-
-       
-
         const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
         let line = new THREE.Line( geometry, this.hullMaterial );
-
         // set initial position
-
         line.position.set(position.x,position.y,position.z)
-
         this.app.scene.add( line );
-
     }
 
 }
