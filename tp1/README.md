@@ -1,92 +1,66 @@
-# sgi-tp1-base
+## TP4 Shadows
 
 
+#### Ver as sombras resultantes e identificar as duas sombras produzidas pelo cubo: Relativa à fonte direcional;Relativa à fonte pontual.
 
-## Getting started
+![Alt text](screenshots/1.png)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+   A sombra imediatamente abaixo do cubo é referente à fonte direcional. A sombra mais afastada do cubo é referente à fonte pontual.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+#### Altere a intensidade da fonte de luz para 5 e a sua posição para (0, 2, 0); repita os pontos anteriores.
+    O plano está pouco iluminado, relevando compoonente especular ao centro. As faces laterais e superior do cubo continuam escuras, uma vez que apenas estão iluminadas por uma luz ambiente. A fonte de luz mencionada no enunciado não ilumina o cubo.
 
-## Add your files
+#### Faça ```this.diffusePlaneColor = "rgb(0,0,0)``` Que componente(s) de iluminação encontra no plano?
+    O plano apenas tem componente especular.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+#### Faça também ```this.planeShininess = 400``` Que diferenças encontra? (experimente outros valores…)
+    A intensidade da reflexão especular é proporcional a cos^n(α). Quanto maior o valor de n, mais concentrada é a reflexão especular.
 
-```
-cd existing_repo
-git remote add origin https://git.fe.up.pt/sgi-meic/sgi-2023-2024/courseware/sgi-tp1-base.git
-git branch -M main
-git push -uf origin main
-```
+#### Faça agora (note que há mais um parâmetro em PointLight): ```this.diffusePlaneColor =  "rgb(128,128,128)" this.specularPlaneColor = "rgb(0,0,0)" this.planeShininess = 0 pointLight = new THREE.PointLight(0xffffff, 5, 0, 0); pointLight.position.set( 0, 20, 0 )```; Veja e memorize o resultado
 
-## Integrate with your tools
+#### Faça agora: ```pointLight = new THREE.PointLight(0xffffff, 5, 15, 0)``` Comente sobre as alterações observadas.Reponha o penúltimo parâmetro em 0 (intensity) e faça variar o último parâmetro entre 0, 1 e 2 (decay); comente os resultados
+    Como se alterou a distância máxima a que a luz chega, o plano ficou mais escuro.
+    Quanto ao decay, nota-se a diminuição da intensidade da luminosidade que chega ao plano.
 
-- [ ] [Set up project integrations](https://git.fe.up.pt/sgi-meic/sgi-2023-2024/courseware/sgi-tp1-base/-/settings/integrations)
+### 0.1.2
+Posição (0,10,0)
+![Alt text](screenshots/1.png)
 
-## Collaborate with your team
+#### Altere a posição da fonte de luz para (5, 10, 2). Comente sobre a nova iluminação obtida.
+Nota-se maior iluminação na parte direita do plano.
+![Alt text](screenshots/2.png)
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+#### Altere a posição da fonte de luz para (-5, 10, -2). Comente sobre a nova iluminação obtida.
+Nota-se maior iluminação na parte esquerda do plano.
+![Alt text](screenshots/3.png)
 
-## Test and Deploy
+#### Consulte a documentação sobre o parâmetro ```.target``` desta classe e acrescente um target diferente do de default.
+Target alterado para (2,2,2).
+![Alt text](screenshots/4.png)
 
-Use the built-in continuous integration in GitLab.
+#### Fonte de Luz "Foco" - Compare, nas 3 faces iluminadas do cubo, as respectivas iluminações.
+A face superior do cubo é a face mais iluminada. A face da direita é a segunda mais iluminada e a face da esquerda é a menos iluminada.
+![Alt text](screenshots/5.png)
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### 4.3.6
+#### Altere o valor de ```this.diffusePlaneColor``` para ```"rgb(128,0,0)"```. Comente os resultados.
+O plano ficou com uma cor vermelha. ![Alt text](screenshots/6.png)
 
-***
+#### Comente a alternativa 1 e descomente a alternativa 2. Comente os resultados.
+A alternativa 1 ilumina o plano com uma cor vermelha. A alternativa 2 ilumina o plano com uma cor branca, sem componentes difusa nem especular. ![Alt text](screenshots/7.png)
 
-# Editing this README
+### 4.3.7
+A imagem da textura aparece inteira no plano com as proporções certas.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+#### Altere as dimensões do plano para 10*3
+A imagem não aparece inteira no plano mas não está distorcida.
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+#### Interprete o resultado obtido com base na linha de código ```let planeTextureRepeatV = planeTextureRepeatU * planeUVRate * planeTextureUVRate```.
+Esta conta calcula como é que a textura é aplicada ao plano na vertical.
 
-## Name
-Choose a self-explaining name for your project.
+#### Altere o valor de ```planeTextureRepeatU``` para 2.5 e comente o resultado.
+A textura é repetida 2.5 vezes na horizontal conforme apresentado na imagem abaixo.
+![Alt text](screenshots/8.png)
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+#### Altere 
+```this.planeTexture.wrapS = THREE.ClampToEdgeWrapping; this.planeTexture.wrapT = THREE.ClampToEdgeWrapping;``` e comente o resultado.
