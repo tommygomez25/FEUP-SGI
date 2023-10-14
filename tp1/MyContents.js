@@ -2,6 +2,8 @@ import * as THREE from 'three';
 
 import { MyAxis } from './MyAxis.js';
 
+import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
+
 
 /**
 
@@ -46,7 +48,7 @@ class MyContents  {
 
         this.mapSize = 1024
 
-        this.nbrPolyg = 10
+        this.nbrPolyg = 100
 
         this.volumeDimX = 10
 
@@ -133,7 +135,7 @@ class MyContents  {
 
         light2.shadow.camera.far = 100;
 
-        this.app.scene.add( light2 );
+        //this.app.scene.add( light2 );
 
 
         // creates a helper for the light
@@ -179,6 +181,7 @@ class MyContents  {
         mesh.receiveShadow = true;
 
         mesh.castShadow = true;
+        
 
         this.app.scene.add( mesh );
 
@@ -195,11 +198,11 @@ class MyContents  {
 
         // Create a plane Mesh with basic material
 
-        var floor = new THREE.PlaneGeometry( 30, 30 );
+        var floor = new THREE.PlaneGeometry( 30,30 );
 
         let mesh = new THREE.Mesh( floor, this.floorMaterial );
 
-        mesh.rotation.x = - Math.PI / 2;
+        mesh.rotation.x =  Math.PI / 2;
 
         mesh.position.y = 0
 
@@ -210,6 +213,9 @@ class MyContents  {
         mesh.castShadow = true;
 
         this.app.scene.add( mesh );
+
+        var vnh = new VertexNormalsHelper( mesh, 1, 0xff0000 );
+        this.app.scene.add( vnh );
 
     }
 
