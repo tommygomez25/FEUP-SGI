@@ -10,6 +10,8 @@ import { MyPlate } from './MyPlate.js';
 import { MyJar } from './MyJar.js';
 import { MyFlower } from './MyFlower.js';
 import { MyLights } from './MyLights.js';
+import { MyJornal } from './MyJornal.js';
+import { MySpiral } from './MySpiral.js';
 
 /**
  *  This class contains the contents of out application
@@ -35,7 +37,9 @@ class MyContents  {
             new MyCar(this.app),
             new MyChair(this.app),
             new MyJar(this.app),
-            new MyFlower(this.app)
+            new MyFlower(this.app),
+            new MyJornal(this.app),
+            new MySpiral(this.app)
         ]
 
         this.lightsManager = new MyLights(this.app)
@@ -73,11 +77,7 @@ class MyContents  {
         this.boardTexture.wrapS = THREE.RepeatWrapping;
         this.boardTexture.wrapT = THREE.RepeatWrapping;
         this.boardMaterial = new THREE.MeshPhongMaterial({ map: this.boardTexture, specular: "#000000", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
-        
-        this.jornalTexture = new THREE.TextureLoader().load( 'textures/jornal.jpg' );
-        this.jornalTexture.wrapS = THREE.RepeatWrapping;
-        this.jornalTexture.wrapT = THREE.RepeatWrapping;
-        this.jornalMaterial = new THREE.MeshBasicMaterial({ map: this.jornalTexture, side: THREE.DoubleSide });
+    
 
         
     }   
@@ -116,9 +116,8 @@ class MyContents  {
         this.chairMesh = this.objects[4].create()
         this.jarMesh = this.objects[5].create()
         this.flowerMesh = this.objects[6].create()
-
-        let sanityCheck = new THREE.Mesh();
-        console.log("- Tampo Mesh::: " + typeof (this.tampoMesh) + "- Jar Mesh::: " + typeof (this.jarMesh) + " - sanity check::: " + typeof (sanityCheck))
+        this.jornalMesh = this.objects[7].create()
+        this.spiralMesh = this.objects[8].create()
 
         this.boards = new MyBoards(this.app)
         this.boardTomas = this.boards.create(this.tomasTexture,this.tomasPlaneMaterial, 10,10,800/800,1,this.wallMeshes[0].position.x + 0.01,2.5,2.5,0,Math.PI/2,0,0,3,3)
@@ -126,6 +125,8 @@ class MyContents  {
         this.boardView = this.boards.create(this.viewTexture,this.viewPlaneMaterial, 10,10,800/800,1,0,2.5,this.wallMeshes[2].position.z + 0.01,0,0,0,0,3,3)
         
         this.tampoMesh.add(this.jarMesh)
+        this.tampoMesh.add(this.jornalMesh)
+        this.tampoMesh.add(this.spiralMesh)
         this.jarMesh.add(this.flowerMesh)
 
         this.app.scene.add(this.boardTomas)
@@ -137,90 +138,8 @@ class MyContents  {
         this.app.scene.add(this.carMesh)
         this.app.scene.add(this.chairMesh)
 
-        this.recompute()
-
-    }
-
-    drawJornal() {  
-
-        // declare local variables
-        let controlPoints;
-        let surfaceData;
-        let mesh;
-        let orderU = 2
-        let orderV = 1
-        // build nurb #1
-        controlPoints =
-
-        [   // U = 0
-
-        [ // V = 0..1;
-
-            [ -0.2, -1.5, 0.0, 1 ],
-
-            [ -0.2,  1.5, 0.0, 1 ]
-
-        ],
-
-    // U = 1
-
-        [ // V = 0..1
-
-            [ 0, -1.5, 4.0, 1 ],
-
-            [ 0,  1.5, 4.0, 1 ]
-
-        ],
-
-    // U = 2
-
-        [ // V = 0..1
-
-            [ 0.2, -1.5, 0.0, 1 ],
-
-            [ 0.2,  1.5, 0.0, 1 ]
-
-            ]
-
-        ]
-        let planeSizeU = 0.3;
-        let planeSizeV = 0.2;
-        let planeUVRate = planeSizeV / planeSizeU;
-        let jornalTextureUVRate = 728 / 494; // image dimensions
-        let jornalTextureRepeatU = 1;
-        let jornalTextureRepeatV =jornalTextureRepeatU * planeUVRate * jornalTextureUVRate;
-        this.jornalTexture.repeat.set(jornalTextureRepeatU, jornalTextureRepeatV );
-        this.jornalTexture.rotation = -Math.PI / 2;
-
-        surfaceData = this.builder.build(controlPoints,
-                orderU, orderV, 100,
-                 100, this.jornalMaterial)  
-
-        mesh = new THREE.Mesh( surfaceData, this.jornalMaterial );
-        mesh.rotation.x = 0
-        mesh.rotation.y = 3*Math.PI/4
-        mesh.rotation.z = Math.PI/2
-        mesh.scale.set( 0.2,0.2,0.2 )
-        mesh.position.set( 0.7,1.1,0.7 )
-        this.app.scene.add( mesh )
-        this.meshes.push (mesh)
-        }
-
-    recompute() {
-
-        // are there any meshes to remove?
-        if (this.meshes !== null) {
-            // traverse mesh array
-            for (let i=0; i<this.meshes.length; i++) {
-                // remove all meshes from the scene
-                this.app.scene.remove(this.meshes[i])
-            }
-            this.meshes = [] // empty the array  
-        }
-
-        this.drawSpiral()
-
-        this.drawJornal()
+        this.meshes.push(this.jornalMesh)
+        this.meshes.push(this.spiralMesh)
 
     }
 
@@ -255,42 +174,6 @@ class MyContents  {
 
         this.wallMeshes.push(this.wallMesh);
     }
-
-
-    drawSpiral() {
-        const segments = 100
-        const radius = 0.1
-        const numberOfLoops = 3
-        const height = 0.1
-        let points = []
-
-        var angleStep = 2 * Math.PI / segments; // 2PI = 360º, logo vou dividir o circulo em 100 partes e desenha-las
-        var heightStep = height / segments; // 0.1 = altura da mola , logo vou dividir a mola em 100 partes e desenha-las
-
-        /*
-            x ->  cos(t) * raio
-            y ->  t * h
-            z ->  sin(t) * raio
-        */
-        for (let i = 0; i < numberOfLoops * segments; i++) {
-            const x = Math.cos(i * angleStep) * radius
-            const y = i * heightStep
-            const z = Math.sin(i * angleStep) * radius
-            points.push(new THREE.Vector3(x, y, z))
-        }
-
-        const curve = new THREE.CatmullRomCurve3(points)
-        const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(segments))
-        const material = new THREE.LineBasicMaterial({ color: 0xdcdcdc })
-        const line = new THREE.Line(geometry, material)
-        line.position.set(-0.75,this.tampoMesh.position.y + height ,-0.75)
-        //line.rotation.x = Math.PI / 2
-        this.app.scene.add(line)
-
-    }
-
-
-
     
     
     /**
