@@ -15,7 +15,7 @@ class MyJar {
             this.rightJarMesh = null
         }
     
-    create(tampoMesh) {
+    create() {
         // declare local variables
         let controlPoints;
         let surfaceData;
@@ -60,8 +60,6 @@ class MyJar {
         this.leftJarMesh.position.set( -0.7,0.3,0.7)
         this.leftJarMesh.add(this.rightJarMesh)
         this.rightJarMesh.scale.set( 1,1,-1)
-
-        tampoMesh.add(this.leftJarMesh)
 
         return this.leftJarMesh
     }

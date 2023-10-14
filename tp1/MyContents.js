@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { MyAxis } from './MyAxis.js';
-import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 import { MyNurbsBuilder } from './MyNurbsBuilder.js';
 import { MyBoards } from './MyBoards.js';
 import { MyChair } from './MyChair.js';
@@ -10,7 +9,7 @@ import { MyCar } from './MyCar.js';
 import { MyPlate } from './MyPlate.js';
 import { MyJar } from './MyJar.js';
 import { MyFlower } from './MyFlower.js';
-
+import { MyLights } from './MyLights.js';
 
 /**
  *  This class contains the contents of out application
@@ -38,6 +37,8 @@ class MyContents  {
             new MyJar(this.app),
             new MyFlower(this.app)
         ]
+
+        this.lightsManager = new MyLights(this.app)
 
         // NURBS
         this.builder = new MyNurbsBuilder()
@@ -100,26 +101,22 @@ class MyContents  {
             //this.app.scene.add(this.axis)
         }
 
-        // add a point light on top of the model
-        const pointLight = new THREE.PointLight( 0xffffff, 50, 0 );
-        pointLight.position.set( 0, 10, 0 );
-        this.app.scene.add( pointLight );
-
-        // add a point light helper for the previous point light
-        const sphereSize = 0.5;
-        const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
-        this.app.scene.add( pointLightHelper );
-
-        // add an ambient light
-        const ambientLight = new THREE.AmbientLight( 0x555555 );
-        this.app.scene.add( ambientLight );
-
         //curves
         this.quadraticBezierCurve = null
         this.catmullRomCurve = null
         this.numberOfSamples = 100
 
-        this.addSpotlights()
+        this.spotlights = this.lightsManager.createSpotlights();
+        this.spotlights.forEach((light) => this.app.scene.add(light));
+
+        this.rectLight = this.lightsManager.createRectAreaLight();
+        this.app.scene.add(this.rectLight);
+
+        this.ambientLight = this.lightsManager.createAmbientLight();
+        this.app.scene.add(this.ambientLight);
+
+        this.pointLight = this.lightsManager.createPointLight();
+        this.app.scene.add(this.pointLight);
         
         this.createWalls()
 
@@ -128,7 +125,7 @@ class MyContents  {
         this.cakeMesh = this.objects[2].create(this.plateMesh)
         this.carMesh = this.objects[3].create()
         this.chairMesh = this.objects[4].create()
-        this.jarMesh = this.objects[5].create(this.tampoMesh)
+        this.jarMesh = this.objects[5].create()
         this.flowerMesh = this.objects[6].create(this.jarMesh)
 
         this.boards = new MyBoards(this.app)
@@ -216,60 +213,6 @@ class MyContents  {
         this.meshes.push (mesh)
         }
 
-
-
-    drawSemiCircunference(position, radius, numberOfSamples) {
-        let points = []
-        const inicialAngle = 0
-        const finalAngle = Math.PI
-
-        for (let i = 0; i <= numberOfSamples; i++) {
-            const t = i / this.numberOfSamples
-            const x = radius * Math.cos(inicialAngle + t * (finalAngle - inicialAngle))
-            const y = radius * Math.sin(inicialAngle + t * (finalAngle - inicialAngle))
-            points.push(new THREE.Vector3(x, y, 0))
-        }
-
-        let curve = new THREE.CatmullRomCurve3( points )
-        let sampledPoints = curve.getPoints( this.numberOfSamples );
-        this.curveGeometry = new THREE.BufferGeometry().setFromPoints( sampledPoints )
-        this.lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff } )
-        this.lineObj = new THREE.Line( this.curveGeometry, this.lineMaterial )
-        this.lineObj.position.set(position.x,position.y,position.z)
-        this.app.scene.add( this.lineObj );
-        return this.lineObj
-
-    }
-
-    drawQuarterCircunference(position, radius, numberOfSamples,reverse) {
-        let points = []
-        const inicialAngle = 0
-        const finalAngle = Math.PI / 2
-
-        for (let i = 0; i <= numberOfSamples; i++) {
-            const t = i / this.numberOfSamples
-            if (reverse === true) {
-                const x = radius * Math.cos(inicialAngle + t * (finalAngle - inicialAngle))
-                const y = radius * Math.sin(inicialAngle + t * (finalAngle - inicialAngle))
-                points.push(new THREE.Vector3(x, y, 0))
-            }
-            else {
-                const x = radius * Math.cos(finalAngle - t * (inicialAngle - finalAngle))
-                const y = radius * Math.sin(finalAngle - t * (inicialAngle - finalAngle))
-                points.push(new THREE.Vector3(x, y, 0))
-            }
-        }
-
-        let curve = new THREE.CatmullRomCurve3( points )
-        let sampledPoints = curve.getPoints( this.numberOfSamples );
-        this.curveGeometry = new THREE.BufferGeometry().setFromPoints( sampledPoints )
-        this.lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff } )
-        this.lineObj = new THREE.Line( this.curveGeometry, this.lineMaterial )
-        this.lineObj.position.set(position.x,position.y,position.z)
-        this.app.scene.add( this.lineObj );
-        return this.lineObj
-    }
-
     recompute() {
 
         // are there any meshes to remove?
@@ -285,63 +228,6 @@ class MyContents  {
         this.drawSpiral()
 
         this.drawJornal()
-
-    }
-
-    addSpotlights() {
-        this.spotLight = new THREE.SpotLight( 0xffffff, 15 );
-        this.spotLight.position.set(0,5,0);
-        this.spotLight.angle = Math.PI/20;
-        this.spotLight.penumbra = 0
-        this.spotLight.decay = 0
-        this.spotLight.distance = 5
-        this.spotLight.intensity = 5
-
-        this.spotLightTarget = new THREE.Object3D()
-        this.spotLightTarget.position.set(0,1,0)
-        this.app.scene.add(this.spotLightTarget)
-
-        this.spotLight.target = this.spotLightTarget
-        this.app.scene.add(this.spotLight)
-
-        this.spotLight2 = new THREE.SpotLight( 0xffffff, 15 );
-        this.spotLight2.position.set(-2.5,5,2.5);
-        this.spotLight2.angle = Math.PI/10;
-        this.spotLight2.penumbra = 1
-        this.spotLight2.decay = 0
-        this.spotLight2.distance = 10
-        this.spotLight2.intensity = 1.2
-
-        this.spotLightTarget2 = new THREE.Object3D()
-        this.spotLightTarget2.position.set(-4.9,2.8,2.5)
-        this.app.scene.add(this.spotLightTarget2)
-
-        this.spotLight2.target = this.spotLightTarget2
-        this.app.scene.add(this.spotLight2)
-
-        this.spotLight3 = new THREE.SpotLight( 0xffffff, 15 );
-        this.spotLight3.position.set(-2.5,5,-2.5);
-        this.spotLight3.angle = Math.PI/10;
-        this.spotLight3.penumbra = 1
-        this.spotLight3.decay = 0
-        this.spotLight3.distance = 10
-        this.spotLight3.intensity = 1.2
-
-        this.spotLightTarget3 = new THREE.Object3D()
-        this.spotLightTarget3.position.set(-4.9,2.8,-2.5)
-        this.app.scene.add(this.spotLightTarget3)
-
-        this.spotLight3.target = this.spotLightTarget3
-        this.app.scene.add(this.spotLight3)
-        
-        this.rectLight = new THREE.RectAreaLight( 0xdcdcdc, 20,  3, 3 );
-        this.rectLight.position.set( 0, 2.5, -5.1 );
-        this.rectLight.lookAt( 0, 2.5, 0 );
-        this.app.scene.add( this.rectLight );
-
-        this.RectAreaLightHelper = new RectAreaLightHelper( this.rectLight );
-        this.app.scene.add( this.RectAreaLightHelper );
-
 
     }
 
