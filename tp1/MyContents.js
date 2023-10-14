@@ -2,7 +2,14 @@ import * as THREE from 'three';
 import { MyAxis } from './MyAxis.js';
 import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 import { MyNurbsBuilder } from './MyNurbsBuilder.js';
-
+import { MyBoards } from './MyBoards.js';
+import { MyChair } from './MyChair.js';
+import { MyTable } from './MyTable.js';
+import { MyCake } from './MyCake.js';
+import { MyCar } from './MyCar.js';
+import { MyPlate } from './MyPlate.js';
+import { MyJar } from './MyJar.js';
+import { MyFlower } from './MyFlower.js';
 
 
 /**
@@ -19,21 +26,25 @@ class MyContents  {
         this.app = app
         this.axis = null
 
-        // box related attributes
-        this.boxMesh = null
-        this.boxMeshSize = 1.0
-        this.boxEnabled = false
-        this.lastBoxEnabled = null
-        this.boxDisplacement = new THREE.Vector3(0,2,0)
-
         this.wallMeshes = []
+
+        // Objects of the scene
+        this.objects = [
+            new MyTable(this.app),
+            new MyPlate (this.app),
+            new MyCake(this.app),
+            new MyCar(this.app),
+            new MyChair(this.app),
+            new MyJar(this.app),
+            new MyFlower(this.app)
+        ]
 
         // NURBS
         this.builder = new MyNurbsBuilder()
         this.meshes = []
         this.samplesU = 8         // maximum defined in MyGuiInterface
         this.samplesV = 8         // maximum defined in MyGuiInterface
-        //this.createNurbsSurfaces()
+        
         
         // textures
         this.wallTexture = new THREE.TextureLoader().load( 'textures/wall.jpg' );
@@ -71,30 +82,20 @@ class MyContents  {
         this.boardTexture.wrapS = THREE.RepeatWrapping;
         this.boardTexture.wrapT = THREE.RepeatWrapping;
         this.boardMaterial = new THREE.MeshPhongMaterial({ map: this.boardTexture, specular: "#000000", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
+        
+        this.jornalTexture = new THREE.TextureLoader().load( 'textures/jornal.jpg' );
+        this.jornalTexture.wrapS = THREE.RepeatWrapping;
+        this.jornalTexture.wrapT = THREE.RepeatWrapping;
+        this.jornalMaterial = new THREE.MeshBasicMaterial({ map: this.jornalTexture, side: THREE.DoubleSide });
+
+        
+        this.flowerStalkMaterial = new THREE.MeshPhongMaterial({ color: "#000000", specular: "#000000", emissive: "#000000", shininess: 90, side: THREE.DoubleSide });
     }   
 
-    /**
-     * builds the box mesh with material assigned
-     */
-    buildBox() {    
-        let boxMaterial = new THREE.MeshPhongMaterial({ color: "#00ff00", 
-        specular: "#000000", emissive: "#000000", shininess: 90 , wireframe: false})
 
-        // Create a Cube Mesh with basic material
-        let box = new THREE.BoxGeometry(  this.boxMeshSize,  this.boxMeshSize,  this.boxMeshSize );
-        this.boxMesh = new THREE.Mesh( box, boxMaterial, );
-        this.boxMesh.rotation.x = Math.PI / 4;
-        this.boxMesh.position.y = this.boxDisplacement.y;
-    }
-
-    /**
-     * initializes the contents
-     */
     init() {
        
-        // create once 
         if (this.axis === null) {
-            // create and attach the axis to the scene
             this.axis = new MyAxis(this)
             //this.app.scene.add(this.axis)
         }
@@ -120,111 +121,102 @@ class MyContents  {
 
         this.addSpotlights()
         
-        this.buildBox()
-        
         this.createWalls()
 
-        this.createTable()
+        this.tampoMesh = this.objects[0].create()
+        this.plateMesh = this.objects[1].create(this.tampoMesh)
+        this.cakeMesh = this.objects[2].create(this.plateMesh)
+        this.carMesh = this.objects[3].create()
+        this.chairMesh = this.objects[4].create()
+        this.jarMesh = this.objects[5].create(this.tampoMesh)
+        this.flowerMesh = this.objects[6].create(this.jarMesh)
 
-        this.createPlate()
-
-        this.createCake()
-
-        this.createChair()
-
-        this.addBoards()
+        this.boards = new MyBoards(this.app)
+        this.boardTomas = this.boards.create(this.tomasTexture,this.tomasPlaneMaterial, 10,10,800/800,1,this.wallMeshes[0].position.x + 0.01,2.5,2.5,0,Math.PI/2,0,0,3,3)
+        this.boardFrancisco = this.boards.create(this.franciscoTexture,this.franciscoPlaneMaterial, 10,10,800/800,1,this.wallMeshes[0].position.x + 0.01,2.5,-2.5,0,Math.PI/2,0,0,3,3)
+        this.boardView = this.boards.create(this.viewTexture,this.viewPlaneMaterial, 10,10,800/800,1,0,2.5,this.wallMeshes[2].position.z + 0.01,0,0,0,0,3,3)
+        
+        this.app.scene.add(this.boardTomas)
+        this.app.scene.add(this.boardFrancisco)
+        this.app.scene.add(this.boardView)
+        this.app.scene.add(this.tampoMesh)
+        this.app.scene.add(this.plateMesh)
+        this.app.scene.add(this.cakeMesh)
+        this.app.scene.add(this.carMesh)
+        this.app.scene.add(this.chairMesh)
+        this.app.scene.add(this.jarMesh)
+        this.app.scene.add(this.flowerMesh)
 
         this.recompute()
 
     }
 
-    /**
-
-     * removes (if existing) and recreates the nurbs surfaces
-
-     */
-
-    createNurbsSurfaces() {  
-        // are there any meshes to remove?
-        if (this.meshes !== null) {
-           // traverse mesh array
-            for (let i=0; i<this.meshes.length; i++) {
-                // remove all meshes from the scene
-                this.app.scene.remove(this.meshes[i])
-            }
-            this.meshes = [] // empty the array  
-        }
+    drawJornal() {  
 
         // declare local variables
         let controlPoints;
         let surfaceData;
         let mesh;
         let orderU = 2
-        let orderV = 3
+        let orderV = 1
         // build nurb #1
         controlPoints =
 
         [   // U = 0
 
-                [ // V = 0..3;
+        [ // V = 0..1;
 
-                    [ -1.5, -1.5, 0.0, 1 ],
+            [ -0.2, -1.5, 0.0, 1 ],
 
-                    [ -2.0, -2.0, 2.0, 1 ],
+            [ -0.2,  1.5, 0.0, 1 ]
 
-                    [ -2.0,  2.0, 2.0, 1 ],
+        ],
 
-                    [ -1.5,  1.5, 0.0, 1 ]
+    // U = 1
 
-                ],
+        [ // V = 0..1
 
-            // U = 1
+            [ 0, -1.5, 4.0, 1 ],
 
-                [ // V = 0..3
+            [ 0,  1.5, 4.0, 1 ]
 
-                    [ 0.0,  0.0, 3.0, 1 ],
+        ],
 
-                    [ 0.0, -2.0, 3.0, 1 ],
+    // U = 2
 
-                    [ 0.0,  2.0, 3.0, 1 ],
+        [ // V = 0..1
 
-                    [ 0.0,  0.0, 3.0, 1 ]        
+            [ 0.2, -1.5, 0.0, 1 ],
 
-                ],
+            [ 0.2,  1.5, 0.0, 1 ]
 
-            // U = 2
+            ]
 
-                [ // V = 0..3
-
-                    [ 1.5, -1.5, 0.0, 1 ],
-
-                    [ 2.0, -2.0, 2.0, 1 ],
-
-                    [ 2.0,  2.0, 2.0, 1 ],
-
-                    [ 1.5,  1.5, 0.0, 1 ]
-
-                ]
-
-         ]
-
-       
+        ]
+        let planeSizeU = 0.3;
+        let planeSizeV = 0.2;
+        let planeUVRate = planeSizeV / planeSizeU;
+        let jornalTextureUVRate = 728 / 494; // image dimensions
+        let jornalTextureRepeatU = 1;
+        let jornalTextureRepeatV =jornalTextureRepeatU * planeUVRate * jornalTextureUVRate;
+        this.jornalTexture.repeat.set(jornalTextureRepeatU, jornalTextureRepeatV );
+        this.jornalTexture.rotation = -Math.PI / 2;
 
         surfaceData = this.builder.build(controlPoints,
+                orderU, orderV, 100,
+                 100, this.jornalMaterial)  
 
-                      orderU, orderV, this.samplesU,
-
-                      this.samplesV, this.material)  
-
-        mesh = new THREE.Mesh( surfaceData, this.material );
+        mesh = new THREE.Mesh( surfaceData, this.jornalMaterial );
         mesh.rotation.x = 0
-        mesh.rotation.y = 0
-        mesh.rotation.z = 0
-        mesh.scale.set( 1,1,1 )
-        mesh.position.set( 0,0,0 )
+        mesh.rotation.y = 3*Math.PI/4
+        mesh.rotation.z = Math.PI/2
+        mesh.scale.set( 0.2,0.2,0.2 )
+        mesh.position.set( 0.7,1.1,0.7 )
         this.app.scene.add( mesh )
         this.meshes.push (mesh)
-    }
+        }
+
+
 
     drawSemiCircunference(position, radius, numberOfSamples) {
         let points = []
@@ -279,15 +271,21 @@ class MyContents  {
     }
 
     recompute() {
-        /*
-        if (this.quadraticBezierCurve !== null)
-            this.app.scene.remove(this.quadraticBezierCurve)
-        this.initQuadraticBezierCurve()
-        */
 
-        this.drawCar()
+        // are there any meshes to remove?
+        if (this.meshes !== null) {
+            // traverse mesh array
+            for (let i=0; i<this.meshes.length; i++) {
+                // remove all meshes from the scene
+                this.app.scene.remove(this.meshes[i])
+            }
+            this.meshes = [] // empty the array  
+        }
 
         this.drawSpiral()
+
+        this.drawJornal()
+
     }
 
     addSpotlights() {
@@ -296,8 +294,8 @@ class MyContents  {
         this.spotLight.angle = Math.PI/20;
         this.spotLight.penumbra = 0
         this.spotLight.decay = 0
-        this.spotLight.distance = 10
-        this.spotLight.intensity = 1.2
+        this.spotLight.distance = 5
+        this.spotLight.intensity = 5
 
         this.spotLightTarget = new THREE.Object3D()
         this.spotLightTarget.position.set(0,1,0)
@@ -364,80 +362,6 @@ class MyContents  {
 
     }
 
-    createTable() {
-        
-        let planeSizeU = 10;
-        let planeSizeV = 7;
-        let planeUVRate = planeSizeV / planeSizeU;
-        let tampoTextureUVRate = 350 / 268; // image dimensions
-        let tampoTextureRepeatU = 1;
-        let tampoTextureRepeatV =tampoTextureRepeatU * planeUVRate * tampoTextureUVRate;
-        this.tampoTexture.repeat.set(tampoTextureRepeatU, tampoTextureRepeatV );
-        this.tampoTexture.rotation = 0;
-        this.tampoTexture.offset = new THREE.Vector2(0,0);
-
-        let tampo = new THREE.BoxGeometry(2.5, 0.1, 2.5);
-        this.tampoMesh = new THREE.Mesh( tampo, this.tampoPlaneMaterial);
-        this.tampoMesh.position.y = 1;
-
-        this.app.scene.add( this.tampoMesh);
-
-        this.addLegs(this.tampoMesh,1);
-
-    }
-
-    addLegs(tampoMesh,legHeight) {
-        const legWidth = 0.1; 
-    
-        
-        const legPositions = [
-            { x: tampoMesh.geometry.parameters.width / 2 - legWidth / 2, z: tampoMesh.geometry.parameters.depth / 2 - legWidth / 2 },
-            { x: -tampoMesh.geometry.parameters.width / 2 + legWidth / 2, z: tampoMesh.geometry.parameters.depth / 2 - legWidth / 2 },
-            { x: tampoMesh.geometry.parameters.width / 2 - legWidth / 2, z: -tampoMesh.geometry.parameters.depth / 2 + legWidth / 2 },
-            { x: -tampoMesh.geometry.parameters.width / 2 + legWidth / 2, z: -tampoMesh.geometry.parameters.depth / 2 + legWidth / 2 },
-        ];
-    
-        
-        legPositions.forEach(position => {
-            const leg = this.addLeg(legWidth, legHeight, legWidth); // create leg mesh
-            leg.position.set(position.x, -legHeight / 2, position.z); 
-            tampoMesh.add(leg);
-        });
-    }
-    
-    addLeg(width, height, depth) {
-        const legGeometry = new THREE.BoxGeometry(width, height, depth);
-        const legMesh = new THREE.Mesh(legGeometry, this.tampoPlaneMaterial);
-        return legMesh;
-    }
-
-    createChair() {
-        let planeSizeU = 10;
-        let planeSizeV = 7;
-        let planeUVRate = planeSizeV / planeSizeU;
-        let tampoTextureUVRate = 350 / 268; // image dimensions
-        let tampoTextureRepeatU = 1;
-        let tampoTextureRepeatV =tampoTextureRepeatU * planeUVRate * tampoTextureUVRate;
-        this.tampoTexture.repeat.set(tampoTextureRepeatU, tampoTextureRepeatV );
-        this.tampoTexture.rotation = 0;
-        this.tampoTexture.offset = new THREE.Vector2(0,0);
-
-        let tampoChair = new THREE.BoxGeometry(0.75, 0.1, 0.75);
-        this.tampoChairMesh = new THREE.Mesh( tampoChair, this.tampoPlaneMaterial);
-        this.tampoChairMesh.position.y = 0.8;
-        this.tampoChairMesh.position.x = 1.5;
-
-        this.app.scene.add( this.tampoChairMesh);
-
-        this.addLegs(this.tampoChairMesh,0.8);
-
-        const otherTampoChair = new THREE.BoxGeometry(0.75, 0.1, 0.75);
-        this.otherTampoChairMesh = new THREE.Mesh( otherTampoChair, this.tampoPlaneMaterial);
-        this.otherTampoChairMesh.rotation.z = Math.PI / 2;
-        this.otherTampoChairMesh.position.x += this.tampoChairMesh.geometry.parameters.width / 2 - this.otherTampoChairMesh.geometry.parameters.height / 2
-        this.otherTampoChairMesh.position.y += this.tampoChairMesh.geometry.parameters.width / 2
-        this.tampoChairMesh.add( this.otherTampoChairMesh);
-    }
 
     addWall(x,y,z,rx,ry,rz) {
         let wall = new THREE.PlaneGeometry( 10, 5 );
@@ -453,126 +377,6 @@ class MyContents  {
         this.wallMeshes.push(this.wallMesh);
     }
 
-    createPlate() {
-        const plateGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.05, 32); // Raio superior, raio inferior, altura e segmentos
-        const plateMaterial = new THREE.MeshPhongMaterial({ color: "#d3d3d3", specular: "#000000", emissive: "#000000", shininess: 90 }); 
-        this.plate = new THREE.Mesh(plateGeometry, plateMaterial);
-        this.plate.position.y = this.tampoMesh.position.y + this.tampoMesh.geometry.parameters.height / 2 + this.plate.geometry.parameters.height / 2;
-        
-        this.app.scene.add(this.plate);       
-    }
-
-    createCake() {
-        let planeSizeU = 3;
-        let planeSizeV = 2;
-        let planeUVRate = planeSizeV / planeSizeU;
-        let cakeUVRate = 350/233; // image dimensions
-        let cakeRepeatU =4
-        let cakeRepeatV =cakeRepeatU * planeUVRate * cakeUVRate;
-        this.cakeTexture.repeat.set(cakeRepeatU, cakeRepeatV );
-        this.cakeTexture.rotation = 0;
-        this.cakeTexture.offset = new THREE.Vector2(0,0);
-
-        const cakeGeometry = new THREE.CylinderGeometry(0.35, 0.35, 0.1, 32, 1, false, 0, 1/(2 * Math.PI/32)); // Raio superior, raio inferior, altura, segmentos, stacks, openEnded, abertura inicial e ângulo thetaLength
-        this.cake = new THREE.Mesh( cakeGeometry,this.cakePlaneMaterial)
-        this.cake.position.y = this.plate.position.y + this.plate.geometry.parameters.height / 2 + this.cake.geometry.parameters.height / 2;
-
-        const candleGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 32);
-        const candleMaterial = new THREE.MeshPhongMaterial({ color: "#ffffff", specular: "#ffffff", emissive: "#ffffff", shininess: 90 });
-        this.candle = new THREE.Mesh(candleGeometry, candleMaterial);
-        this.candle.position.y = this.cake.geometry.parameters.height;
-        this.cake.add(this.candle);
-
-        const flameGeometry = new THREE.ConeGeometry(0.01, 0.07, 32);
-        const flameMaterial = new THREE.MeshPhongMaterial({ color: "#F1C40F" }); 
-        this.flame = new THREE.Mesh(flameGeometry, flameMaterial);
-        this.flame.position.y = this.candle.geometry.parameters.height;
-        this.candle.add(this.flame);
-
-        this.app.scene.add(this.cake);
-    }
-
-    addBoards() {
-
-
-        let planeSizeU = 10;
-        let planeSizeV = 10;
-        let planeUVRate = planeSizeV / planeSizeU;
-        let tomasUVRate = 800 / 800; // image dimensions
-        let tomasRepeatU = 1;
-        let tomasRepeatV =tomasRepeatU * planeUVRate * tomasUVRate;
-        this.tomasTexture.repeat.set(tomasRepeatU, tomasRepeatV );
-        this.tomasTexture.rotation = 0;
-        this.tomasTexture.offset = new THREE.Vector2(0,0);
-
-        let board_tomas = new THREE.PlaneGeometry( 3, 3 );
-        this.board_tomasMesh = new THREE.Mesh( board_tomas, this.tomasPlaneMaterial );
-        this.board_tomasMesh.rotation.y = Math.PI / 2;
-        this.board_tomasMesh.position.y = 2.5;
-        this.board_tomasMesh.position.x = this.wallMeshes[0].position.x + 0.01;
-        this.board_tomasMesh.position.z = 2.5;
-        this.app.scene.add( this.board_tomasMesh );
-
-        let franciscoUVRate = 800 / 800; // image dimensions
-        let franciscoRepeatU = 1;
-        let franciscoRepeatV =franciscoRepeatU * planeUVRate * franciscoUVRate;
-        this.franciscoTexture.repeat.set(franciscoRepeatU, franciscoRepeatV );
-        this.franciscoTexture.rotation = 0;
-        this.franciscoTexture.offset = new THREE.Vector2(0,0);
-
-        let board_francisco = new THREE.PlaneGeometry( 3, 3 );
-        this.board_franciscoMesh = new THREE.Mesh( board_francisco, this.franciscoPlaneMaterial );
-        this.board_franciscoMesh.rotation.y = Math.PI / 2;
-        this.board_franciscoMesh.position.y = 2.5;
-        this.board_franciscoMesh.position.x = this.wallMeshes[0].position.x + 0.01;
-        this.board_franciscoMesh.position.z = -2.5;
-        this.app.scene.add( this.board_franciscoMesh );
-
-        let viewUVRate = 800 / 800; // image dimensions
-        let viewRepeatU = 1;
-        let viewRepeatV =viewRepeatU * planeUVRate * viewUVRate;
-        this.viewTexture.repeat.set(viewRepeatU, viewRepeatV );
-        this.viewTexture.rotation = 0;
-        this.viewTexture.offset = new THREE.Vector2(0,0);
-        
-        let board_view = new THREE.PlaneGeometry( 3, 3 );
-        this.board_viewMesh = new THREE.Mesh( board_view, this.viewPlaneMaterial );
-        this.board_viewMesh.position.y = 2.5;
-        this.board_viewMesh.position.x =0
-        this.board_viewMesh.position.z = this.wallMeshes[2].position.z + 0.01;
-        this.app.scene.add( this.board_viewMesh );
-
-    }
-
-    drawCar() {
-
-        this.board = new THREE.BoxGeometry( 6,3,0.1);
-        this.boardMesh = new THREE.Mesh( this.board, this.boardMaterial );
-        this.boardMesh.position.y = 2.5;
-        this.boardMesh.position.x = 0;
-        this.boardMesh.position.z = 0;
-        this.app.scene.add( this.boardMesh );
-        
-        //this.car = new THREE.Object3D()
-        
-        this.carSize = 5
-        const rearWheel= this.drawSemiCircunference(new THREE.Vector3(-3/this.carSize,-this.boardMesh.geometry.parameters.height/4,this.boardMesh.position.z + 0.1), 3/this.carSize, 100)
-        const frontWheel = this.drawSemiCircunference(new THREE.Vector3(7/this.carSize,-this.boardMesh.geometry.parameters.height/4,this.boardMesh.position.z + 0.1), 3/this.carSize, 100)
-        const body1= this.drawQuarterCircunference(new THREE.Vector3(2/this.carSize,-this.boardMesh.geometry.parameters.height/4,this.boardMesh.position.z + 0.1), 8/this.carSize, 100,false)
-        const body2= this.drawQuarterCircunference(new THREE.Vector3(2/this.carSize,4/this.carSize -this.boardMesh.geometry.parameters.height/4,this.boardMesh.position.z + 0.1), 4/this.carSize, 100,true)
-        const body3 = this.drawQuarterCircunference(new THREE.Vector3(6/this.carSize,-this.boardMesh.geometry.parameters.height/4,this.boardMesh.position.z + 0.1), 4/this.carSize, 100,true)
-        
-        this.boardMesh.add(rearWheel)
-        this.boardMesh.add(frontWheel)
-        this.boardMesh.add(body1)
-        this.boardMesh.add(body2)
-        this.boardMesh.add(body3)
-        
-        this.boardMesh.rotation.y = -Math.PI / 2;
-        this.boardMesh.position.x = 4.9
-        this.app.scene.add(this.boardMesh)
-
-    }
 
     drawSpiral() {
         const segments = 100
@@ -605,6 +409,8 @@ class MyContents  {
         this.app.scene.add(line)
 
     }
+
+
 
     
     /**
