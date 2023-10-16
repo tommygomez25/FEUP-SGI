@@ -4,7 +4,6 @@ import { MyUtils } from './MyUtils.js';
 
 class MyFlower {
     constructor(app) {
-            
             this.app = app
             this.samplesU = 30
             this.samplesV = 30    

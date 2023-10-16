@@ -72,14 +72,12 @@ class MyContents  {
         this.viewTexture.wrapT = THREE.RepeatWrapping;
         this.viewPlaneMaterial = new THREE.MeshPhongMaterial({ map: this.viewTexture, specular: "#dcdcdc", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
         
-
         this.boardTexture = new THREE.TextureLoader().load( 'textures/board.jpg' );
         this.boardTexture.wrapS = THREE.RepeatWrapping;
         this.boardTexture.wrapT = THREE.RepeatWrapping;
         this.boardMaterial = new THREE.MeshPhongMaterial({ map: this.boardTexture, specular: "#000000", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
-    
 
-        
+        this.mapSize = 4096;
     }   
 
 
@@ -95,8 +93,27 @@ class MyContents  {
         this.catmullRomCurve = null
         this.numberOfSamples = 100
 
-        this.spotlights = this.lightsManager.createSpotlights();
-        this.spotlights.forEach((light) => this.app.scene.add(light));
+        const light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
+        light1.position.set( 0, 1, 0 );
+        light1.castShadow = true;
+        light1.shadow.mapSize.width = this.mapSize;
+        light1.shadow.mapSize.height = this.mapSize;
+        light1.shadow.camera.near = 0.5;
+        light1.shadow.camera.far = 100;
+        light1.shadow.camera.left = -15;
+        light1.shadow.camera.right = 15;
+        light1.shadow.camera.bottom = -15;
+        light1.shadow.camera.top = 15;
+        this.app.scene.add( light1 );
+
+        this.spotLight = new THREE.SpotLight(0xffffff, 100, 20, Math.PI / 4, 0.5);
+        this.spotLight.position.set(4, 3, 1);
+        this.spotLight.castShadow = true;
+        this.spotLight.shadow.mapSize.width = this.mapSize;
+        this.spotLight.shadow.mapSize.height = this.mapSize;
+        this.spotLight.shadow.camera.near = 0.5;
+        this.spotLight.shadow.camera.far = 100
+        this.app.scene.add(this.spotLight);
 
         this.rectLight = this.lightsManager.createRectAreaLight();
         this.app.scene.add(this.rectLight);
@@ -105,6 +122,7 @@ class MyContents  {
         this.app.scene.add(this.ambientLight);
 
         this.pointLight = this.lightsManager.createPointLight();
+        this.pointLight.castShadow = true;
         this.app.scene.add(this.pointLight);
         
         this.createWalls()
@@ -116,6 +134,7 @@ class MyContents  {
         this.chairMesh = this.objects[4].create()
         this.jarMesh = this.objects[5].create()
         this.flowerMesh = this.objects[6].create()
+        this.flowerMesh.castShadow = true;
         this.jornalMesh = this.objects[7].create()
         this.spiralMesh = this.objects[8].create()
 
@@ -150,14 +169,13 @@ class MyContents  {
         this.planeMesh = new THREE.Mesh( plane, floorMaterial );
         this.planeMesh.rotation.x = -Math.PI / 2;
         this.planeMesh.position.y = -0;
+        this.planeMesh.receiveShadow = true;
         this.app.scene.add( this.planeMesh );
 
         this.addWall(-5,2.5,0,0,Math.PI/2,0)
         this.addWall(0,2.5,5,0,0,0)
         this.addWall(0,2.5,-5,0,0,0)
         this.addWall(5,2.5,0,0,Math.PI/2,0)
-
-
     }
 
 

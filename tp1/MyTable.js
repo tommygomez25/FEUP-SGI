@@ -25,9 +25,11 @@ class MyTable {
         let tampo = new THREE.BoxGeometry(2.5, 0.1, 2.5);
         this.tampoMesh = new THREE.Mesh(tampo, this.tampoPlaneMaterial);
         this.tampoMesh.position.y = 1;
-
+        
         this.addLegs(this.tampoMesh, 1);
         
+        this.tampoMesh.receiveShadow = true;
+        this.tampoMesh.castShadow = true;
         return this.tampoMesh;
     }
 

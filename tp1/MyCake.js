@@ -9,7 +9,6 @@ class MyCake {
         this.cakeTexture.wrapS = THREE.RepeatWrapping;
         this.cakeTexture.wrapT = THREE.RepeatWrapping;
         this.cakePlaneMaterial = new THREE.MeshPhongMaterial({ map: this.cakeTexture, specular: "#000000", emissive: "#000000", shininess: 10, side: THREE.DoubleSide });
-
     }
 
     create(plate) {
@@ -26,11 +25,14 @@ class MyCake {
         const cakeGeometry = new THREE.CylinderGeometry(0.35, 0.35, 0.1, 32, 1, false, 0, 1/(2 * Math.PI/32)); // Raio superior, raio inferior, altura, segmentos, stacks, openEnded, abertura inicial e ângulo thetaLength
         this.cake = new THREE.Mesh( cakeGeometry,this.cakePlaneMaterial)
         this.cake.position.y = plate.position.y + plate.geometry.parameters.height / 2 + this.cake.geometry.parameters.height / 2;
+        this.cake.receiveShadow = true;
+        this.cake.castShadow = true;
 
         const candleGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 32);
         const candleMaterial = new THREE.MeshPhongMaterial({ color: "#ffffff", specular: "#ffffff", emissive: "#ffffff", shininess: 90 });
         this.candle = new THREE.Mesh(candleGeometry, candleMaterial);
         this.candle.position.y = this.cake.geometry.parameters.height;
+        this.candle.castShadow = true;
         this.cake.add(this.candle);
 
         const flameGeometry = new THREE.ConeGeometry(0.01, 0.07, 32);

@@ -36,6 +36,9 @@ class MyChair {
         this.otherTampoChairMesh.position.y += this.tampoChairMesh.geometry.parameters.width / 2
         this.tampoChairMesh.add( this.otherTampoChairMesh);
 
+        this.tampoChairMesh.receiveShadow = true;
+        this.tampoChairMesh.castShadow = true;
+
         return this.tampoChairMesh;
 
     }

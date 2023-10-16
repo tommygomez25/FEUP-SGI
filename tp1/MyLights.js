@@ -14,6 +14,7 @@ class MyLights {
         this.spotLight.decay = 0
         this.spotLight.distance = 5
         this.spotLight.intensity = 5
+        this.spotLight.castShadow = true;
 
         this.spotLightTarget = new THREE.Object3D()
         this.spotLightTarget.position.set(0,1,0)
@@ -29,6 +30,7 @@ class MyLights {
         this.spotLight2.decay = 0
         this.spotLight2.distance = 10
         this.spotLight2.intensity = 1.2
+        this.spotLight2.castShadow = true;
 
         this.spotLightTarget2 = new THREE.Object3D()
         this.spotLightTarget2.position.set(-4.9,2.8,2.5)
@@ -44,6 +46,7 @@ class MyLights {
         this.spotLight3.decay = 0
         this.spotLight3.distance = 10
         this.spotLight3.intensity = 1.2
+        this.spotLight3.castShadow = true;
 
         this.spotLightTarget3 = new THREE.Object3D()
         this.spotLightTarget3.position.set(-4.9,2.8,-2.5)

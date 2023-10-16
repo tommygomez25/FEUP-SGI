@@ -55,6 +55,8 @@ class MyJar {
 
         this.leftJarMesh = new THREE.Mesh( surfaceData, this.jarMaterial );
         this.rightJarMesh = new THREE.Mesh( surfaceData, this.jarMaterial );
+        this.leftJarMesh.castShadow = true;
+        this.rightJarMesh.castShadow = true;
         this.leftJarMesh.rotation.x = 0
         this.leftJarMesh.scale.set( 0.14,0.14,0.14)
         this.leftJarMesh.position.set( -0.7,0.3,0.7)
