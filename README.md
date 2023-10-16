@@ -3,8 +3,8 @@
 ## Group T0xG0y
 | Name             | Number    | E-Mail             |
 | ---------------- | --------- | ------------------ |
-| Francisco Pimentel Serra         | 202007723 | ...                |
-| Jane Doe         | 201901011 | ...                |
+| Francisco Pimentel Serra         | 202007723 | up202007723@edu.fe.up.pt                |
+| Tomás Gomes         | 202004393 | up202004393@edu.fe.up.pt                |
 
 ----
 
@@ -12,10 +12,15 @@
 
 ### [TP1 - ThreeJS Basics](tp1)
 
-- (items briefly describing main strong points)
+- Good lighting, shadows and textures
 - Scene
-  - (Brief description of the created scene)
-  - (relative link to the scene)
+  - A room with a chair and table
+  - 2 beautiful pictures on the wall
+  - A window with a view to the outside
+  - One green board with a car
+  - On the table there is a cake with a candle burning and a flower in a pot
+  - The chair is a bit far from the table
+  - There is also a spring on the table
 
 -----
 
