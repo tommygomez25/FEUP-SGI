@@ -22,3 +22,26 @@ Como se pode ver, as normais apontam para baixo. Ora, no cálculo das sombras é
 #### Substitua o plano do chão por uma caixa com as mesmas dimensões x e z, mas muito fina em y (30 * 0.1 * 30).Reavaliando as sombras anteriores, fica o problema resolvido?
     Reavaliando as sombras anteriores, o problema fica resolvido.
 
+#### Altere, na câmara da luz direcional, os valores shadow.camera.left / right / bottom / top para -3, 3, -3, 3 respetivamente. Que conclusão retira?
+    As sombras projetadas são mais pequenas.
+
+#### Altere agora, na mesma câmara, shadow.camera.far = 27. Que conclusão retira?
+    Objetos mais afastados da fonte de luz não projetam sombras.
+
+#### Faça o número de retângulos igual a 250 e verifique o valor de FPS
+    O valor de FPS é de 60.
+    
+#### Com quantos polígonos o valor FPS cai para cerca de 40?
+    Cerca de 3500 polígonos.
+
+#### Com quantos polígonos o valor FPS cai para cerca de 20?
+    Cerca de 8000 polígonos.
+
+#### Faça o número de retângulos igual a 250 e verifique o valor de FPS
+    O valor de FPS é de 60.
+
+#### Com quantos polígonos o valor FPS cai para cerca de 40?
+    Cerca de 2000 polígonos.
+
+#### Com quantos polígonos o valor FPS cai para cerca de 20?
+    Cerca de 5000 polígonos.
