@@ -38,6 +38,8 @@ class MyChair {
 
         this.tampoChairMesh.receiveShadow = true;
         this.tampoChairMesh.castShadow = true;
+        this.otherTampoChairMesh.receiveShadow = true;
+        this.otherTampoChairMesh.castShadow = true;
 
         return this.tampoChairMesh;
 
