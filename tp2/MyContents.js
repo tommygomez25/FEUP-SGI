@@ -46,8 +46,11 @@ class MyContents  {
     onAfterSceneLoadedAndBeforeRender(data) {
        
         // refer to descriptors in class MySceneData.js
-        // to see the data structure for each item
-
+        // to see the  data structure for each item
+        this.initGlobals(data)
+        this.initFog(data)
+        this.initCameras(data)
+        /*
         this.output(data.options)
         console.log("textures:")
         for (var key in data.textures) {
@@ -83,7 +86,36 @@ class MyContents  {
                     this.output(child, 2)
                 }
             }
+        }*/
+    }
+
+    initGlobals(data) {
+        this.globals = data.options
+        this.app.scene.background = new THREE.Color(this.globals["background"]["r"], this.globals["background"]["g"], this.globals["background"]["b"])
+        this.app.scene.ambient = new THREE.Color(this.globals["ambient"]["r"], this.globals["ambient"]["g"], this.globals["ambient"]["b"])
+    }
+
+    initFog(data) {
+        this.fog = data.getFog()
+        this.app.scene.fog = new THREE.Fog(this.fog.color, this.fog.near, this.fog.far)
+    }
+
+    initCameras(data) {
+        this.cameras = data.cameras
+        this.activeCameraId = data.activeCameraId
+        this.activeCamera = data.getCamera(this.activeCameraId)
+        
+        const aspect = this.app.width / this.app.height;
+
+        var appCameras = []
+        
+        for (var cameraId in this.cameras) {
+            var objectCamera = data.getCamera(cameraId)
+            if (objectCamera.type === "perspective") {
+                
+            }
         }
+        //this.app.setActiveCamera(this.activeCamera)
     }
 
     update() {
