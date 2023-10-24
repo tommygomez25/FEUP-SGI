@@ -149,7 +149,17 @@ class MyContents  {
         this.app.scene.textures = []
         for (var textureId in this.textures) {
             var filePath = data.textures[textureId].filepath
+            var isVideo = data.textures[textureId].isVideo
+            var magFilter = data.textures[textureId].magFilter
+            var minFilter = data.textures[textureId].minFilter
+            var mipmaps = data.textures[textureId].mipmaps
+            var anisotropy = data.textures[textureId].anisotropy
+            // mag and min to be used later
+
+            
             this.app.scene.textures[textureId] = new THREE.TextureLoader().load(filePath)
+            this.app.scene.textures[textureId].mipmaps = mipmaps
+            this.app.scene.textures[textureId].anisotropy = anisotropy
         }
     }
 
@@ -168,12 +178,19 @@ class MyContents  {
             var twoSided = this.materials[materialId].twoSided
             var wireframe = this.materials[materialId].wireframe
             var shading = this.materials[materialId].shading
+            var bumpMap = this.materials[materialId].bumpMap
+            var bumpScale = this.materials[materialId].bumpScale
             
             // find texture
             var texture = this.app.scene.textures[textureref]
-            texture.wrapS = texlength_s
-            texture.wrapT = texlength_t
+            //texture.wrapS = texlength_s
+            //texture.wrapT = texlength_t
+            if (wireframe === undefined) wireframe = false
+            if (shading === undefined) shading = false 
+            if (textureref === undefined) texture = null
+            if (twoSided === undefined) twoSided = false
 
+            
             var material = new THREE.MeshPhongMaterial({
                 emissive: emissive, color: color, 
                 specular: specular, shininess: shininess, 
