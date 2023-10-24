@@ -50,6 +50,7 @@ class MyContents  {
         this.initGlobals(data)
         this.initFog(data)
         this.initCameras(data)
+        this.addCube()
         /*
         this.output(data.options)
         console.log("textures:")
@@ -91,8 +92,18 @@ class MyContents  {
 
     initGlobals(data) {
         this.globals = data.options
-        this.app.scene.background = new THREE.Color(this.globals["background"]["r"], this.globals["background"]["g"], this.globals["background"]["b"])
-        this.app.scene.ambient = new THREE.Color(this.globals["ambient"]["r"], this.globals["ambient"]["g"], this.globals["ambient"]["b"])
+        this.app.scene.background = this.globals.background
+
+        const ambientLight = new THREE.AmbientLight();
+        ambientLight.color.setRGB(this.globals.ambient.r, this.globals.ambient.g, this.globals.ambient.b);
+        this.app.scene.add(ambientLight);
+    }
+
+    addCube(){
+        const box = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial();
+        const cube = new THREE.Mesh(box, material);
+        this.app.scene.add(cube);
     }
 
     initFog(data) {
