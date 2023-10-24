@@ -51,6 +51,8 @@ class MyContents  {
         this.initFog(data)
         this.initCameras(data)
         this.loadTextures(data)
+        this.loadMaterials(data)
+        this.addCube()
         /*
         this.output(data.options)
         console.log("textures:")
@@ -92,8 +94,18 @@ class MyContents  {
 
     initGlobals(data) {
         this.globals = data.options
-        this.app.scene.background = new THREE.Color(this.globals["background"]["r"], this.globals["background"]["g"], this.globals["background"]["b"])
-        this.app.scene.ambient = new THREE.Color(this.globals["ambient"]["r"], this.globals["ambient"]["g"], this.globals["ambient"]["b"])
+        this.app.scene.background = this.globals.background
+
+        const ambientLight = new THREE.AmbientLight();
+        ambientLight.color.setRGB(this.globals.ambient.r, this.globals.ambient.g, this.globals.ambient.b);
+        this.app.scene.add(ambientLight);
+    }
+
+    addCube(){
+        const box = new THREE.BoxGeometry(1, 1, 1);
+        const material = this.app.scene.materials["tableApp"];
+        const cube = new THREE.Mesh(box, material);
+        this.app.scene.add(cube);
     }
 
     initFog(data) {
@@ -154,7 +166,24 @@ class MyContents  {
             var texlength_s = this.materials[materialId].texlength_s
             var texlength_t = this.materials[materialId].texlength_t
             var twoSided = this.materials[materialId].twoSided
-            mat = new THREE.MeshPhongMaterial
+            var wireframe = this.materials[materialId].wireframe
+            var shading = this.materials[materialId].shading
+            
+            // find texture
+            var texture = this.app.scene.textures[textureref]
+            texture.wrapS = texlength_s
+            texture.wrapT = texlength_t
+
+            var material = new THREE.MeshPhongMaterial({
+                emissive: emissive, color: color, 
+                specular: specular, shininess: shininess, 
+                wireframe: wireframe, 
+                flatShading: shading ? true : false, 
+                side: twoSided ? THREE.DoubleSide : THREE.FrontSide,
+                map: texture})
+
+            
+            this.app.scene.materials[materialId] = material
         }
     }
 
