@@ -49,6 +49,22 @@ class MyContents  {
         // to see the data structure for each item
 
         this.output(data.options)
+
+        this.globals = data.options
+
+        //Create background light
+        this.app.scene.background = this.globals.background
+
+        const ambientLight = new THREE.AmbientLight();
+        ambientLight.color.setRGB(this.globals.ambient.r, this.globals.ambient.g, this.globals.ambient.b);
+        this.app.scene.add(ambientLight);
+
+        //Create box
+        const box = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial();
+        const cube = new THREE.Mesh(box, material);
+        this.app.scene.add(cube);
+
         console.log("textures:")
         for (var key in data.textures) {
             let texture = data.textures[key]
