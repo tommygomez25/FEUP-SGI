@@ -50,6 +50,7 @@ class MyContents  {
         this.initGlobals(data)
         this.initFog(data)
         this.initCameras(data)
+        this.loadTextures(data)
         /*
         this.output(data.options)
         console.log("textures:")
@@ -103,19 +104,58 @@ class MyContents  {
     initCameras(data) {
         this.cameras = data.cameras
         this.activeCameraId = data.activeCameraId
-        this.activeCamera = data.getCamera(this.activeCameraId)
         
-        const aspect = this.app.width / this.app.height;
+        const aspect = window.innerWidth / window.innerHeight;
 
         var appCameras = []
         
         for (var cameraId in this.cameras) {
             var objectCamera = data.getCamera(cameraId)
             if (objectCamera.type === "perspective") {
-                
+                const perspective = new THREE.PerspectiveCamera( objectCamera.angle, aspect, objectCamera.near, objectCamera.far)
+                perspective.position.set(objectCamera.location[0], objectCamera.location[1], objectCamera.location[2])
+                appCameras[cameraId] = perspective
+            }
+            else if (objectCamera.type === "orthogonal") {
+                const ortho = new THREE.OrthographicCamera( objectCamera.left, objectCamera.right, objectCamera.top, objectCamera.bottom, objectCamera.near, objectCamera.far);
+                ortho.position.set(objectCamera.location[0], objectCamera.location[1], objectCamera.location[2])
+                const lookAt = new THREE.Vector3(objectCamera.target[0], objectCamera.target[1], objectCamera.target[2])
+                ortho.lookAt(lookAt);
+                appCameras[cameraId] = ortho
+                /*
+                PERGUNTAR SOBRE O .up 
+                */
             }
         }
-        //this.app.setActiveCamera(this.activeCamera)
+        
+        this.app.cameras = appCameras
+        this.app.setActiveCamera(this.activeCameraId)
+    }
+
+    loadTextures(data) {
+        this.textures = data.textures
+        this.app.scene.textures = []
+        for (var textureId in this.textures) {
+            var filePath = data.textures[textureId].filepath
+            this.app.scene.textures[textureId] = new THREE.TextureLoader().load(filePath)
+        }
+    }
+
+    loadMaterials(data) {
+        this.materials = data.materials
+        this.app.scene.materials = []
+        for (var materialId in this.materials) {
+            // é suposto considerar tudo MeshPhongMaterial?
+            var emissive = this.materials[materialId].emissive
+            var color = this.materials[materialId].color
+            var specular = this.materials[materialId].specular
+            var shininess = this.materials[materialId].shininess
+            var textureref = this.materials[materialId].textureref
+            var texlength_s = this.materials[materialId].texlength_s
+            var texlength_t = this.materials[materialId].texlength_t
+            var twoSided = this.materials[materialId].twoSided
+            mat = new THREE.MeshPhongMaterial
+        }
     }
 
     update() {
