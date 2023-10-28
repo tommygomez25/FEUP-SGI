@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { MyAxis } from './MyAxis.js';
 import { MyFileReader } from './parser/MyFileReader.js';
+import { MySceneGraph } from './MySceneGraph.js';
 /**
  *  This class contains the contents of out application
  */
@@ -16,6 +17,8 @@ class MyContents  {
 
         this.reader = new MyFileReader(app, this, this.onSceneLoaded);
 		this.reader.open("scenes/demo/demo.xml");		
+
+        this.sceneGraph = new MySceneGraph(this.app)
     }
 
     /**
@@ -53,6 +56,7 @@ class MyContents  {
         this.loadTextures(data)
         this.loadMaterials(data)
         this.addCube()
+        this.sceneGraph.traverse(data)
         /*
         this.output(data.options)
         console.log("textures:")
