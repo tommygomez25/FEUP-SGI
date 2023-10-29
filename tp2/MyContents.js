@@ -16,7 +16,7 @@ class MyContents  {
         this.axis = null
 
         this.reader = new MyFileReader(app, this, this.onSceneLoaded);
-		this.reader.open("scenes/demo/demo.xml");		
+		this.reader.open("scenes/demo/demo1.xml");		
 
         this.sceneGraph = new MySceneGraph(this.app)
     }
@@ -55,9 +55,9 @@ class MyContents  {
         this.initCameras(data)
         this.loadTextures(data)
         this.loadMaterials(data)
-        this.addCube()
+        //this.addCube()
         this.sceneGraph.traverse(data)
-        /*
+        
         this.output(data.options)
 
         this.globals = data.options
@@ -69,12 +69,7 @@ class MyContents  {
         ambientLight.color.setRGB(this.globals.ambient.r, this.globals.ambient.g, this.globals.ambient.b);
         this.app.scene.add(ambientLight);
 
-        //Create box
-        const box = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial();
-        const cube = new THREE.Mesh(box, material);
-        this.app.scene.add(cube);
-
+        /*
         console.log("textures:")
         for (var key in data.textures) {
             let texture = data.textures[key]
