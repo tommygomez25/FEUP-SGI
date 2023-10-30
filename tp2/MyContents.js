@@ -187,23 +187,18 @@ class MyContents  {
             var color = this.materials[materialId].color
             var specular = this.materials[materialId].specular
             var shininess = this.materials[materialId].shininess
-            var textureref = this.materials[materialId].textureref
-            var texlength_s = this.materials[materialId].texlength_s
-            var texlength_t = this.materials[materialId].texlength_t
-            var twoSided = this.materials[materialId].twoSided
-            var wireframe = this.materials[materialId].wireframe
-            var shading = this.materials[materialId].shading
-            var bumpMap = this.materials[materialId].bumpMap
-            var bumpScale = this.materials[materialId].bumpScale
+            var textureref = this.materials[materialId].textureref ? this.materials[materialId].textureref : null
+            var texlength_s = this.materials[materialId].texlength_s ? this.materials[materialId].texlength_s : 1.0
+            var texlength_t = this.materials[materialId].texlength_t ? this.materials[materialId].texlength_t : 1.0
+            var twoSided = this.materials[materialId].twosided ? true : false
+            var wireframe = this.materials[materialId].wireframe ? true : false
+            var shading = this.materials[materialId].shading ? true : false
+            var bump_ref = this.materials[materialId].bump_ref ? this.materials[materialId].bump_ref : null
+            var bump_scale = this.materials[materialId].bump_scale ? this.materials[materialId].bump_scale : 1.0
             
             // find texture
             var texture = this.app.scene.textures[textureref]
-            //texture.wrapS = texlength_s
-            //texture.wrapT = texlength_t
-            if (wireframe === undefined) wireframe = false
-            if (shading === undefined) shading = false 
-            if (textureref === undefined) texture = null
-            if (twoSided === undefined) twoSided = false
+            //texture.repeat.set(texlength_s, texlength_t)
 
             
             var material = new THREE.MeshPhongMaterial({

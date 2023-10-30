@@ -10,26 +10,8 @@ export class MySceneGraph {
         this.defaultMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
         this.primitives = []
     }
-
-    /*
-    traverse(data) {
-        for (var key in data.nodes) {
-            let node = data.nodes[key]
-            this.output(node, 1)
-            for (let i=0; i< node.children.length; i++) {
-                let child = node.children[i]
-                if (child.type === "primitive") {
-                    console.log("" + new Array(2 * 4).join(' ') + " - " + child.type + " with "  + child.representations.length + " " + child.subtype + " representation(s)")
-                    if (child.subtype === "nurbs") {
-                        console.log("" + new Array(3 * 4).join(' ') + " - " + child.representations[0].controlpoints.length + " control points")
-                    }
-                }
-                else {
-                    this.output(child, 2)
-                }
-            }
-        }
-    }
+    /* NOTES: 
+    Sempre que um nó tem um <noderef> , signfica que esse nó é pai do nó referenciado
     */
 
     traverse(data) {
@@ -69,7 +51,8 @@ export class MySceneGraph {
         for (var key in data.nodes) {
             if (key === "scene") { this.traverseScene(data.nodes[key])}
             else {
-                var group = this.traverseNode(data.nodes[key]); 
+                var materialId = data.nodes[key]["materialIds"]
+                var group = this.traverseNode(data.nodes[key], materialId); 
                 if (this.sceneObjects.some((e) => e.id === group.name)) { 
                     console.log("ADDING TO SCENE: " + group.name)
                     console.log("-----------------------")
@@ -85,18 +68,17 @@ export class MySceneGraph {
 
     }
 
-    traverseNode(node) {
+    traverseNode(node, parentMaterialId) {
         var currentGroup = new THREE.Group();
         currentGroup.name = node.id;
-        console.log("Traversing node: " + node.id);
+        console.log("Traversing node: " + node.id + " with material " + parentMaterialId);
 
         for (const key in node.children) {
             const child = node.children[key];
             
-    
             if (child.type === "primitive") {
                 var primitive = this.traversePrimitive(child);
-                var mesh = this.createMesh(primitive, node);
+                var mesh = this.createMesh(primitive, parentMaterialId);
                 this.applyTransformation(node, mesh);
                 currentGroup.add(mesh);
                 this.primitives.push(currentGroup);
@@ -104,27 +86,15 @@ export class MySceneGraph {
                 
             } else if (child.type === "node") {
                 console.log("Traversing child node: " + child.id);
-
-                if (this.primitives.some((e) => e.name === child.id)) {
-                    console.log("found primitive with id " + child.id);
-                    console.log("Adding primitive " + child.id + " to currentGroup: " + currentGroup.name)
-
-                    var group = (this.primitives.find((e) => e.name === child.id));  
-                    let cloned = group.clone();
-                    cloned.name = child.id;
-                    currentGroup.add(cloned);
-                }
-                else {
-                    // TODO 
-                    
-                }                
+                var childGroup = this.traverseNode(child, parentMaterialId);
+                this.applyTransformation(node, currentGroup);
+                this.primitives.push(currentGroup);
+                currentGroup.add(childGroup);     
             }
         }
-    
-
+        console.log("cheguei aqui com o nó: " + node.id)
         this.applyTransformation(node, currentGroup);
-        this.primitives.push(currentGroup);
-    
+        
         return currentGroup;
     }
     
@@ -132,30 +102,38 @@ export class MySceneGraph {
 
     applyTransformation(node, mesh) {
         const transformations = node.transformations;
-    
+        
+        var initialPosition = new THREE.Vector3(0, 0, 0);
+        var initialScale = new THREE.Vector3(1, 1, 1);
+        var initialRotation = new THREE.Vector3(0, 0, 0);
+
         for (let i = 0; i < transformations.length; i++) {
             const transformation = transformations[i];
             if (transformation.type === 'R') {
                 mesh.rotation.set(
-                    this.toRadians(transformation.rotation[0]),
-                    this.toRadians(transformation.rotation[1]),
-                    this.toRadians(transformation.rotation[2])
+                    this.toRadians(transformation.rotation[0] + initialRotation.x),
+                    this.toRadians(transformation.rotation[1] + initialRotation.y),
+                    this.toRadians(transformation.rotation[2] + initialRotation.z)
                 );
+                initialRotation = mesh.initialRotation;
+                
             }
             else if (transformation.type === 'T') {
                     
                     mesh.position.set(
-                        transformation.translate[0],
-                        transformation.translate[1],
-                        transformation.translate[2]
+                        transformation.translate[0] + initialPosition.x,
+                        transformation.translate[1] + initialPosition.y,
+                        transformation.translate[2] + initialPosition.z
                     );
+                    initialPosition = mesh.position;
                 
             } else if (transformation.type === 'S') {
                 mesh.scale.set(
-                    transformation.scale[0],
-                    transformation.scale[1],
-                    transformation.scale[2]
+                    transformation.scale[0] * initialScale.x,
+                    transformation.scale[1] * initialScale.y,
+                    transformation.scale[2] * initialScale.z
                 );
+                initialScale = mesh.scale;
             }
         }
 
@@ -304,34 +282,16 @@ export class MySceneGraph {
     }
     traverseLights(node) {
         if (node.type === "pointlight") {
-            const id = node.id
-            const lightColor = new THREE.Color(node["color"]["r"], node["color"]["g"], node["color"]["b"])
-            console.log(lightColor)
-            const lightPosition = node["position"]
-            // if enabled is null, default is true
-            const lightEnabled = node["enabled"] === null ? true : node["enabled"]
-            // if intensity is null, default is 1.0
-            const lightIntensity = node["intensity"] === null ? 1.0 : node["intensity"]
-            // if distance is null, default is 1000
-            const lightDistance = node["distance"] === null ? 1000 : node["distance"]
-            // if decay is null, default is 2.0
-            const lightDecay = node["decay"] === null ? 2.0 : node["decay"]
-            // if castshadow is null, default is false
-            const lightCastshadow = node["castshadow"] === null ? false : node["castshadow"]
-            // if shadowmapsize is null, default is 500.0
-            const lightShadowfar = node["shadowfar"] === null ? 500.0 : node["shadowfar"]
-            // if shadowmapsize is null, default is 512
-            const lightShadowmapsize = node["shadowmapsize"] === null ? 512 : node["shadowmapsize"]
-
-            const light = new THREE.PointLight(lightColor, lightIntensity, lightDistance, lightDecay)
-            light.position.set(lightPosition[0], lightPosition[1], lightPosition[2])
-            this.app.scene.add(light)
-            console.log(light)
-
-            const lightHelper = new THREE.PointLightHelper(light, 1)
-            this.app.scene.add(lightHelper)
+            var light = this.createPointlight(node)
             // TODO: ADD OTHER TYPE OF LIGHTS
         }
+        else if (node.type === "spotlight") {
+            var light = this.createSpotlight(node)
+        }
+        else if (node.type === "directionallight") {
+            var light = this.createDirectionalLight(node)
+        }
+        return light
     }
 
     traverseScene(node) {
@@ -347,10 +307,162 @@ export class MySceneGraph {
 
     }   
 
-    createMesh(primitive,node) {
-        const material = this.app.scene.materials[node.materialIds] ? this.app.scene.materials[node.materialIds] : this.defaultMaterial;
+    createMesh(primitive,parentMaterialId) {
+        console.log("Creating mesh with material " + parentMaterialId)
+        const material = this.app.scene.materials[parentMaterialId] ? this.app.scene.materials[parentMaterialId] : this.defaultMaterial;
         return new THREE.Mesh(primitive, material)
     }
+
+    createPointlight(node) {
+        
+        const lightColor = new THREE.Color(node["color"]["r"], node["color"]["g"], node["color"]["b"])
+        
+        const lightPosition = node["position"]
+
+        const lightEnabled = node["enabled"] === null ? true : node["enabled"]
+
+        const lightIntensity = node["intensity"] === null ? 1.0 : node["intensity"]
+
+        const lightDistance = node["distance"] === null ? 1000 : node["distance"]
+
+        const lightDecay = node["decay"] === null ? 2.0 : node["decay"]
+
+        const lightCastshadow = node["castshadow"] === null ? false : node["castshadow"]
+
+        const lightShadowfar = node["shadowfar"] === null ? 500.0 : node["shadowfar"]
+
+        const lightShadowmapsize = node["shadowmapsize"] === null ? 512 : node["shadowmapsize"]
+
+        const light = new THREE.PointLight(lightColor, lightIntensity, lightDistance, lightDecay)
+        light.position.set(lightPosition[0], lightPosition[1], lightPosition[2])
+        this.app.scene.add(light)
+        light.castShadow = lightCastshadow
+        light.shadow.camera.far = lightShadowfar
+        light.shadow.mapSize.width = lightShadowmapsize
+        light.visible = lightEnabled
+        console.log(light)
+
+        const lightHelper = new THREE.PointLightHelper(light, 1)
+        this.app.scene.add(lightHelper)
+        return light
+    } 
+
+    createSpotlight(node) {
+        
+        const lightColor = new THREE.Color(node["color"]["r"], node["color"]["g"], node["color"]["b"])
+        
+        const lightPosition = node["position"]
+        
+        const lightTarget = node["target"]
+        
+        const lightAngle = node["angle"]
+        
+        const lightEnabled = node["enabled"] === null ? false : node["enabled"]
+        
+        const lightIntensity = node["intensity"] === null ? 1.0 : node["intensity"]
+        
+        const lightDistance = node["distance"] === null ? 1000 : node["distance"]
+        
+        const lightDecay = node["decay"] === null ? 2.0 : node["decay"]
+        
+        const lightPenumbra = node["penumbra"] === null ? 1.0 : node["penumbra"]
+        
+        const castshadow = node["castshadow"] === null ? false : node["castshadow"]
+        
+        const shadowfar = node["shadowfar"] === null ? 500.0 : node["shadowfar"]
+        
+        const shadowmapsize = node["shadowmapsize"] === null ? 512 : node["shadowmapsize"]
+
+        const light = new THREE.SpotLight(lightColor, lightIntensity)
+        
+        light.angle = this.toRadians(lightAngle)
+        
+        light.penumbra = lightPenumbra
+        
+        light.distance = lightDistance
+        
+        light.decay = lightDecay
+        
+        light.castShadow = castshadow
+        
+        light.position.set(lightPosition[0], lightPosition[1], lightPosition[2])
+        
+        const targetObject = new THREE.Object3D()
+        targetObject.position.set(lightTarget[0], lightTarget[1], lightTarget[2])
+        this.app.scene.add(targetObject)
+        
+        light.target = targetObject
+        this.app.scene.add(light)
+        
+        light.shadow.camera.far = shadowfar
+        
+        light.shadow.mapSize.width = shadowmapsize
+        
+        light.shadow.mapSize.height = shadowmapsize
+        
+        light.visible = lightEnabled
+
+        console.log(light)
+
+        const lightHelper = new THREE.SpotLightHelper(light)
+        this.app.scene.add(lightHelper)
+        return light
+    }
+
+    createDirectionalLight(node) {
+        
+        const lightColor = new THREE.Color(node["color"]["r"], node["color"]["g"], node["color"]["b"])
+        
+        const lightPosition = node["position"]
+        
+        const lightEnabled = node["enabled"] === null ? false : node["enabled"]
+        
+        const lightIntensity = node["intensity"] === null ? 1.0 : node["intensity"]
+        
+        const lightCastshadow = node["castshadow"] === null ? false : node["castshadow"]
+        
+        const lightShadowLeft = node["shadowleft"] === null ? -5.0 : node["shadowleft"]
+        
+        const lightShadowRight = node["shadowright"] === null ? 5.0 : node["shadowright"]
+        
+        const lightShadowBottom = node["shadowbottom"] === null ? -5.0 : node["shadowbottom"]
+        
+        const lightShadowTop = node["shadowtop"] === null ? 5.0 : node["shadowtop"]
+        
+        const lightShadowFar = node["shadowfar"] === null ? 500.0 : node["shadowfar"]
+        
+        const lightShadowmapsize = node["shadowmapsize"] === null ? 512 : node["shadowmapsize"]
+
+        const light = new THREE.DirectionalLight(lightColor, lightIntensity)
+        
+        light.position.set(lightPosition[0], lightPosition[1], lightPosition[2])
+        
+        light.castShadow = lightCastshadow
+        
+        this.app.scene.add(light)
+        
+        light.visible = lightEnabled
+        
+        light.shadow.camera.left = lightShadowLeft
+        
+        light.shadow.camera.right = lightShadowRight
+        
+        light.shadow.camera.bottom = lightShadowBottom
+        
+        light.shadow.camera.top = lightShadowTop
+        
+        light.shadow.camera.far = lightShadowFar
+        
+        light.shadow.mapSize.width = lightShadowmapsize
+        
+        light.shadow.mapSize.height = lightShadowmapsize
+        
+        const lightHelper = new THREE.DirectionalLightHelper(light, 1)
+        this.app.scene.add(lightHelper)
+        return light
+    }   
+
+
     toRadians(angle) {
         return angle * (Math.PI / 180);
     }
