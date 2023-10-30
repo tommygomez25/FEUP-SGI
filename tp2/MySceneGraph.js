@@ -86,6 +86,8 @@ export class MySceneGraph {
                 
             } else if (child.type === "node") {
                 console.log("Traversing child node: " + child.id);
+                if (child["materialIds"].length !== 0) {parentMaterialId = child["materialIds"];}
+                console.log("CHILD NODE HAS MATERIAL: " + parentMaterialId)
                 var childGroup = this.traverseNode(child, parentMaterialId);
                 this.applyTransformation(node, currentGroup);
                 this.primitives.push(currentGroup);
@@ -164,7 +166,7 @@ export class MySceneGraph {
         } else if (node.subtype === "sphere") {
             var primitive = this.traverseSphere(node)
         } else if (node.subtype === "nurbs") {
-            var primitive = this.traverseNurbs(fatherNode,node)
+            var primitive = this.traverseNurbs(node)
         } else if (node.subtype === "box") {
             var primitive = this.traverseBox(node)
         }
@@ -211,7 +213,7 @@ export class MySceneGraph {
 
     traverseCylinder(node) {
         const representation = node.representations[0]
-        const primitive = new THREE.CylinderGeometry(representation["base"], representation["top"], representation["height"], representation["slices"], representation["stacks"])
+        const primitive = new THREE.CylinderGeometry(representation["top"], representation["base"] , representation["height"], representation["slices"], representation["stacks"])
         const capsclose = representation["capsclose"] ? true : false
         const thetastart = representation["thetastart"] ? representation["thetastart"] : 0.0
         const thetalength = representation["thetalength"] ? representation["thetalength"] : 2 * Math.PI
@@ -244,7 +246,7 @@ export class MySceneGraph {
         
     }
 
-    traverseNurbs(fatherNode,node) {
+    traverseNurbs(node) {
         const representation = node.representations[0]
         const controlPointsLength = representation.controlpoints.length
         const controlPoints = representation.controlpoints
@@ -260,10 +262,10 @@ export class MySceneGraph {
         const parts_v = representation.parts_v
 
         const builder = new MyNurbsBuilder(this.app)
-        const material = this.app.scene.materials[fatherNode.materialIds] ? this.app.scene.materials[fatherNode.materialIds] : this.defaultMaterial;
-        const surface = builder.build(controlPointsArray,degree_u,degree_v,parts_u,parts_v,material)
+        
+        const surface = builder.build(controlPointsArray,degree_u,degree_v,parts_u,parts_v)
 
-        return new THREE.Mesh(surface, material)
+        return surface
     }
 
     traverseBox(node) {
@@ -309,7 +311,7 @@ export class MySceneGraph {
 
     createMesh(primitive,parentMaterialId) {
         console.log("Creating mesh with material " + parentMaterialId)
-        const material = this.app.scene.materials[parentMaterialId] ? this.app.scene.materials[parentMaterialId] : this.defaultMaterial;
+        const material = this.app.scene.materials[parentMaterialId] ;
         return new THREE.Mesh(primitive, material)
     }
 

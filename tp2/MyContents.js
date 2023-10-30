@@ -16,7 +16,7 @@ class MyContents  {
         this.axis = null
 
         this.reader = new MyFileReader(app, this, this.onSceneLoaded);
-		this.reader.open("scenes/demo/demo1.xml");		
+		this.reader.open("scenes/demo/demo.xml");		
 
         this.sceneGraph = new MySceneGraph(this.app)
     }
@@ -209,7 +209,7 @@ class MyContents  {
                 side: twoSided ? THREE.DoubleSide : THREE.FrontSide,
                 map: texture})
 
-            
+            console.log(material.emissive)
             this.app.scene.materials[materialId] = material
         }
     }
