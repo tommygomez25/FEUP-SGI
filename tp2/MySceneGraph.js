@@ -180,11 +180,13 @@ export class MySceneGraph {
         const x2 = representation["xy2"][0];
         const y2 = representation["xy2"][1];
         
-        const width = x2 - x1;
-        const height = y2 - y1;
-
+        const width = Math.abs(x2 - x1);
+        const height = Math.abs(y2 - y1);
+        const widthSegments = representation.parts_x;
+        const heightSegments = representation.parts_y;
     
-        const primitive = new THREE.PlaneGeometry(width, height);
+        const primitive = new THREE.PlaneGeometry(width, height, widthSegments, heightSegments)
+        primitive.translate((x1 + x2) / 2, (y1 + y2) / 2, 0);
                 
         return primitive;
     }
