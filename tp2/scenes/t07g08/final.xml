@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<yaf> 
+
+	<!-- Credits of the original file go to Group 1, class 1 of course LAIG school year 2013/2014, FEUP, University of Porto -->
+	
+    <globals background="0 0 0 1" ambient="0 0 0 1" /> 
+
+    <fog color="1.0 1.0 1.0 1.0" near="0.0" far="100.0" />
+
+    <cameras initial="cam1" > 
+        <perspective id="cam1" 
+            angle="60" 
+            near="0.1" 
+            far="1000" 
+            location="15 15 15" 
+            target="0 0.0 0" /> 
+
+        <orthogonal id="cam2" 
+            near="0.1" 
+            far="1000" 
+            location="0 15 15" 
+            target="0.0 15 0.0" 
+            left="-5" 
+            right="5" 
+            bottom="-5" 
+            top="-5" /> 
+    </cameras> 
+
+    <!-- bloco de texturas. Este bloco tem de existir mas pode estar vazio, se nao forem usadas texturas --> 
+    <textures>        
+        <texture id="wallTex" filepath="scenes/t07g08/textures/wallTex.jpg" />
+		<texture id="floorTex" filepath="scenes/t07g08/textures/floorTex.jpg" />
+		<texture id="shelfTex" filepath="scenes/t07g08/textures/shelfTex.jpg" />
+		<texture id="crimeWeaponTex" filepath="scenes/t07g08/textures/bloodyPrints.jpg" />
+		<texture id="tapeTex" filepath="scenes/t07g08/textures/pTape.jpg" />
+		<texture id="supportLegTex" filepath="scenes/t07g08/textures/supportLegTex.jpg" />
+		<texture id="treeTex" filepath="scenes/t07g08/textures/treeTex.jpg" />
+		<texture id="vaseTex" filepath="scenes/t07g08/textures/vaseTex.jpg" />
+    </textures> 
+
+    <materials> 
+
+        <material id="shelfMaterial" 
+            color="0.8 0.8 0.8 1.0" 
+            emissive="0.0 0.0 0.0 0.0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="shelfTex" 
+            texlength_s="1" 
+            texlength_t="1" />
+			
+		<material id="wall" 
+            emissive="0.0 0.0 0.0 1" 
+			color="0.8 0.8 0.8 1.0" 
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="wallTex" 
+            texlength_s="15" 
+            texlength_t="8" 
+            twosided = "true" />
+		
+		<material id="floorMaterial" 
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="floorTex" 
+            texlength_s="15" 
+            texlength_t="15" 
+            twosided = "true" />
+		
+		<material id="supportLegMaterial" 
+            emissive="0.0 0.0 0.0 1" 
+           color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="supportLegTex" 
+            texlength_s="1" 
+            texlength_t="1" />
+		
+		<material id="tree" 
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="treeTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            wireframe = "true" />
+			
+		<material id="vase" 
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="vaseTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            shading = "flat" />
+			
+    </materials> 
+
+    <graph rootid="scene"> 
+		
+		<node id="scene"> 
+            <children> 
+                <noderef id="leftWall" /> 
+				<noderef id="rightWall" /> 
+				<noderef id="floor" /> 
+				<noderef id="shelf" /> 
+				 
+				<noderef id="tree" /> 
+				<noderef id="policeWarning1" /> 
+				<noderef id="policeWarning2" />
+				<noderef id="crimeWeapon" />
+
+                <pointlight id="light1" enabled="true" 
+                    color="0.5 0.6 0.8 1" 
+                    intensity="1.0"
+                    distance="1000"
+                    decay="2.0"
+                    castshadow="false"
+                    position="33.75 37.3 33.75" 
+                /> 
+
+                <pointlight id="light2" enabled="true" 
+                    color="0.5 0.6 0.8 1" 
+                    intensity="100.0"
+                    distance="1000"
+                    decay="2.0"
+                    castshadow="false"
+                    position="11.25 7.3 3.75"
+                /> 
+                
+                <pointlight id="light3" enabled="true" 
+                    color="0.5 0.6 0.8 1" 
+                    intensity="1.0"
+                    distance="1000"
+                    decay="2.0"
+                    castshadow="false"
+                    position="11.25 7.3 3.75"  
+                /> 
+			              
+                <spotlight id="light4" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="1.0"
+                    distance="1000"
+                    decay="2.0"
+                    castshadow="true"
+                    position="2 2 4" 
+                    target="0 0 0"
+                    penumbra="1.0"
+                    angle="10.0" 
+                /> 
+
+                <directionallight id="light5" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="1.0"
+                    castshadow="true"
+                    position="2 2 4" 
+                /> 
+            </children> 
+        </node>
+		
+		<node id="rectangle1"> 
+
+            <transforms>
+				<translate value3="0 0 -0.5" />
+				<rotate value3="0 180.0 0.0" />
+            </transforms> 
+
+            <children>   
+                <primitive>          
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" />
+                </primitive> 
+            </children> 
+        </node>
+		
+		<node id="rectangle2"> 
+
+            <transforms>
+				<translate value3="0 0 0.5" />
+            </transforms> 
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle3"> 
+
+            <transforms>
+				<translate value3="0 -0.5 0" />
+				<rotate value3="90 0.0 0.0" />
+            </transforms> 
+
+            <children>   
+                <primitive>          
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle4"> 
+
+            <transforms>
+				<translate value3="0 0.5 0" />
+				<rotate value3="-90 0.0 0.0" />
+            </transforms> 
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle5"> 
+
+            <transforms>
+				<translate value3="-0.5 0 0" />
+				<rotate value3="0.0 -90.0 0.0" />
+            </transforms> 
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle6"> 
+            <transforms>
+				<translate value3="0.5 0 0" />
+				<rotate value3="0.0 90.0 0.0" />
+            </transforms> 
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="unitCube">
+            <children>            
+				<!-- Back -->
+                <noderef id="rectangle1" /> 
+				<!-- Front -->
+				<noderef id="rectangle2" /> 
+				<!-- Bottom -->
+				<noderef id="rectangle3" />
+				<!-- Top -->
+				<noderef id="rectangle4" />
+				<!-- Left -->				
+				<noderef id="rectangle5" />
+				 <!-- Right -->
+				<noderef id="rectangle6" />
+            </children> 
+        </node>
+		
+		<node id="leg">
+			<transforms>
+				<scale value3="0.06 2.25 0.06" />
+            </transforms> 
+
+            <children>             
+                <noderef id="unitCube" />
+            </children> 
+        </node>
+		
+		<node id="centralLeg">
+			<transforms>
+				<translate value3="0 -0.6 0" />
+            </transforms> 
+
+            <children>             
+                <noderef id="leg" />
+            </children> 
+
+            <materialref id="supportLegMaterial" />
+        </node>
+		
+		<node id="shelfTop">
+			<transforms>
+				<translate value3="0 0.48 0" />
+				<scale value3="1 0.08 0.5" />
+            </transforms> 
+
+            <children>             
+                <noderef id="unitCube" />
+            </children> 
+        </node>
+		
+		<node id="shelf">
+			<transforms>
+				<translate value3="0.8 4 10" />
+				<rotate value3="0 90 0.0" />
+				<scale value3="4.5 2.5 3" />
+
+            </transforms> 
+
+			<materialref id="shelfMaterial" />
+			
+            <children>             
+                <noderef id="shelfTop" />
+				<noderef id="centralLeg" />
+            </children> 
+        </node>
+		
+		<node id="floor">
+			<transforms>
+				<translate value3="0 0 15" />
+				<rotate value3="-90 0.0 0.0" />
+            </transforms> 
+
+			<materialref id="floorMaterial" />
+			
+            <children>             
+                <primitive>
+                    <rectangle xy1="0 0" xy2="15 15" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="wall">
+			<transforms>
+				<rotate value3="-90 0.0 0.0" />
+            </transforms> 
+			
+            <children>             
+                <noderef id="rectangle1" />
+            </children> 
+        </node>
+		
+		<node id="leftWall">
+			<transforms>
+				<translate value3="0 0 15" />
+				<rotate value3="0.0 90 0.0" />
+            </transforms> 
+
+			<materialref id="wall" />
+			
+            <children>             
+                <primitive>
+                    <rectangle xy1="0 0" xy2="15 8" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rightWall">
+			<materialref id="wall" />
+			
+            <children>             
+                <primitive>
+                    <rectangle xy1="0 0" xy2="15 8" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="support">
+            <children>             
+                <primitive>
+                    <cylinder base="0.2" top="0.2" height="3" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="tapeSupport1">
+			<transforms>
+				<translate value3="-6 1.5 0" /> 
+            </transforms> 
+			
+			<materialref id="tapeSupportApp" />
+			
+            <children>             
+                <noderef id="support" />
+            </children> 
+        </node>
+		
+		<node id="tapeSupport2">
+			<transforms>
+				<translate value3="6 1.5 0" /> 
+            </transforms> 
+			
+			<materialref id="tapeSupportApp" />
+			
+            <children>             
+                <noderef id="support" />
+            </children> 
+        </node>
+		
+		<node id="vase">
+			<materialref id="vase" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="0.75" top="1.3" height="1.9" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="trunk">
+			<transforms>
+				<translate value3="0 1.7 0" />
+			</transforms> 
+			
+			<materialref id="shelfMaterial" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="0.4" top="0.4" height="3" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg1">
+			<transforms>
+				<translate value3="0 2.7 0" />
+            </transforms> 
+			
+			<materialref id="tree" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="2" top="1" height="1.9" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg2">
+			<transforms>
+				<translate value3="0 4.6 0" />
+            </transforms> 
+			
+			<materialref id="tree" />
+			
+            <children>
+                <primitive >
+                    <cylinder base="1.5" top="0.75" height="2" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg3">
+			<transforms>
+				<translate value3="0 6.6 0" />
+            </transforms> 
+			
+			<materialref id="tree" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="0.9" top="0" height="2" slices="32" stacks="32" />
+                </primitive>
+
+            </children> 
+        </node>
+		
+		<node id="tree">
+			<transforms>
+				<translate value3="2 0.7 2" />
+				<rotate value3="0.0 0.0 0"/>
+            </transforms> 
+			
+            <children>             
+                <noderef id="vase" />
+				<noderef id="trunk" />
+				<noderef id="treeSeg1" />
+				<noderef id="treeSeg2" />
+				<noderef id="treeSeg3" />
+                <primitive>
+                    <nurbs degree_u="1" degree_v="1" parts_u="20" parts_v="20" distance="0.0">
+                        <controlpoint xx="0" yy="0" zz="0" />
+                        <controlpoint xx="0" yy="0" zz="1" />
+                        <controlpoint xx="1" yy="0" zz="0" />
+                        <controlpoint xx="1" yy="0" zz="1" />
+                    </nurbs>
+                </primitive>
+                <primitive>
+                    <box xyz1="-0.5 -0.5 -0.5" xyz2="0.5 0.5 0.5" />
+                </primitive>
+
+            </children> 
+        </node>
+		
+    </graph> 
+</yaf> 
