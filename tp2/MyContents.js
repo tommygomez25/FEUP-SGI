@@ -47,7 +47,7 @@ class MyContents  {
     }
 
     onAfterSceneLoadedAndBeforeRender(data) {
-       
+        console.log("NODES "+ data.nodes.length)
         // refer to descriptors in class MySceneData.js
         // to see the  data structure for each item
         this.initGlobals(data)
@@ -198,7 +198,7 @@ class MyContents  {
             
             // find texture
             var texture = this.app.scene.textures[textureref]
-            //texture.repeat.set(texlength_s, texlength_t)
+            //texture.repeat = new THREE.Vector2(texlength_s, texlength_t)
 
             
             var material = new THREE.MeshPhongMaterial({

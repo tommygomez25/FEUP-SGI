@@ -68,10 +68,13 @@ export class MySceneGraph {
 
     }
 
-    traverseNode(node, parentMaterialId) {
+    traverseNode(node, parentMaterialId,castShadows,receiveShadows) {
         var currentGroup = new THREE.Group();
         currentGroup.name = node.id;
         console.log("Traversing node: " + node.id + " with material " + parentMaterialId);
+
+        var castShadows = node.castShadows === null ? false : node.castShadows
+        var receiveShadows = node.receiveShadows === null ? false : node.receiveShadows
 
         for (const key in node.children) {
             const child = node.children[key];
@@ -79,7 +82,7 @@ export class MySceneGraph {
             if (child.type === "primitive") {
                 var primitive = this.traversePrimitive(child);
                 var mesh = this.createMesh(primitive, parentMaterialId);
-                this.applyTransformation(node, mesh);
+                this.applyTransformation(node, mesh, castShadows, receiveShadows);
                 currentGroup.add(mesh);
                 this.primitives.push(currentGroup);
                 return currentGroup;
@@ -88,8 +91,8 @@ export class MySceneGraph {
                 console.log("Traversing child node: " + child.id);
                 if (child["materialIds"].length !== 0) {parentMaterialId = child["materialIds"];}
                 console.log("CHILD NODE HAS MATERIAL: " + parentMaterialId)
-                var childGroup = this.traverseNode(child, parentMaterialId);
-                this.applyTransformation(node, currentGroup);
+                var childGroup = this.traverseNode(child, parentMaterialId,castShadows,receiveShadows);
+                this.applyTransformation(node, currentGroup,castShadows,receiveShadows);
                 this.primitives.push(currentGroup);
                 currentGroup.add(childGroup);     
             }
@@ -102,7 +105,7 @@ export class MySceneGraph {
     
     
 
-    applyTransformation(node, mesh) {
+    applyTransformation(node, mesh,castShadows,receiveShadows) {
         const transformations = node.transformations;
         
         var initialPosition = new THREE.Vector3(0, 0, 0);
@@ -144,7 +147,9 @@ export class MySceneGraph {
            // mesh.scale.set(1, 1, 1);
            // mesh.rotation.set(0, 0, 0);
         }
-    
+        console.log("MESH + " + mesh.id + " SHADOWS: " + castShadows + " " + receiveShadows)
+        mesh.castShadow = castShadows
+        mesh.receiveShadow = receiveShadows
         // console log all transformations
         console.log("Transformation: " + node.id);
         console.log("Position: " + mesh.position.x + " " + mesh.position.y + " " + mesh.position.z);
