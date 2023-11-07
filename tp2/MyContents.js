@@ -16,9 +16,10 @@ class MyContents  {
         this.axis = null
 
         this.reader = new MyFileReader(app, this, this.onSceneLoaded);
-		this.reader.open("scenes/t07g08/final.xml");		
+		this.reader.open("scenes/t04g04/SGI_TP2_XML_T04_G04_v1.xml");		
 
         this.sceneGraph = new MySceneGraph(this.app)
+        
     }
 
     /**
@@ -47,15 +48,16 @@ class MyContents  {
     }
 
     onAfterSceneLoadedAndBeforeRender(data) {
+        this.app.loadCameras(data)
+
         console.log("NODES "+ data.nodes.length)
         // refer to descriptors in class MySceneData.js
         // to see the  data structure for each item
         this.initGlobals(data)
         this.initFog(data)
-        this.initCameras(data)
+        //this.initCameras(data)
         this.loadTextures(data)
         this.loadMaterials(data)
-        //this.addCube()
         this.sceneGraph.traverse(data)
         
         this.output(data.options)
@@ -128,37 +130,6 @@ class MyContents  {
         this.app.scene.fog = new THREE.Fog(this.fog.color, this.fog.near, this.fog.far)
     }
 
-    initCameras(data) {
-        this.cameras = data.cameras
-        this.activeCameraId = data.activeCameraId
-        
-        const aspect = window.innerWidth / window.innerHeight;
-
-        var appCameras = []
-        
-        for (var cameraId in this.cameras) {
-            var objectCamera = data.getCamera(cameraId)
-            if (objectCamera.type === "perspective") {
-                const perspective = new THREE.PerspectiveCamera( objectCamera.angle, aspect, objectCamera.near, objectCamera.far)
-                perspective.position.set(objectCamera.location[0], objectCamera.location[1], objectCamera.location[2])
-                appCameras[cameraId] = perspective
-            }
-            else if (objectCamera.type === "orthogonal") {
-                const ortho = new THREE.OrthographicCamera( objectCamera.left, objectCamera.right, objectCamera.top, objectCamera.bottom, objectCamera.near, objectCamera.far);
-                ortho.position.set(objectCamera.location[0], objectCamera.location[1], objectCamera.location[2])
-                const lookAt = new THREE.Vector3(objectCamera.target[0], objectCamera.target[1], objectCamera.target[2])
-                ortho.lookAt(lookAt);
-                appCameras[cameraId] = ortho
-                /*
-                PERGUNTAR SOBRE O .up 
-                */
-            }
-        }
-        
-        this.app.cameras = appCameras
-        this.app.setActiveCamera(this.activeCameraId)
-    }
-
     loadTextures(data) {
         this.textures = data.textures
         this.app.scene.textures = []
@@ -198,7 +169,7 @@ class MyContents  {
             
             // find texture
             var texture = this.app.scene.textures[textureref]
-            //texture.repeat = new THREE.Vector2(texlength_s, texlength_t)
+            if (texture !== undefined) {texture.repeat = new THREE.Vector2(texlength_s, texlength_t)}
 
             
             var material = new THREE.MeshPhongMaterial({

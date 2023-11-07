@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { MyNurbsBuilder } from './MyNurbsBuilder.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
 export class MySceneGraph {
 
@@ -80,25 +81,63 @@ export class MySceneGraph {
             const child = node.children[key];
             
             if (child.type === "primitive") {
-                var primitive = this.traversePrimitive(child);
-                var mesh = this.createMesh(primitive, parentMaterialId);
-                this.applyTransformation(node, mesh, castShadows, receiveShadows);
-                currentGroup.add(mesh);
+                
+                if (child.subtype === "model3d") {
+                    const loader = new OBJLoader()
+                    const path = child.representations[0]["filepath"]
+                    const material = this.app.scene.materials[parentMaterialId] ;
+                    var primitive;
+                    loader.load(path, (obj) => {
+                        
+                        obj.traverse((child) => {
+                            if (child instanceof THREE.Mesh) {
+                                child.material = material
+                            }
+                        });
+                        this.applyTransformation(node, obj, castShadows, receiveShadows);
+                        currentGroup.add(obj);
+                        },
+                        function (xhr) {
+                            console.log((xhr.loaded / xhr.total * 100) + '% loaded')
+                        },
+                        function(err) {
+                            console.error('An error happened', err)
+                        })
+                }
+                else {
+                    var primitive = this.traversePrimitive(child);
+
+                    var mesh = this.createMesh(primitive, parentMaterialId);
+
+                    this.applyTransformation(node, mesh, castShadows, receiveShadows);
+
+                    currentGroup.add(mesh);
+                }
+
                 this.primitives.push(currentGroup);
                 return currentGroup;
                 
-            } else if (child.type === "node") {
+            } 
+            
+            else if (child.type === "node") {
                 console.log("Traversing child node: " + child.id);
+
                 if (child["materialIds"].length !== 0) {parentMaterialId = child["materialIds"];}
+
                 console.log("CHILD NODE HAS MATERIAL: " + parentMaterialId)
+
                 var childGroup = this.traverseNode(child, parentMaterialId,castShadows,receiveShadows);
+
                 this.applyTransformation(node, currentGroup,castShadows,receiveShadows);
+
                 this.primitives.push(currentGroup);
+
                 currentGroup.add(childGroup);     
             }
         }
+
         console.log("cheguei aqui com o nó: " + node.id)
-        this.applyTransformation(node, currentGroup);
+        this.applyTransformation(node, currentGroup,castShadows,receiveShadows);
         
         return currentGroup;
     }
@@ -199,18 +238,6 @@ export class MySceneGraph {
 
     traverseTriangle(node) {
         const representation = node.representations[0]
-        const x1 = representation["xyz1"][0]
-        const y1 = representation["xyz1"][1]
-        const z1 = representation["xyz1"][2]
-
-        const x2 = representation["xyz2"][0]
-        const y2 = representation["xyz2"][1]
-        const z2 = representation["xyz2"][2]
-        
-        const x3 = representation["xyz3"][0]
-        const y3 = representation["xyz3"][1]
-        const z3 = representation["xyz3"][2]
-
         const primitive =  new THREE.BufferGeometry().setFromPoints((representation["xyz1"], representation["xyz2"], representation["xyz3"]))
 
         // TODO : distance???
@@ -258,10 +285,6 @@ export class MySceneGraph {
         const controlPointsLength = representation.controlpoints.length
         const controlPoints = representation.controlpoints
         var controlPointsArray = []
-        for (var i = 0; i < controlPointsLength; i++) {
-            var controlPoint = controlPoints[i]
-            controlPointsArray.push([controlPoint.xx, controlPoint.yy, controlPoint.zz, 1])
-        }
 
         const degree_u = representation.degree_u
         const degree_v = representation.degree_v
@@ -269,7 +292,15 @@ export class MySceneGraph {
         const parts_v = representation.parts_v
 
         const builder = new MyNurbsBuilder(this.app)
-        
+        for (var i = 0; i < degree_u + 1; i++) {
+            var tempControlPointList = []
+            for (var j = 0; j < degree_v + 1; j++) {
+                var controlPoint = controlPoints[i * (degree_v + 1) + j]
+                tempControlPointList.push([controlPoint.xx, controlPoint.yy, controlPoint.zz, 1])
+            }
+            controlPointsArray.push(tempControlPointList)
+        }
+
         const surface = builder.build(controlPointsArray,degree_u,degree_v,parts_u,parts_v)
 
         return surface
@@ -289,6 +320,7 @@ export class MySceneGraph {
         const primitive = new THREE.BoxGeometry(x2 - x1, y2 - y1, z2 - z1)
         return primitive;
     }
+
     traverseLights(node) {
         if (node.type === "pointlight") {
             var light = this.createPointlight(node)
@@ -305,6 +337,7 @@ export class MySceneGraph {
 
     traverseScene(node) {
         for (const key in node.children) {
+
             const child = node.children[key]
             if (child.type !== "node") {
                 this.traverseLights(child)
@@ -318,7 +351,9 @@ export class MySceneGraph {
 
     createMesh(primitive,parentMaterialId) {
         console.log("Creating mesh with material " + parentMaterialId)
+
         const material = this.app.scene.materials[parentMaterialId] ;
+
         return new THREE.Mesh(primitive, material)
     }
 
@@ -343,16 +378,25 @@ export class MySceneGraph {
         const lightShadowmapsize = node["shadowmapsize"] === null ? 512 : node["shadowmapsize"]
 
         const light = new THREE.PointLight(lightColor, lightIntensity, lightDistance, lightDecay)
+
         light.position.set(lightPosition[0], lightPosition[1], lightPosition[2])
+
         this.app.scene.add(light)
+
         light.castShadow = lightCastshadow
+
         light.shadow.camera.far = lightShadowfar
+
         light.shadow.mapSize.width = lightShadowmapsize
+
         light.visible = lightEnabled
+
         console.log(light)
 
         const lightHelper = new THREE.PointLightHelper(light, 1)
+
         this.app.scene.add(lightHelper)
+
         return light
     } 
 
