@@ -5,6 +5,18 @@
 
     <fog color="1.0 1.0 1.0 1.0" near="0.0" far="100.0" />
 
+    <skybox
+       size="10 10 10"
+       center="0 0 0"
+       emissive="3.0 3.0 3.0 1.0"
+       intensity="2.0"
+       front="2.0"
+       back="4.0"
+       up="1.0"
+       down="2.3"
+       left="4.3"
+       right="2.7" />
+
     <cameras initial="cam1" > 
         <perspective id="cam1" 
             angle="60" 
@@ -98,42 +110,44 @@
             texlength_t="1"
             shading = "flat" />
 
+        
+        
         <material id="mat" 
-        emissive="0.0 0.0 0.0 1" 
-        color="0.8 0.8 0.8 1.0"  
-        specular="0 0 0 0" 
-        shininess="0" 
-        textureref="matTex" 
-        texlength_s="1" 
-        texlength_t="1"
-        shading = "flat" />
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="matTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            shading = "flat" />
         <material id="mirrorBallMaterial" 
-        emissive="0.0 0.0 0.0 1" 
-        color="0.8 0.8 0.8 1.0"  
-        specular="0 0 0 0" 
-        shininess="0" 
-        textureref="mirrorBallTex" 
-        texlength_s="1" 
-        texlength_t="1"
-        shading = "flat" />
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="mirrorBallTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            shading = "flat" />
         <material id="footballMaterial" 
-        emissive="0.0 0.0 0.0 1" 
-        color="0.8 0.8 0.8 1.0"  
-        specular="0 0 0 0" 
-        shininess="0" 
-        textureref="footballTex" 
-        texlength_s="1" 
-        texlength_t="1"
-        shading = "flat" />
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="footballTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            shading = "flat" />
         <material id="basketballMaterial" 
-        emissive="0.0 0.0 0.0 1" 
-        color="0.8 0.8 0.8 1.0"  
-        specular="0 0 0 0" 
-        shininess="0" 
-        textureref="basketballTex" 
-        texlength_s="1" 
-        texlength_t="1"
-        shading = "flat" />
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="basketballTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            shading = "flat" />
 			
     </materials> 
 
@@ -158,7 +172,7 @@
                     intensity="1.0"
                     distance="1000"
                     decay="2.0"
-                    castshadow="false"
+                    castshadow="true"
                     position="33.75 37.3 33.75" 
                 /> 
 
@@ -167,7 +181,7 @@
                     intensity="100.0"
                     distance="1000"
                     decay="2.0"
-                    castshadow="false"
+                    castshadow="true"
                     position="11.25 7.3 3.75"
                 /> 
 			              
@@ -188,7 +202,9 @@
                     intensity="5.0"
                     castshadow="true"
                     position="10 5 7" 
-                /> 
+                />
+
+                
             </children> 
         </node>
 		
@@ -301,7 +317,7 @@
             </children> 
         </node>
 		
-		<node id="centralLeg">
+		<node id="centralLeg" castshadows="true">
 			<transforms>
 				<translate value3="0 -0.6 0" />
             </transforms> 
@@ -313,7 +329,7 @@
             <materialref id="supportLegMaterial" />
         </node>
 		
-		<node id="shelfTop">
+		<node id="shelfTop" castshadows="true" receiveshadows="true">
 			<transforms>
 				<translate value3="0 0.48 0" />
 				<scale value3="1 0.08 0.5" />
@@ -349,7 +365,7 @@
             </children>
         </node>
 
-        <node id="mat">
+        <node id="mat" receiveshadows="true">
             <transforms>
                 <translate value3="7 0.13 7" />
                 <scale value3="7.5 1 7" />
@@ -362,7 +378,7 @@
             </children>
         </node>
 		
-		<node id="floor">
+		<node id="floor" receiveshadows="true">
 			<transforms>
 				<translate value3="0 0 15" />
 				<rotate value3="-90 0.0 0.0" />
@@ -377,7 +393,7 @@
             </children> 
         </node>
 		
-		<node id="wall">
+		<node id="wall" receiveshadows="true">
 			<transforms>
 				<rotate value3="-90 0.0 0.0" />
             </transforms> 
@@ -412,7 +428,7 @@
             </children> 
         </node>
 
-        <node id="ball">
+        <node id="ball" castshadows="true">
             <children>             
                 <primitive>
                     <sphere radius="0.5" slices="32" stacks="32" />
@@ -421,7 +437,7 @@
             </children>
         </node>
 
-        <node id="mirrorBall">
+        <node id="mirrorBall" castshadows="true">
             <transforms>
                 <translate value3="2 9 2" />
                 <scale value3="2 2 2" />
@@ -434,7 +450,7 @@
             </children>
         </node>
 
-        <node id="football">
+        <node id="football" castshadows="true">
             <transforms>
                 <translate value3="7.1 1 7" />
                 <scale value3="1.5 1.5 1.5" />
@@ -447,7 +463,7 @@
             </children>
         </node>
 
-        <node id="basketball">
+        <node id="basketball" castshadows="true">
             <transforms>
                 <translate value3="1 5.8 9" />
                 <scale value3="1 1 1" />
@@ -460,7 +476,7 @@
             </children>
         </node>
 		
-		<node id="vase">
+		<node id="vase" castshadows="true">
 			<materialref id="vase" />
 			
             <children>             
@@ -470,7 +486,7 @@
             </children> 
         </node>
 
-        <node id="vase2">
+        <node id="vase2" castshadows="true">
 			<materialref id="supportLegMaterial" />
 			
             <children>             
@@ -542,8 +558,17 @@
                     <box xyz1="-0.5 -0.5 -0.5" xyz2="0.5 0.5 0.5" />
                 </primitive>
 
+            <lodref id="lod1" />
+
             </children> 
         </node>
-		
+
+		<lod id="lod1">
+            <!-- declare one or more descendants (representations); -->
+            <!-- one descendent can be only a noderef; -->
+            <!-- repeat as necessary -->
+            <noderef id="tree2"  mindist="1.0"/>
+        
+        </lod>
     </graph> 
 </yaf> 
