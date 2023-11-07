@@ -16,7 +16,7 @@ class MyContents  {
         this.axis = null
 
         this.reader = new MyFileReader(app, this, this.onSceneLoaded);
-		this.reader.open("scenes/t04g04/SGI_TP2_XML_T04_G04_v1.xml");		
+		this.reader.open("scenes/t07g08/final.xml");		
 
         this.sceneGraph = new MySceneGraph(this.app)
         
@@ -50,27 +50,13 @@ class MyContents  {
     onAfterSceneLoadedAndBeforeRender(data) {
         this.app.loadCameras(data)
 
-        console.log("NODES "+ data.nodes.length)
-        // refer to descriptors in class MySceneData.js
-        // to see the  data structure for each item
         this.initGlobals(data)
         this.initFog(data)
-        //this.initCameras(data)
+        this.initSkyBox(data)
         this.loadTextures(data)
         this.loadMaterials(data)
         this.sceneGraph.traverse(data)
         
-        this.output(data.options)
-
-        this.globals = data.options
-
-        //Create background light
-        this.app.scene.background = this.globals.background
-
-        const ambientLight = new THREE.AmbientLight();
-        ambientLight.color.setRGB(this.globals.ambient.r, this.globals.ambient.g, this.globals.ambient.b);
-        this.app.scene.add(ambientLight);
-
         /*
         console.log("textures:")
         for (var key in data.textures) {
@@ -118,17 +104,48 @@ class MyContents  {
         this.app.scene.add(ambientLight);
     }
 
-    addCube(){
-        const box = new THREE.BoxGeometry(1, 1, 1);
-        const material = this.app.scene.materials["tableApp"];
-        const cube = new THREE.Mesh(box, material);
-        this.app.scene.add(cube);
-    }
-
     initFog(data) {
         this.fog = data.getFog()
         this.app.scene.fog = new THREE.Fog(this.fog.color, this.fog.near, this.fog.far)
     }
+
+    initSkyBox(data) {
+        this.skybox = data.getSkybox();
+    
+        let materialArray = [];
+    
+        const loader = new THREE.TextureLoader();
+    
+        const textures = [
+            this.skybox.front,
+            this.skybox.back,
+            this.skybox.up,
+            this.skybox.down,
+            this.skybox.right,
+            this.skybox.left
+        ];
+    
+        textures.forEach((texture) => {
+            const textureMap = loader.load(texture);
+            const material = new THREE.MeshStandardMaterial({
+                map: textureMap,
+                emissive: new THREE.Color(this.skybox.emissive),
+                emissiveIntensity:this.skybox.intensity
+            });
+            materialArray.push(material);
+        });
+
+        for (let i = 0; i < 6; i++) {
+            materialArray[i].side = THREE.BackSide;
+        }
+    
+        const skyboxGeometry = new THREE.BoxGeometry(this.skybox.size[0], this.skybox.size[1], this.skybox.size[2]);
+        const skybox = new THREE.Mesh(skyboxGeometry, materialArray);
+        skybox.position.set(this.skybox.center[0], this.skybox.center[1], this.skybox.center[2]);
+    
+        this.app.scene.add(skybox);
+    }
+    
 
     loadTextures(data) {
         this.textures = data.textures

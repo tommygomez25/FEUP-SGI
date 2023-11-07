@@ -3,19 +3,19 @@
 	
     <globals background="0 0 0 1" ambient="0 0 0 1" /> 
 
-    <fog color="1.0 1.0 1.0 1.0" near="0.0" far="100.0" />
+    <fog color="1.0 1.0 1.0 1.0" near="0.0" far="100.0" />~
 
     <skybox
-       size="10 10 10"
+       size="100 100 100"
        center="0 0 0"
-       emissive="3.0 3.0 3.0 1.0"
-       intensity="2.0"
-       front="2.0"
-       back="4.0"
-       up="1.0"
-       down="2.3"
-       left="4.3"
-       right="2.7" />
+       emissive="0 0 0 1.0"
+       intensity="1"
+       front="scenes/t07g08/textures/posx.jpg"
+       back="scenes/t07g08/textures/negx.jpg"
+       up="scenes/t07g08/textures/posy.jpg"
+       down="scenes/t07g08/textures/negy.jpg"
+       left="scenes/t07g08/textures/negz.jpg"
+       right="scenes/t07g08/textures/posz.jpg" />
 
     <cameras initial="cam1" > 
         <perspective id="cam1" 
@@ -166,6 +166,8 @@
                 <noderef id="mirrorBall" />
                 <noderef id="football" />
                 <noderef id="basketball" />
+
+                <noderef id="skybox1" />
 
                 <pointlight id="light1" enabled="true" 
                     color="0.5 0.6 0.8 1" 
