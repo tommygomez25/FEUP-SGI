@@ -90,6 +90,7 @@ class MyApp  {
                 const lookAt = new THREE.Vector3(objectCamera.target[0], objectCamera.target[1], objectCamera.target[2])
                 perspective.lookAt(lookAt);
                 appCameras[cameraId] = perspective
+                console.log(perspective)
             }
             else if (objectCamera.type === "orthogonal") {
                 const ortho = new THREE.OrthographicCamera( objectCamera.left, objectCamera.right, objectCamera.top, objectCamera.bottom, objectCamera.near, objectCamera.far);
@@ -97,6 +98,7 @@ class MyApp  {
                 const lookAt = new THREE.Vector3(objectCamera.target[0], objectCamera.target[1], objectCamera.target[2])
                 ortho.lookAt(lookAt);
                 appCameras[cameraId] = ortho
+                console.log(ortho)
                 /*
                 PERGUNTAR SOBRE O .up 
                 */
@@ -107,10 +109,10 @@ class MyApp  {
         this.setActiveCamera(data.activeCameraId)
 
         // adds a folder to the gui interface for the camera
-        const cameraFolder = this.gui.datgui.addFolder('Camera')
-        console.log("active camera name "+ this.activeCameraName)
-        cameraFolder.add(this, 'activeCameraName',Object.keys(appCameras)).name("active camera");
-        cameraFolder.open()
+        //const cameraFolder = this.gui.datgui.addFolder('Camera')
+        //console.log("active camera name "+ this.activeCameraName)
+        //cameraFolder.add(this, 'activeCameraName',Object.keys(appCameras)).name("active camera");
+        //cameraFolder.open()
     }
 
 

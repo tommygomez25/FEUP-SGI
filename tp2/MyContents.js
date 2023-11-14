@@ -16,9 +16,7 @@ class MyContents  {
         this.axis = null
 
         this.reader = new MyFileReader(app, this, this.onSceneLoaded);
-		this.reader.open("scenes/t07g08/final.xml");		
-
-        this.sceneGraph = new MySceneGraph(this.app)
+		this.reader.open("scenes/t07g08/stadium.xml");		
         
     }
 
@@ -55,44 +53,15 @@ class MyContents  {
         this.initSkyBox(data)
         this.loadTextures(data)
         this.loadMaterials(data)
+        this.sceneGraph = new MySceneGraph(this.app)
+        this.sceneGraph.loadLods(data)
         this.sceneGraph.traverse(data)
         
-        /*
-        console.log("textures:")
-        for (var key in data.textures) {
-            let texture = data.textures[key]
-            this.output(texture, 1)
-        }
-
-        console.log("materials:")
-        for (var key in data.materials) {
-            let material = data.materials[key]
-            this.output(material, 1)
-        }
-
         console.log("cameras:")
         for (var key in data.cameras) {
             let camera = data.cameras[key]
             this.output(camera, 1)
         }
-
-        console.log("nodes:")
-        for (var key in data.nodes) {
-            let node = data.nodes[key]
-            this.output(node, 1)
-            for (let i=0; i< node.children.length; i++) {
-                let child = node.children[i]
-                if (child.type === "primitive") {
-                    console.log("" + new Array(2 * 4).join(' ') + " - " + child.type + " with "  + child.representations.length + " " + child.subtype + " representation(s)")
-                    if (child.subtype === "nurbs") {
-                        console.log("" + new Array(3 * 4).join(' ') + " - " + child.representations[0].controlpoints.length + " control points")
-                    }
-                }
-                else {
-                    this.output(child, 2)
-                }
-            }
-        }*/
     }
 
     initGlobals(data) {
@@ -150,19 +119,77 @@ class MyContents  {
     loadTextures(data) {
         this.textures = data.textures
         this.app.scene.textures = []
+
         for (var textureId in this.textures) {
-            var filePath = data.textures[textureId].filepath
-            var isVideo = data.textures[textureId].isVideo
-            var magFilter = data.textures[textureId].magFilter
-            var minFilter = data.textures[textureId].minFilter
-            var mipmaps = data.textures[textureId].mipmaps
-            var anisotropy = data.textures[textureId].anisotropy
-            // mag and min to be used later
+            
+            var texture = data.textures[textureId]
+
+            var filePath = texture.filepath
+
+            var isVideo = texture.isVideo === null ? false : texture.isVideo
+
+            var magFilter = texture.magFilter === null ? 'LinearFilter' : texture.magFilter
+
+            var minFilter = texture.minFilter === null ? 'LinearMipMapLinearFilter' : texture.minFilter
+
+            var mipmaps = texture.mipmaps === null ? true : texture.mipmaps
+
+            var anisotropy = texture.anisotropy === null ? 1 : texture.anisotropy
+
+            var mipmap0 = texture.mipmap0 === null ? null : texture.mipmap0
+            var mipmap1 = texture.mipmap1 === null ? null : texture.mipmap1
+            var mipmap2 = texture.mipmap2 === null ? null : texture.mipmap2
+            var mipmap3 = texture.mipmap3 === null ? null : texture.mipmap3
+            var mipmap4 = texture.mipmap4 === null ? null : texture.mipmap4
+            var mipmap5 = texture.mipmap5 === null ? null : texture.mipmap5
+            var mipmap6 = texture.mipmap6 === null ? null : texture.mipmap6
+            var mipmap7 = texture.mipmap7 === null ? null : texture.mipmap7
+
+            var mipmapList = [mipmap0, mipmap1, mipmap2, mipmap3, mipmap4, mipmap5, mipmap6, mipmap7]
 
             
+            this.minFilters= {
+                    'NearestFilter': THREE.NearestFilter,
+                    'NearestMipmapLinearFilter': THREE.NearestMipmapLinearFilter,
+                    'NearestMipMapNearestFilter': THREE.NearestMipmapNearestFilter,
+                    'LinearFilter ': THREE.LinearFilter,
+                    'LinearMipmapLinearFilter': THREE.LinearMipmapLinearFilter,
+                    'LinearMipmapNearestFilter': THREE.LinearMipmapNearestFilter,
+                }
+            this.magFilters= {
+                    'NearestFilter': THREE.NearestFilter,
+                    'LinearFilter': THREE.LinearFilter,
+                }
+            
+            console.log(this.minFilters["NearestFilter"])
+            console.log("FILE PATH: " + filePath)
+
             this.app.scene.textures[textureId] = new THREE.TextureLoader().load(filePath)
-            this.app.scene.textures[textureId].mipmaps = mipmaps
             this.app.scene.textures[textureId].anisotropy = anisotropy
+
+            this.app.scene.textures[textureId].wrapS = THREE.RepeatWrapping
+            this.app.scene.textures[textureId].wrapT = THREE.RepeatWrapping
+            
+            console.log("mipmaps: " + mipmaps)
+            if (mipmaps === true) {
+                this.app.scene.textures[textureId].generateMipmaps = true
+                this.app.scene.textures[textureId].minFilter = this.minFilters[minFilter]
+                this.app.scene.textures[textureId].magFilter = this.magFilters[magFilter]
+                this.app.scene.textures[textureId].needsUpdate = true
+            }
+
+            else {
+                this.app.scene.textures[textureId].generateMipmaps = false
+                console.log("mipmap list: " + mipmapList)
+                
+                for (let i = 0; i < mipmapList.length; i++) {
+                    if (mipmapList[i] !== null) {
+                        console.log("Adding mipmap level")
+                        this.loadMipmap(this.app.scene.textures[textureId], i, mipmapList[i])
+                    }
+                }
+                this.app.scene.textures[textureId].needsUpdate = true
+            }
         }
     }
 
@@ -181,13 +208,19 @@ class MyContents  {
             var twoSided = this.materials[materialId].twosided ? true : false
             var wireframe = this.materials[materialId].wireframe ? true : false
             var shading = this.materials[materialId].shading ? true : false
-            var bump_ref = this.materials[materialId].bump_ref ? this.materials[materialId].bump_ref : null
-            var bump_scale = this.materials[materialId].bump_scale ? this.materials[materialId].bump_scale : 1.0
-            
+            var bump_ref = this.materials[materialId].bumpref ? this.materials[materialId].bumpref : null
+            var bump_scale = this.materials[materialId].bumpscale ? this.materials[materialId].bumpscale : 1.0
+            var specular_ref = this.materials[materialId].specularref ? this.materials[materialId].specularref : null
             // find texture
             var texture = this.app.scene.textures[textureref]
             if (texture !== undefined) {texture.repeat = new THREE.Vector2(texlength_s, texlength_t)}
-
+            
+            var bumpTexture = this.app.scene.textures[bump_ref]
+            if (bumpTexture !== undefined) {bumpTexture.repeat = new THREE.Vector2(texlength_s, texlength_t)}
+            console.log("BUMP TEXTURE: " + bumpTexture)
+            var specularTexture = this.app.scene.textures[specular_ref]
+            if (specularTexture !== undefined) {specularTexture.repeat = new THREE.Vector2(texlength_s, texlength_t)}
+            
             
             var material = new THREE.MeshPhongMaterial({
                 emissive: emissive, color: color, 
@@ -195,11 +228,53 @@ class MyContents  {
                 wireframe: wireframe, 
                 flatShading: shading ? true : false, 
                 side: twoSided ? THREE.DoubleSide : THREE.FrontSide,
-                map: texture})
+                map: texture,
+                bumpMap: bumpTexture,
+                bumpScale: bump_scale,
+                specularMap: specularTexture})
 
             console.log(material.emissive)
             this.app.scene.materials[materialId] = material
         }
+    }
+
+
+    /**
+     * load an image and create a mipmap to be added to a texture at the defined level.
+     * In between, add the image some text and control squares. These items become part of the picture
+     * 
+     * @param {*} parentTexture the texture to which the mipmap is added
+     * @param {*} level the level of the mipmap
+     * @param {*} path the path for the mipmap image
+    // * @param {*} size if size not null inscribe the value in the mipmap. null by default
+    // * @param {*} color a color to be used for demo
+     */
+    loadMipmap(parentTexture, level, path)
+    {
+        // load texture. On loaded call the function to create the mipmap for the specified level 
+        new THREE.TextureLoader().load(path, 
+            function(mipmapTexture)  // onLoad callback
+            {
+                const canvas = document.createElement('canvas')
+                const ctx = canvas.getContext('2d')
+                ctx.scale(1, 1);
+                
+                // const fontSize = 48
+                const img = mipmapTexture.image         
+                canvas.width = img.width;
+                canvas.height = img.height
+
+                // first draw the image
+                ctx.drawImage(img, 0, 0 )
+                             
+                // set the mipmap image in the parent texture in the appropriate level
+                parentTexture.mipmaps[level] = canvas
+            },
+            undefined, // onProgress callback currently not supported
+            function(err) {
+                console.error('Unable to load the image ' + path + ' as mipmap level ' + level + ".", err)
+            }
+        )
     }
 
     update() {

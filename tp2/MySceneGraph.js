@@ -10,60 +10,38 @@ export class MySceneGraph {
         this.sceneLights = []
         this.defaultMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
         this.primitives = []
+        this.groups = []
+        this.lods = []
+        this.minDists = []
     }
-    /* NOTES: 
-    Sempre que um nó tem um <noderef> , signfica que esse nó é pai do nó referenciado
-    */
 
     traverse(data) {
-        //  this.traverseScene(data.nodes["scene"])
-        /*
-        var group = this.traverseNode(data.nodes["rectangle1"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group =this.traverseNode(data.nodes["rectangle2"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group =this.traverseNode(data.nodes["rectangle3"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group =this.traverseNode(data.nodes["rectangle4"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group =this.traverseNode(data.nodes["rectangle5"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group =this.traverseNode(data.nodes["rectangle6"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group =this.traverseNode(data.nodes["unitCube"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group =this.traverseNode(data.nodes["leg"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        // se calahr tirar o add to scene do traverSENODE e pô-lo aqui
-        var group = this.traverseNode(data.nodes["leg1"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group = this.traverseNode(data.nodes["leg2"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group = this.traverseNode(data.nodes["leg3"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group = this.traverseNode(data.nodes["leg4"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group = this.traverseNode(data.nodes["tableTop"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        var group = this.traverseNode(data.nodes["table"])
-        if (this.sceneObjects.some((e) => e.id === group.name)) { this.app.scene.add(group) }
-        for (var key in group.children) {console.log(group.children[key])}
-        */
+        
         for (var key in data.nodes) {
+
             if (key === "scene") { this.traverseScene(data.nodes[key])}
+
             else {
+
                 var materialId = data.nodes[key]["materialIds"]
+
                 var group = this.traverseNode(data.nodes[key], materialId); 
+
                 if (this.sceneObjects.some((e) => e.id === group.name)) { 
+
                     console.log("ADDING TO SCENE: " + group.name)
+
                     console.log("-----------------------")
+
                     this.app.scene.add(group) 
                 }
             }
         }
         console.log("sceneObjects:")
         for (var key in this.sceneObjects) {
+
             let node = this.sceneObjects[key]
+
             console.log(node.id)
         }
 
@@ -71,21 +49,29 @@ export class MySceneGraph {
 
     traverseNode(node, parentMaterialId,castShadows,receiveShadows) {
         var currentGroup = new THREE.Group();
+
         currentGroup.name = node.id;
+
         console.log("Traversing node: " + node.id + " with material " + parentMaterialId);
 
         var castShadows = node.castShadows === null ? false : node.castShadows
+
         var receiveShadows = node.receiveShadows === null ? false : node.receiveShadows
 
         for (const key in node.children) {
+
             const child = node.children[key];
             
             if (child.type === "primitive") {
                 
                 if (child.subtype === "model3d") {
+
                     const loader = new OBJLoader()
+                    
                     const path = child.representations[0]["filepath"]
+
                     const material = this.app.scene.materials[parentMaterialId] ;
+
                     var primitive;
                     loader.load(path, (obj) => {
                         
@@ -103,8 +89,10 @@ export class MySceneGraph {
                         function(err) {
                             console.error('An error happened', err)
                         })
+                    
                 }
                 else {
+                    
                     var primitive = this.traversePrimitive(child);
 
                     var mesh = this.createMesh(primitive, parentMaterialId);
@@ -134,11 +122,39 @@ export class MySceneGraph {
 
                 currentGroup.add(childGroup);     
             }
+
+            else if (child.type === "lod") {
+
+                console.log("Traversing lod: " + child.id);
+
+                var lod = this.lods[child.id]
+
+                console.log("Creating lod for group:" + currentGroup.name)
+
+                var minDist = this.minDists[currentGroup.name]
+
+                lod.addLevel(currentGroup, minDist)
+
+                console.log("LOD OBJECT:" + lod)
+
+                this.app.scene.add(lod)
+            }
+
+            else if (child.type === "spotlight" || child.type === "pointlight" || child.type === "directionallight") {
+                var light = this.traverseLights(child)
+
+                currentGroup.add(light)
+
+                this.sceneLights.push(light)
+
+                console.log("Light added to group: " + currentGroup.name + " " + light)
+            }
         }
 
         console.log("cheguei aqui com o nó: " + node.id)
         this.applyTransformation(node, currentGroup,castShadows,receiveShadows);
-        
+        console.log("GROUP ID: " + currentGroup.id)
+
         return currentGroup;
     }
     
@@ -148,7 +164,9 @@ export class MySceneGraph {
         const transformations = node.transformations;
         
         var initialPosition = new THREE.Vector3(0, 0, 0);
+
         var initialScale = new THREE.Vector3(1, 1, 1);
+
         var initialRotation = new THREE.Vector3(0, 0, 0);
 
         for (let i = 0; i < transformations.length; i++) {
@@ -213,6 +231,8 @@ export class MySceneGraph {
             var primitive = this.traverseNurbs(node)
         } else if (node.subtype === "box") {
             var primitive = this.traverseBox(node)
+        } else if (node.subtype === "lod") {
+            console.log("LOD PRIMITIVE FOR NODE " + node.id)
         }
         return primitive
     }   
@@ -324,7 +344,6 @@ export class MySceneGraph {
     traverseLights(node) {
         if (node.type === "pointlight") {
             var light = this.createPointlight(node)
-            // TODO: ADD OTHER TYPE OF LIGHTS
         }
         else if (node.type === "spotlight") {
             var light = this.createSpotlight(node)
@@ -340,7 +359,9 @@ export class MySceneGraph {
 
             const child = node.children[key]
             if (child.type !== "node") {
-                this.traverseLights(child)
+                const light = this.traverseLights(child)
+                this.sceneLights.push(light)
+                this.app.scene.add(light)
             }
             else {
                 this.sceneObjects.push(child)
@@ -381,7 +402,7 @@ export class MySceneGraph {
 
         light.position.set(lightPosition[0], lightPosition[1], lightPosition[2])
 
-        this.app.scene.add(light)
+        //this.app.scene.add(light)
 
         light.castShadow = lightCastshadow
 
@@ -445,7 +466,7 @@ export class MySceneGraph {
         this.app.scene.add(targetObject)
         
         light.target = targetObject
-        this.app.scene.add(light)
+        //this.app.scene.add(light)
         
         light.shadow.camera.far = shadowfar
         
@@ -492,7 +513,7 @@ export class MySceneGraph {
         
         light.castShadow = lightCastshadow
         
-        this.app.scene.add(light)
+        //this.app.scene.add(light)
         
         light.visible = lightEnabled
         
@@ -514,6 +535,27 @@ export class MySceneGraph {
         this.app.scene.add(lightHelper)
         return light
     }   
+
+    loadLods(data) {
+        for (const key in data.lods) {
+
+            var lod = data.lods[key]
+
+            var lodGroup = new THREE.LOD()
+
+            for (var keyChild in lod.children) {
+
+                const child = lod.children[keyChild]
+
+                console.log("LOD CHILD: " + child.node.id + " " + child.mindist)
+
+                this.minDists[child.node.id] = child.mindist
+            }
+
+            this.lods[lod.id] = lodGroup
+
+        }
+    }
 
 
     toRadians(angle) {

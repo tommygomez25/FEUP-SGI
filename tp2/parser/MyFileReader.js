@@ -52,7 +52,7 @@ class MyFileReader  {
 			this.xmlhttp.onload = this.onStateChange;
 			this.xmlhttp.reader = this;
 			this.xmlfilename = xmlfile;
- 			this.xmlhttp.open("GET", xmlfile, true); //  (httpMethod,  URL,  asynchronous)			
+ 			this.xmlhttp.open("GET", xmlfile, false); //  (httpMethod,  URL,  asynchronous)			
 			this.xmlhttp.setRequestHeader("Content-Type", "text/xml");
 			this.xmlhttp.send(null);
 		}
@@ -643,7 +643,8 @@ class MyFileReader  {
 	 */
 	loadFog(rootElement) {
 		let elem = this.getAndCheck(rootElement, 'fog', 0, 1)
-		this.data.setFog(this.loadXmlItem({elem: elem, descriptor: this.data.descriptors["fog"], extras: [["type", "fog"]]}))
+		if (elem !== null && elem !== undefined)
+			this.data.setFog(this.loadXmlItem({elem: elem, descriptor: this.data.descriptors["fog"], extras: [["type", "fog"]]}))
 	}
 
 	/**
