@@ -70,18 +70,16 @@
         <texture id="carTex" filepath="scenes/t07g08/textures/black.jpg" />
         <texture id="roadTex" filepath="scenes/t07g08/textures/road.jpg" />
         <texture id="walkwayTex" filepath="scenes/t07g08/textures/walkway.jpg" />
-
+        <texture id="walkwaybumpTex" filepath="scenes/t07g08/textures/walkwaybump.jpg" />
+        <texture id="walkwayspecTex" filepath="scenes/t07g08/textures/walkwayspec.jpg" />
     </textures> 
 
     <materials> 
         <material id="carMaterial" 
-            color="1 1 1 1.0" 
-            emissive="0.0 0.0 0.0 0.0" 
-			specular="0 0 0 0" 
-            shininess="10" 
-            textureref="carTex" 
-            texlength_s="10" 
-            texlength_t="10" />
+            color="1 0 0 1.0" 
+            emissive="0.0 0.0 0.0 1.0" 
+			specular="0.5 0.5 0.5 1.0" 
+            shininess="10"/>
         
         <material id = "roadMaterial" 
             color="1 1 1 1.0" 
@@ -99,109 +97,18 @@
             shininess="10" 
             textureref="walkwayTex" 
             texlength_s="0.08" 
-            texlength_t="5" />
+            texlength_t="5" 
+            bumpref="walkwaybumpTex"
+            bumpscale = "0.2"
+            specularref="walkwayspecTex"/>
 
-        <material id="shelfMaterial" 
-            color="0.8 0.8 0.8 1.0" 
+        <material id = "roadlightMaterial" 
+            color="0.5 0.5 0.5 1.0" 
             emissive="0.0 0.0 0.0 0.0" 
 			specular="0 0 0 0" 
-            shininess="10" 
-            textureref="shelfTex" 
-            texlength_s="1" 
-            texlength_t="1" />
-			
-		<material id="wall" 
-            emissive="0.0 0.0 0.0 1" 
-			color="0.8 0.8 0.8 1.0" 
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="wallTex" 
-            texlength_s="1" 
-            texlength_t="1" 
-            twosided = "true" />
-		
-		<material id="floorMaterial" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="floorTex" 
-            texlength_s="1" 
-            texlength_t="1" 
-            twosided = "true" />
-		
-		<material id="supportLegMaterial" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="supportLegTex" 
-            texlength_s="1" 
-            texlength_t="1" />
-		
-		<material id="tree" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="treeTex" 
-            texlength_s="1" 
-            texlength_t="1"
-            shading = "flat" />
-			
-		<material id="vase" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="vaseTex" 
-            texlength_s="1" 
-            texlength_t="1"
-            shading = "flat" />
+            shininess="10" />
 
         
-        
-        <material id="mat" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="matTex" 
-            texlength_s="1" 
-            texlength_t="1"
-            shading = "flat" />
-        <material id="mirrorBallMaterial" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="1 1 1 0" 
-            shininess="0" 
-            textureref="noIce" 
-            texlength_s="1" 
-            texlength_t="1"
-            shading = "flat" 
-            bumpref="elev_bump"
-            bumpscale="0.3"
-            specularref="spec"
-            />
-
-        <material id="footballMaterial" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="footballTex" 
-            texlength_s="1" 
-            texlength_t="1"
-            shading = "flat" />
-        <material id="basketballMaterial" 
-            emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
-            specular="0 0 0 0" 
-            shininess="0" 
-            textureref="basketballTex" 
-            texlength_s="1" 
-            texlength_t="1"
-            shading = "flat" />
 			
     </materials> 
 
@@ -213,13 +120,14 @@
                 <noderef id ="road" />
                 <noderef id="walkway" />
                 <noderef id="walkway-2" />
-                <noderef id="road-light" />
+                <noderef id="road-light-1" />
+                <noderef id="audi" />
                 
                 <directionallight id="dirLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
-                    intensity="0.2"
+                    intensity="1"
                     castshadow="true"
-                    position="-20 10 -20" 
+                    position="-20 10 0" 
                     shadowright="20"
                     shadowleft="-20"
                 /> 
@@ -290,7 +198,7 @@
                 <rotate value3="0 0 0" />
             </transforms> 
 
-            <materialref id="carMaterial" />
+
             
             <children>
                 <primitive>
@@ -305,7 +213,7 @@
                 <rotate value3="0 0 0" />
             </transforms> 
 
-            <materialref id="carMaterial" />
+
 
             <children>
                 <primitive>
@@ -321,7 +229,6 @@
                 <rotate value3="0 0 -40" />
             </transforms> 
 
-            <materialref id="carMaterial" />
 
             <children>
                 <primitive>
@@ -331,31 +238,42 @@
 
         </node>
 
-        
-
-        <node id="road-light">
+        <node id="road-light-reference">
             <transforms>
-				<translate value3="-8.5 1 0" />
+				<translate value3="0 0 0" />
                 <rotate value3="0 0 0" />
                 <scale value3="0.1 0.1 0.1" />
             </transforms> 
 
-            <materialref id="carMaterial" />
+            <materialref id="roadlightMaterial" />
 
             <children>
                 <noderef id="road-light-base" />
                 <noderef id="road-light-rect" />
                 <noderef id="road-light-arm" />
+            </children>
+
+        </node>
+
+        <node id="road-light-1">
+            <transforms>
+				<translate value3="-8.5 1 0" />
+                <rotate value3="0 0 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
                 <spotlight id="spotLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
                     intensity="100.0"
                     distance="50"
-                    decay="1.0"
+                    decay="1"
                     castshadow="true"
-                    position="7 44 0" 
-                    target="-6 -1 0"
+                    position="0.7 4.4 0" 
+                    target="-4 -1 0"
                     penumbra="1.0"
-                    angle="35.0" 
+                    angle="60.0" 
                 /> 
             </children>
 
