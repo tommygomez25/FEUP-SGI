@@ -108,11 +108,6 @@ class MyApp  {
         this.cameras = appCameras
         this.setActiveCamera(data.activeCameraId)
 
-        // adds a folder to the gui interface for the camera
-        //const cameraFolder = this.gui.datgui.addFolder('Camera')
-        //console.log("active camera name "+ this.activeCameraName)
-        //cameraFolder.add(this, 'activeCameraName',Object.keys(appCameras)).name("active camera");
-        //cameraFolder.open()
     }
 
 
@@ -179,6 +174,11 @@ class MyApp  {
      */
     setGui(gui) {   
         this.gui = gui
+                // adds a folder to the gui interface for the camera
+                const cameraFolder = this.gui.datgui.addFolder('Camera')
+                console.log("active camera name "+ this.activeCameraName)
+                cameraFolder.add(this, 'activeCameraName',Object.keys(this.cameras)).name("active camera");
+                cameraFolder.open() 
     }
 
     /**

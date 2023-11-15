@@ -416,7 +416,7 @@ export class MySceneGraph {
 
         const lightHelper = new THREE.PointLightHelper(light, 1)
 
-        this.app.scene.add(lightHelper)
+        //this.app.scene.add(lightHelper)
 
         return light
     } 
@@ -479,7 +479,7 @@ export class MySceneGraph {
         console.log(light)
 
         const lightHelper = new THREE.SpotLightHelper(light)
-        this.app.scene.add(lightHelper)
+        //this.app.scene.add(lightHelper)
         return light
     }
 
@@ -532,7 +532,7 @@ export class MySceneGraph {
         light.shadow.mapSize.height = lightShadowmapsize
         
         const lightHelper = new THREE.DirectionalLightHelper(light, 1)
-        this.app.scene.add(lightHelper)
+        //this.app.scene.add(lightHelper)
         return light
     }   
 

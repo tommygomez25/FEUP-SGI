@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-16" standalone="yes"?>
 <yaf> 
 	
-    <globals background="0 0 0 1" ambient="0 0 0 1" /> 
+    <globals background="1 1 1 1" ambient="0.2 0.2 0.2 1" /> 
 
     <fog color="1.0 1.0 1.0 1.0" near="0.0" far="10000.0" />
 
@@ -10,12 +10,12 @@
        center="0 0 0"
        emissive="0 0 0 1.0"
        intensity="1"
-       front="scenes/t07g08/textures/black.jpg"
-       back="scenes/t07g08/textures/black.jpg"
-       up="scenes/t07g08/textures/black.jpg"
-       down="scenes/t07g08/textures/black.jpg"
-       left="scenes/t07g08/textures/black.jpg"
-       right="scenes/t07g08/textures/black.jpg" />
+       front="scenes/t07g08/textures/vz_sinister_front.png"
+       back="scenes/t07g08/textures/vz_sinister_back.png"
+       up="scenes/t07g08/textures/vz_sinister_up.png"
+       down="scenes/t07g08/textures/vz_sinister_down.png"
+       left="scenes/t07g08/textures/vz_sinister_left.png"
+       right="scenes/t07g08/textures/vz_sinister_right.png" />
 
     <cameras initial="cam1" > 
         <perspective id="cam1" 
@@ -44,34 +44,14 @@
     </cameras> 
 
     <textures>        
-        <texture id="wallTex" filepath="scenes/t07g08/textures/caravaggio.jpg" 
-            mipmaps="false" mipmap0="scenes/t07g08/textures/caravaggio.1024.jpg" 
-            mipmap1="scenes/t07g08/textures/caravaggio.512.jpg" 
-            mipmap2="scenes/t07g08/textures/caravaggio.256.jpg"
-            mipmap3="scenes/t07g08/textures/caravaggio.128.jpg"
-            mipmap4="scenes/t07g08/textures/caravaggio.64.jpg"
-            mipmap5="scenes/t07g08/textures/caravaggio.32.jpg"
-            mipmap6="scenes/t07g08/textures/caravaggio.16.jpg"
-            mipmap7="scenes/t07g08/textures/caravaggio.8.jpg"/>
-
-		<texture id="floorTex" filepath="scenes/t07g08/textures/floorTex.jpg" />
-		<texture id="shelfTex" filepath="scenes/t07g08/textures/shelfTex.jpg" />
-		<texture id="supportLegTex" filepath="scenes/t07g08/textures/supportLegTex.jpg" />
-		<texture id="treeTex" filepath="scenes/t07g08/textures/treeTex.jpg" />
-		<texture id="vaseTex" filepath="scenes/t07g08/textures/vaseTex.jpg" />
-        <texture id="matTex" filepath="scenes/t07g08/textures/matTex.jpg" />
-        <texture id="mirrorBallTex" filepath="scenes/t07g08/textures/mirrorBallTex.jpg" />
-        <texture id="footballTex" filepath="scenes/t07g08/textures/fut.png" />
-        <texture id="basketballTex" filepath="scenes/t07g08/textures/basketballTex.jpg" />
-        <texture id="noIce" filepath="scenes/t07g08/textures/4_no_ice_clouds_mts_8k.jpg" />
-        <texture id="elev_bump" filepath="scenes/t07g08/textures/elev_bump_16k.jpg" />
-        <texture id="spec" filepath="scenes/t07g08/textures/spec.jpg" />
-        <texture id="clouds" filepath="scenes/t07g08/textures/storm_clouds_8k.jpg" />
         <texture id="carTex" filepath="scenes/t07g08/textures/black.jpg" />
         <texture id="roadTex" filepath="scenes/t07g08/textures/road.jpg" />
         <texture id="walkwayTex" filepath="scenes/t07g08/textures/walkway.jpg" />
         <texture id="walkwaybumpTex" filepath="scenes/t07g08/textures/walkwaybump.jpg" />
         <texture id="walkwayspecTex" filepath="scenes/t07g08/textures/walkwayspec.jpg" />
+        <texture id="houseTex" filepath="scenes/t07g08/textures/house.jpg" />
+        <texture id="roofTex" filepath="scenes/t07g08/textures/roof.jpg"/>
+        <texture id="doorTex" filepath="scenes/t07g08/textures/door.jpg"/>
     </textures> 
 
     <materials> 
@@ -114,7 +94,29 @@
 			specular="1 1 1 1" 
             shininess="10" />
 
+        <material id ="houseMaterial"
+            color="1 1 1 1.0" 
+            emissive="0.5 0.5 0.5 0.5" 
+			specular="0 0 0 1" 
+            shininess="10" 
+            textureref="houseTex"/>
+
+        <material id = "roofMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="roofTex"
+            texlength_s="4" 
+            texlength_t="0.9" 
+            bumpref="scenes/t07g08/textures/roof-bump.jpg" bumpscale="0.3"/>
         
+        <material id ="doorMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 1" 
+			specular="0 0 0 1" 
+            shininess="10" 
+            textureref="doorTex"/>
 			
     </materials> 
 
@@ -130,12 +132,22 @@
                 <noderef id="road-light-2" />
                 <noderef id="road-light-3" />
                 <noderef id="road-light-4" />
+                <noderef id="house" />
 
                 <directionallight id="dirLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
-                    intensity="1"
+                    intensity="0.5"
                     castshadow="true"
                     position="-20 10 0" 
+                    shadowright="20"
+                    shadowleft="-20"
+                /> 
+
+                <directionallight id="dirLight-2" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="0.5"
+                    castshadow="true"
+                    position="20 10 0" 
                     shadowright="20"
                     shadowleft="-20"
                 /> 
@@ -369,6 +381,70 @@
 
         </node>
 
+        <node id="house">
+            <transforms>
+				<translate value3="-14.5 5 -1" />
+                <rotate value3="0 0 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id = "house-box" />
+                <noderef id = "house-roof" />
+                <noderef id = "house-door" />
+            </children>
+
+        </node>
+
+        <node id="house-box">
+            <transforms>
+				<translate value3="0 0 0" />
+                <rotate value3="0 0 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <materialref id = "houseMaterial" />
+            <children>
+                <primitive >
+                    <box xyz1="0 0 0" xyz2="10 10 10" />
+                </primitive>
+            </children>
+
+        </node>
+
+        <node id="house-roof">
+            <transforms>
+				<translate value3="0 6.5 0" />
+                <rotate value3="0 45 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <materialref id = "roofMaterial" />
+
+            <children>
+                <primitive >
+                    <cylinder base="8.5" top="4" height="3" slices="4" stacks="1"/>
+                </primitive>
+            </children>
+
+        </node>
+        
+        <node id="house-door">
+            <transforms>
+				<translate value3="5.1 -5 0" />
+                <rotate value3="0 90 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <materialref id = "doorMaterial" />
+
+            <children>
+                <primitive >
+                    <rectangle xy1="0 0" xy2="3 5"/>
+                </primitive>
+            </children>
+
+        </node>
 			
     </graph> 
 </yaf> 
