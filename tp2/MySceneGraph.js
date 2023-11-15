@@ -374,7 +374,7 @@ export class MySceneGraph {
         console.log("Creating mesh with material " + parentMaterialId)
 
         const material = this.app.scene.materials[parentMaterialId] ;
-
+        
         return new THREE.Mesh(primitive, material)
     }
 
