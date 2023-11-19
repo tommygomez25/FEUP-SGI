@@ -233,6 +233,8 @@ export class MySceneGraph {
             var primitive = this.traverseBox(node)
         } else if (node.subtype === "lod") {
             console.log("LOD PRIMITIVE FOR NODE " + node.id)
+        } else if (node.subtype === "polygon") {
+            var primitive = this.traversePolygon(node)
         }
         return primitive
     }   
@@ -258,7 +260,61 @@ export class MySceneGraph {
 
     traverseTriangle(node) {
         const representation = node.representations[0]
-        const primitive =  new THREE.BufferGeometry().setFromPoints((representation["xyz1"], representation["xyz2"], representation["xyz3"]))
+        const primitive =  new THREE.BufferGeometry()
+
+        const p1 = representation["xyz1"]
+        const p2 = representation["xyz2"]
+        const p3 = representation["xyz3"]
+
+        var vectorAx = p2[0] - p1[0]
+        var vectorAy = p2[1] - p1[1]
+        var vectorAz = p2[2] - p1[2]
+
+        var vectorBx = p3[0] - p1[0]
+        var vectorBy = p3[1] - p1[1]
+        var vectorBz = p3[2] - p1[2]
+
+        var crossProductX = vectorAy * vectorBz - vectorBy * vectorAz
+        var crossProductY = vectorBx * vectorAz - vectorAx * vectorBz
+        var crossProductZ = vectorAx * vectorBy - vectorBx * vectorAy
+
+        var normal = new THREE.Vector3(crossProductX, crossProductY, crossProductZ)
+        normal.normalize()
+
+        let a = Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2) + Math.pow(p2[2] - p1[2], 2))
+        let b = Math.sqrt(Math.pow(p3[0] - p2[0], 2) + Math.pow(p3[1] - p2[1], 2) + Math.pow(p3[2] - p2[2], 2))
+        let c = Math.sqrt(Math.pow(p1[0] - p3[0], 2) + Math.pow(p1[1] - p3[1], 2) + Math.pow(p1[2] - p3[2], 2))
+
+        let cos_ac = (a * a - b * b + c * c) / (2 * a * c)
+        let sin_ac = Math.sqrt(1 - cos_ac * cos_ac)
+
+        const vertices = new Float32Array( [
+            ...p1,	//0
+            ...p2,	//1
+            ...p3,	//2
+
+        ] );
+
+        const indices = [
+            0, 1, 2
+        ];
+
+        const normals = [
+            ...normal.toArray(),
+            ...normal.toArray(),
+            ...normal.toArray(),
+        ];
+
+        const uvs = [
+            0, 0,
+            a , 0,
+            c * cos_ac, c * sin_ac
+        ]
+
+        primitive.setIndex(indices)
+        primitive.setAttribute('position', new THREE.Float32BufferAttribute(vertices,3))
+        primitive.setAttribute('normal', new THREE.Float32BufferAttribute(normals,3))
+        primitive.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2))
 
         // TODO : distance???
         
@@ -341,6 +397,62 @@ export class MySceneGraph {
         return primitive;
     }
 
+    traversePolygon(node) {
+        let primitive = new THREE.BufferGeometry()
+        let vertices = []
+        let indices = []
+        let normals = []
+        let colors = []
+
+        const representation = node.representations[0]
+        const radius = representation.radius
+        const slices = representation.slices
+        const stacks = representation.stacks
+        const color_c = representation.color_c
+        const color_p = representation.color_p
+
+        console.log("POLYGON: " + radius + " " + slices + " " + stacks + " " + color_c + " " + color_p)
+
+        for(let i= 0; i <= stacks; i++) {
+            const radius_i = radius * (i/stacks)
+
+            for (let j=0; j <= slices; j++) {
+                const theta = (j/slices) * 2 * Math.PI
+
+                const x = radius_i * Math.cos(theta)
+                const y = radius_i * Math.sin(theta)
+
+                vertices.push(x,y,0)
+                normals.push(0,0,1)
+
+                const color = new THREE.Color();
+                const color_r = color_c.r * (1-i / stacks) + color_p.r * (i / stacks)
+                const color_g = color_c.g * (1-i / stacks) + color_p.g * (i / stacks)
+                const color_b = color_c.b * (1-i / stacks) + color_p.b * (i / stacks)
+                color.setRGB(color_r,color_g,color_b)
+                console.log("COLOR: " + color.r + " " + color.g + " " + color.b)
+                colors.push(color.r,color.g,color.b,1)
+            }
+        }
+
+        for (let i = 0; i <= stacks; i++) {
+            for (let j = 0; j <= slices; j++) {
+                const first = (i * (slices + 1)) + j
+                const second = first + slices + 1
+
+                indices.push(first,second,first+1)
+                indices.push(second,second+1,first+1)
+            }
+        }
+
+        primitive.setIndex(indices)
+        primitive.setAttribute('position', new THREE.Float32BufferAttribute(vertices,3))
+        primitive.setAttribute('normal', new THREE.Float32BufferAttribute(normals,3))
+        primitive.setAttribute('color', new THREE.Float32BufferAttribute(colors,4))
+
+        return primitive
+    }
+
     traverseLights(node) {
         if (node.type === "pointlight") {
             var light = this.createPointlight(node)
@@ -374,6 +486,12 @@ export class MySceneGraph {
         console.log("Creating mesh with material " + parentMaterialId)
 
         const material = this.app.scene.materials[parentMaterialId] ;
+
+        if (primitive.type === "BufferGeometry") { // when polygon, create mesh with vertex colors interpolation
+            var polygonMaterial = new THREE.MeshStandardMaterial({ flatShading: true })
+            polygonMaterial.vertexColors = true
+            return new THREE.Mesh(primitive, polygonMaterial)
+        }
         
         return new THREE.Mesh(primitive, material)
     }

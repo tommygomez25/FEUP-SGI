@@ -186,6 +186,7 @@
                 <noderef id="tree" />
                 <noderef id="car" />
 
+
                 <directionallight id="dirLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
                     intensity="0.5"
@@ -720,6 +721,31 @@
                 <lodref id="lod1"/>
             </children>
 
+        </node>
+
+        <node id="pentagon" receiveshadows="true" castshadows="true">
+            <transforms>
+                <translate value3="0 0 0" />
+            </transforms>
+
+            <children>
+                <primitive>
+                    <polygon radius="5" stacks="10" slices="5"
+                        color_c="10 10 10 1.0" color_p="0.0 0.0 0.0 1.0" />
+                </primitive>
+            </children>
+        </node>
+
+         <node id="triangle" receiveshadows="true" castshadows="true">
+            <transforms>
+                <translate value3="0 5 0" />
+            </transforms>
+
+            <children>
+                <primitive>
+                    <triangle xyz1 = "0 0 0" xyz2 = "5 0 0" xyz3 = "0 5 0" />
+                </primitive>
+            </children>
         </node>
 
         <lod id="lod1">
