@@ -24,8 +24,23 @@
 
 -----
 
-### [TP2 - ...](tp2)
-- (items briefly describing main strong points)
+### [TP2](tp2)
+- Our scene is at night time with the stars and the moon in the sky. [README](tp2/README.md) with screenshots.
+- Nice neighborhood with a house, a car, one big sidewalk all the way from the house to the street. There is also a car parked on the side of the house.
+- The street has 2 sidewalks, one on each side, and a road in the middle. There are also some trees on the side of the road and some street lights.
+- House:
+  - The house has a door, 5 windows and a roof.
+  - The door has a door knob.
+  - There is a sidewalk all the way from the door to the street.
+  - We used mipmapping to make the side textures look better.
+  - We also used bump textures on the house, roof and sidewalk to make them look more realistic.
+
+- Tree:
+  - We used lods for the tree.
+
+- Lights:
+  - We used spotlights for the street lights to better represent reality.
+  - There are also 2 directional lights, to represent the light from the moon and the stars.
 
 ----
 
