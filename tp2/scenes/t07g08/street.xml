@@ -49,9 +49,15 @@
         <texture id="walkwayTex" filepath="scenes/t07g08/textures/walkway.jpg" />
         <texture id="walkwaybumpTex" filepath="scenes/t07g08/textures/walkwaybump.jpg" />
         <texture id="walkwayspecTex" filepath="scenes/t07g08/textures/walkwayspec.jpg" />
-        <texture id="houseTex" filepath="scenes/t07g08/textures/house.jpg" />
+        <texture id="houseTex" filepath="scenes/t07g08/textures/house-dif.jpg" />
+        <texture id="houseSideTex" filepath="scenes/t07g08/textures/house-side.jpg"/>
         <texture id="roofTex" filepath="scenes/t07g08/textures/roof.jpg"/>
         <texture id="doorTex" filepath="scenes/t07g08/textures/door.jpg"/>
+        <texture id ="pathTex" filepath="scenes/t07g08/textures/path.jpg"/>
+        <texture id ="grassTex" filepath="scenes/t07g08/textures/grass.jpg"/>
+        <texture id="treeTex" filepath="scenes/t07g08/textures/treeTex.jpg" />
+        
+        
     </textures> 
 
     <materials> 
@@ -96,10 +102,19 @@
 
         <material id ="houseMaterial"
             color="1 1 1 1.0" 
-            emissive="0.5 0.5 0.5 0.5" 
-			specular="0 0 0 1" 
+            emissive="0 0 0 0.5" 
+			specular="0.1 0.1 0.1 1" 
             shininess="10" 
-            textureref="houseTex"/>
+            textureref="houseTex"
+            bumpref = "scenes/t07g08/textures/house-bump.jpg" bumpscale="0.3"
+            specularref="scenes/t07g08/textures/house-spec.jpg"/>
+
+        <material id ="houseSideMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0.5" 
+			specular="0.1 0.1 0.1 1" 
+            shininess="10" 
+            textureref="houseSideTex"/>
 
         <material id = "roofMaterial"
             color="1 1 1 1.0" 
@@ -107,17 +122,40 @@
 			specular="0 0 0 0" 
             shininess="10" 
             textureref="roofTex"
-            texlength_s="4" 
-            texlength_t="0.9" 
-            bumpref="scenes/t07g08/textures/roof-bump.jpg" bumpscale="0.3"/>
-        
-        <material id ="doorMaterial"
+            texlength_s="10" 
+            texlength_t="1" 
+            bumpref="scenes/t07g08/textures/roof-bump.png" bumpscale="1"/>	
+
+        <material id = "pathMaterial"
             color="1 1 1 1.0" 
-            emissive="0 0 0 1" 
-			specular="0 0 0 1" 
+            emissive="0 0 0 0" 
+			specular="0 0 0 0" 
             shininess="10" 
-            textureref="doorTex"/>
-			
+            textureref="pathTex"
+            texlength_s="1" 
+            texlength_t="5" 
+            bumpref="scenes/t07g08/textures/path-bump.png" bumpscale="1"/>	
+
+        <material id = "grassMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="grassTex"
+            texlength_s="5" 
+            texlength_t="5" 
+            bumpref="scenes/t07g08/textures/grass-bump.png" bumpscale="1"/>	
+
+        <material id="tree" 
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="treeTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            shading = "flat" />
+        		
     </materials> 
 
     <graph rootid="scene"> 
@@ -133,6 +171,9 @@
                 <noderef id="road-light-3" />
                 <noderef id="road-light-4" />
                 <noderef id="house" />
+                <noderef id ="path" />
+                <noderef id ="grass" />
+                <noderef id="tree" />
 
                 <directionallight id="dirLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
@@ -383,7 +424,7 @@
 
         <node id="house">
             <transforms>
-				<translate value3="-14.5 5 -1" />
+				<translate value3="-31 5.5 -5.8" />
                 <rotate value3="0 0 0" />
                 <scale value3="1 1 1" />
             </transforms> 
@@ -400,21 +441,19 @@
             <transforms>
 				<translate value3="0 0 0" />
                 <rotate value3="0 0 0" />
-                <scale value3="1 1 1" />
+                <scale value3="10 10 10" />
             </transforms> 
 
             <materialref id = "houseMaterial" />
             <children>
-                <primitive >
-                    <box xyz1="0 0 0" xyz2="10 10 10" />
-                </primitive>
+                <noderef id="unitCube" />
             </children>
 
         </node>
 
         <node id="house-roof">
             <transforms>
-				<translate value3="0 6.5 0" />
+				<translate value3="0 6.7 0" />
                 <rotate value3="0 45 0" />
                 <scale value3="1 1 1" />
             </transforms> 
@@ -423,28 +462,235 @@
 
             <children>
                 <primitive >
-                    <cylinder base="8.5" top="4" height="3" slices="4" stacks="1"/>
+                    <cylinder base="8.5" top="0" height="5" slices="4" stacks="1"/>
                 </primitive>
             </children>
 
         </node>
-        
-        <node id="house-door">
+
+        <node id="unitCube">
+            <children>            
+				<!-- Back -->
+                <noderef id="rectangle1" /> 
+				<!-- Front -->
+				<noderef id="rectangle2" /> 
+				<!-- Bottom -->
+				<noderef id="rectangle3" />
+				<!-- Top -->
+				<noderef id="rectangle4" />
+				<!-- Left -->				
+				<noderef id="rectangle5" />
+				 <!-- Right -->
+				<noderef id="rectangle6" />
+            </children> 
+        </node>
+
+        <node id="rectangle1"> 
+
             <transforms>
-				<translate value3="5.1 -5 0" />
-                <rotate value3="0 90 0" />
-                <scale value3="1 1 1" />
+				<translate value3="0 0 -0.5" />
+				<rotate value3="0 180.0 0.0" />
             </transforms> 
 
-            <materialref id = "doorMaterial" />
+            <materialref id ="houseSideMaterial" />
 
+            <children>   
+                <primitive>          
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" />
+                </primitive> 
+            </children> 
+        </node>
+		
+		<node id="rectangle2"> 
+
+            <transforms>
+				<translate value3="0 0 0.5" />
+            </transforms> 
+            
+            <materialref id ="houseSideMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle3"> 
+
+            <transforms>
+				<translate value3="0 -0.5 0" />
+				<rotate value3="90 0.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseSideMaterial" />
+
+            <children>   
+                <primitive>          
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle4"> 
+
+            <transforms>
+				<translate value3="0 0.5 0" />
+				<rotate value3="-90 0.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseSideMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle5"> 
+
+            <transforms>
+				<translate value3="-0.5 0 0" />
+				<rotate value3="0.0 -90.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseSideMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle6"> 
+            <transforms>
+				<translate value3="0.5 0 0" />
+				<rotate value3="0.0 90.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+
+        <node id="path">
+            <transforms>
+				<translate value3="-19.3 0.5 0" />
+            </transforms> 
+
+            <materialref id="pathMaterial" />
+            
             <children>
-                <primitive >
-                    <rectangle xy1="0 0" xy2="3 5"/>
+                <primitive>
+                    <nurbs degree_u="1" degree_v="4" parts_u="20" parts_v="20">
+                        <controlpoint xx="10" yy="0" zz="8" />
+                        <controlpoint xx="0" yy="0" zz="8" />
+                        <controlpoint xx="-1" yy="0" zz="0" />
+                        <controlpoint xx="0" yy="0" zz="-5" />
+                        <controlpoint xx="-10" yy="0" zz="-5" />
+
+                        <controlpoint xx="10" yy="0" zz="6" />
+                        <controlpoint xx="0" yy="0" zz="6" />
+                        <controlpoint xx="1" yy="0" zz="-2" />
+                        <controlpoint xx="0" yy="0" zz="-7" />
+                        <controlpoint xx="-10" yy="0" zz="-7" />
+                    </nurbs>
                 </primitive>
             </children>
-
         </node>
+
+        <node id="grass"> 
+            <transforms>
+				<translate value3="-23 0.49 0" />
+				<rotate value3="-90.0 0.0 0.0" />
+                <scale value3="30 40 10" />
+            </transforms> 
+
+            <materialref id ="grassMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+
+        <node id="trunk">
+			<transforms>
+				<translate value3="0 1.7 0" />
+			</transforms> 
 			
+			<materialref id="tableApp" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="0.4" top="0.4" height="3" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg1">
+			<transforms>
+				<translate value3="0 2.7 0" />
+            </transforms> 
+			
+			<materialref id="tree" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="2" top="1" height="1.9" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg2">
+			<transforms>
+				<translate value3="0 4.6 0" />
+            </transforms> 
+			
+			<materialref id="tree" />
+			
+            <children>
+                <primitive >
+                    <cylinder base="1.5" top="0.75" height="2" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg3">
+			<transforms>
+				<translate value3="0 6.6 0" />
+            </transforms> 
+			
+			<materialref id= "tree" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="0.9" top="0" height="2" slices="32" stacks="32" />
+                </primitive>
+
+            </children> 
+        </node>
+		
+		<node id="tree">
+			<transforms>
+				<translate value3="2 0.7 2" />
+				<rotate value3="0.0 0.0 0"/>
+            </transforms> 
+			
+            <children>             
+				<noderef id="trunk" />
+				<noderef id="treeSeg1" />
+				<noderef id="treeSeg2" />
+				<noderef id="treeSeg3" />
+            </children> 
+        </node>
+
     </graph> 
 </yaf> 
