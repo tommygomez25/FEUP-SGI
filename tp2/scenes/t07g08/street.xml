@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<yaf> 
+	
+    <globals background="1 1 1 1" ambient="0.2 0.2 0.2 1" /> 
+
+    <fog color="1.0 1.0 1.0 1.0" near="0.0" far="10000.0" />
+
+    <skybox
+       size="1000 1000 1000"
+       center="0 0 0"
+       emissive="0 0 0 1.0"
+       intensity="1"
+       front="scenes/t07g08/textures/vz_sinister_front.png"
+       back="scenes/t07g08/textures/vz_sinister_back.png"
+       up="scenes/t07g08/textures/vz_sinister_up.png"
+       down="scenes/t07g08/textures/vz_sinister_down.png"
+       left="scenes/t07g08/textures/vz_sinister_left.png"
+       right="scenes/t07g08/textures/vz_sinister_right.png" />
+
+    <cameras initial="cam1" > 
+        <perspective id="cam1" 
+            angle="60" 
+            near="0.1" 
+            far="1000" 
+            location="20 5 0" 
+            target="0.0 0.0 0.0" /> 
+        
+        <perspective id="cam3"
+            angle = "60"
+            near = "0.1"
+            far = "1000"
+            location = "0 15 0"
+            target = "0.0 0.0 0.0" />
+
+        <orthogonal id="cam2" 
+            near="0.1" 
+            far="1000" 
+            location="15 15 15" 
+            target="0.0 0.0 0.0" 
+            left="-5" 
+            right="5" 
+            bottom="-5" 
+            top="5" /> 
+    </cameras> 
+
+    <textures>        
+        <texture id="carTex" filepath="scenes/t07g08/textures/black.jpg" />
+        <texture id="roadTex" filepath="scenes/t07g08/textures/road.jpg" />
+        <texture id="walkwayTex" filepath="scenes/t07g08/textures/walkway.jpg" />
+        <texture id="walkwaybumpTex" filepath="scenes/t07g08/textures/walkwaybump.jpg" />
+        <texture id="walkwayspecTex" filepath="scenes/t07g08/textures/walkwayspec.jpg" />
+        <texture id="houseTex" filepath="scenes/t07g08/textures/house-dif.jpg" mipmaps="false" mipmap0="scenes/t07g08/textures/house-dif-256.jpg" mipmap1="scenes/t07g08/textures/house-dif-128.jpg" mipmap2="scenes/t07g08/textures/house-dif-64.jpg"/>
+        <texture id="houseSideTex" filepath="scenes/t07g08/textures/house-side.jpg"/>
+        <texture id="roofTex" filepath="scenes/t07g08/textures/roof.jpg"/>
+        <texture id ="pathTex" filepath="scenes/t07g08/textures/path.jpg"/>
+        <texture id ="grassTex" filepath="scenes/t07g08/textures/grass.jpg"/>
+        <texture id="treeTex" filepath="scenes/t07g08/textures/treeTex.jpg" />
+        <texture id="woodTex" filepath="scenes/t07g08/textures/wood.jpg" />
+        
+    </textures> 
+
+    <materials> 
+        <material id="carMaterial" 
+            color="1 1 1 1.0" 
+            emissive="0.0 0.0 0.0 1.0" 
+			specular="0.5 0.5 0.5 1.0" 
+            shininess="10"
+            textureref= "carTex"/>
+        
+        <material id = "roadMaterial" 
+            color="1 1 1 1.0" 
+            emissive="0.0 0.0 0.0 0.0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="roadTex" 
+            texlength_s="1.5" 
+            texlength_t="1" />
+
+        <material id = "walkwayMaterial" 
+            color="1 1 1 1.0" 
+            emissive="0.0 0.0 0.0 0.0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="walkwayTex" 
+            texlength_s="0.08" 
+            texlength_t="5" 
+            bumpref="walkwaybumpTex"
+            bumpscale = "0.2"
+            specularref="walkwayspecTex"/>
+
+        <material id = "roadlightMaterial" 
+            color="0.5 0.5 0.5 1.0" 
+            emissive="0.0 0.0 0.0 0.0" 
+			specular="0 0 0 0" 
+            shininess="10" />
+
+        <material id = "lightMaterial" 
+            color="1.0 1.0 1.0 1.0" 
+            emissive="1.0 1.0 1.0 1.0" 
+			specular="1 1 1 1" 
+            shininess="10" />
+
+        <material id ="houseMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0.5" 
+			specular="0.1 0.1 0.1 1" 
+            shininess="10" 
+            textureref="houseTex"
+            bumpref = "scenes/t07g08/textures/house-bump.jpg" bumpscale="0.3"
+            specularref="scenes/t07g08/textures/house-spec.jpg"/>
+
+        <material id ="houseSideMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0.5" 
+			specular="0.1 0.1 0.1 1" 
+            shininess="10" 
+            textureref="houseSideTex"/>
+
+        <material id = "roofMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="roofTex"
+            texlength_s="10" 
+            texlength_t="1" 
+            bumpref="scenes/t07g08/textures/roof-bump.png" bumpscale="1"/>	
+
+        <material id = "pathMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="pathTex"
+            texlength_s="1" 
+            texlength_t="5" 
+            bumpref="scenes/t07g08/textures/path-bump.png" bumpscale="1"/>	
+
+        <material id = "grassMaterial"
+            color="1 1 1 1.0" 
+            emissive="0 0 0 0" 
+			specular="0 0 0 0" 
+            shininess="10" 
+            textureref="grassTex"
+            texlength_s="5" 
+            texlength_t="5" 
+            bumpref="scenes/t07g08/textures/grass-bump.png" bumpscale="1"/>	
+
+        <material id="tree" 
+            emissive="0.0 0.0 0.0 1" 
+            color="1 1 1 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="treeTex" 
+            texlength_s="5" 
+            texlength_t="1"
+            shading = "flat" />
+
+        <material id="wood" 
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="woodTex" 
+            texlength_s="1" 
+            texlength_t="1"
+            shading = "flat" />
+        		
+    </materials> 
+
+    <graph rootid="scene"> 
+		
+		<node id="scene"> 
+            <children> 
+                
+                <noderef id ="road" />
+                <noderef id="walkway" />
+                <noderef id="walkway-2" />
+                <noderef id="road-light-1" />
+                <noderef id="road-light-2" />
+                <noderef id="road-light-3" />
+                <noderef id="road-light-4" />
+                <noderef id="house" />
+                <noderef id ="path" />
+                <noderef id ="grass" />
+                <noderef id="tree" />
+                <noderef id="car" />
+
+
+                <directionallight id="dirLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="0.5"
+                    castshadow="true"
+                    position="-20 10 0" 
+                    shadowright="20"
+                    shadowleft="-20"
+                /> 
+
+                <directionallight id="dirLight-2" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="0.5"
+                    castshadow="true"
+                    position="20 10 0" 
+                    shadowright="20"
+                    shadowleft="-20"
+                /> 
+            </children> 
+        </node>
+
+        <node id="rect-light"> 
+
+            <transforms>
+				<translate value3="6 44 0" />
+                <rotate value3="0 0 -40" />
+            </transforms> 
+            
+            <materialref id="lightMaterial" />
+            <children>   
+                <primitive>          
+                    <box xyz1="0 0 0" xyz2="0.5 7 1.5"/>
+                </primitive> 
+            </children> 
+        </node>
+
+        <node id="car">
+            <transforms>
+                <translate value3="-20 0.5 -15" />
+                <rotate value3="-90 0 90" />
+                <scale value3="0.04 0.04 0.04" />
+            </transforms>
+
+            <materialref id ="carMaterial" />
+            <children>
+                <primitive>
+                    <model3d filepath="scenes/t07g08/textures/car.obj"/>
+                </primitive>
+            </children>
+        </node>
+
+        <node id="road">
+            <transforms>
+				<translate value3="0 0 20" />
+				<rotate value3="-90 0 90" />
+            </transforms> 
+
+			<materialref id="roadMaterial" />
+			
+            <children>             
+                <primitive>
+                    <rectangle xy1="0 0" xy2="40 8" />
+                </primitive>
+            </children> 
+        </node>
+
+        <node id="walkway">
+            <transforms>
+				<translate value3="0.5 0.25 0" />
+				<rotate value3="0 0 0" />
+            </transforms> 
+
+            <materialref id = "walkwayMaterial" />
+            <children>
+                <primitive>
+                    <box xyz1="0 0 0" xyz2="1.5 0.5 40" />
+                </primitive>
+            </children>
+        </node>
+
+        <node id="walkway-2">
+            <transforms>
+				<translate value3="-8.5 0.25 0" />
+				<rotate value3="0 0 0" />
+            </transforms> 
+
+            <materialref id="walkwayMaterial" />
+            <children>
+                <primitive>
+                    <box xyz1="0 0 0" xyz2="1.5 0.5 40" />
+                </primitive>
+            </children>
+        </node>
+        
+        <node id="road-light-base">
+            <transforms>
+				<translate value3="0 0 0" />
+                <rotate value3="0 0 0" />
+            </transforms> 
+            <children>
+                <primitive>
+                    <cylinder base="5.6" top="2.3" height="10" slices="8" stacks="1"/>
+                </primitive>
+            </children>
+        </node>
+
+        <node id="road-light-rect">
+            <transforms>
+				<translate value3="0 20 0" />
+                <rotate value3="0 0 0" />
+            </transforms> 
+            <children>
+                <primitive>
+                    <box xyz1="0 0 0" xyz2="2 40 2"/>
+                </primitive>
+            </children>
+
+        </node>
+
+        <node id="road-light-arm">
+            <transforms>
+				<translate value3="3.85 44 0" />
+                <rotate value3="0 0 -40" />
+            </transforms> 
+
+
+            <children>
+                <primitive>
+                    <box xyz1="0 0 0" xyz2="2 13 2"/>
+                </primitive>
+            </children>
+
+        </node>
+
+        <node id="road-light-reference">
+            <transforms>
+				<translate value3="0 0 0" />
+                <rotate value3="0 0 0" />
+                <scale value3="0.1 0.1 0.1" />
+            </transforms> 
+
+            <materialref id="roadlightMaterial" />
+
+            <children>
+                <noderef id="road-light-base" />
+                <noderef id="road-light-rect" />
+                <noderef id="road-light-arm" />
+                <noderef id="rect-light" />
+            </children>
+
+        </node>
+
+        <node id="road-light-1">
+            <transforms>
+				<translate value3="0.5 1 -8" />
+                <rotate value3="0 180 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 4.4 0" 
+                    target="-4 1 -8"
+                    penumbra="1.0"
+                    angle="35.0" 
+                /> 
+            </children>
+
+        </node>
+
+        <node id="road-light-2">
+            <transforms>
+				<translate value3="-8.5 1 8" />
+                <rotate value3="0 0 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 4.4 0" 
+                    target="1 -4 8"
+                    penumbra="1.0"
+                    angle="35.0" 
+                /> 
+            </children>
+
+        </node>
+
+        <node id="road-light-3">
+            <transforms>
+				<translate value3="-8.5 1 -16" />
+                <rotate value3="0 0 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 4.4 0" 
+                    target="1 -4 -16"
+                    penumbra="1.0"
+                    angle="35.0" 
+                /> 
+            </children>
+
+        </node>
+
+        <node id="road-light-4">
+            <transforms>
+				<translate value3="0.5 1 16" />
+                <rotate value3="0 180 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 4.4 0" 
+                    target="-4 1 16"
+                    penumbra="1.0"
+                    angle="35.0" 
+                /> 
+            </children>
+
+        </node>
+
+        <node id="house">
+            <transforms>
+				<translate value3="-31 5.5 -5.8" />
+                <rotate value3="0 0 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id = "house-box" />
+                <noderef id = "house-roof" />
+                <noderef id = "house-door" />
+            </children>
+
+        </node>
+
+        <node id="house-box">
+            <transforms>
+				<translate value3="0 0 0" />
+                <rotate value3="0 0 0" />
+                <scale value3="10 10 10" />
+            </transforms> 
+
+            <materialref id = "houseMaterial" />
+            <children>
+                <noderef id="unitCube" />
+            </children>
+
+        </node>
+
+        <node id="house-roof">
+            <transforms>
+				<translate value3="0 6.7 0" />
+                <rotate value3="0 45 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <materialref id = "roofMaterial" />
+
+            <children>
+                <primitive >
+                    <cylinder base="8.5" top="0" height="5" slices="4" stacks="1"/>
+                </primitive>
+            </children>
+
+        </node>
+
+        <node id="unitCube">
+            <children>            
+				<!-- Back -->
+                <noderef id="rectangle1" /> 
+				<!-- Front -->
+				<noderef id="rectangle2" /> 
+				<!-- Bottom -->
+				<noderef id="rectangle3" />
+				<!-- Top -->
+				<noderef id="rectangle4" />
+				<!-- Left -->				
+				<noderef id="rectangle5" />
+				 <!-- Right -->
+				<noderef id="rectangle6" />
+            </children> 
+        </node>
+
+        <node id="rectangle1"> 
+
+            <transforms>
+				<translate value3="0 0 -0.5" />
+				<rotate value3="0 180.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseSideMaterial" />
+
+            <children>   
+                <primitive>          
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" />
+                </primitive> 
+            </children> 
+        </node>
+		
+		<node id="rectangle2"> 
+
+            <transforms>
+				<translate value3="0 0 0.5" />
+            </transforms> 
+            
+            <materialref id ="houseSideMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle3"> 
+
+            <transforms>
+				<translate value3="0 -0.5 0" />
+				<rotate value3="90 0.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseSideMaterial" />
+
+            <children>   
+                <primitive>          
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle4"> 
+
+            <transforms>
+				<translate value3="0 0.5 0" />
+				<rotate value3="-90 0.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseSideMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle5"> 
+
+            <transforms>
+				<translate value3="-0.5 0 0" />
+				<rotate value3="0.0 -90.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseSideMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="rectangle6"> 
+            <transforms>
+				<translate value3="0.5 0 0" />
+				<rotate value3="0.0 90.0 0.0" />
+            </transforms> 
+
+            <materialref id ="houseMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+
+        <node id="path">
+            <transforms>
+				<translate value3="-19.3 0.5 0" />
+            </transforms> 
+
+            <materialref id="pathMaterial" />
+            
+            <children>
+                <primitive>
+                    <nurbs degree_u="1" degree_v="4" parts_u="20" parts_v="20">
+                        <controlpoint xx="10" yy="0" zz="8" />
+                        <controlpoint xx="0" yy="0" zz="8" />
+                        <controlpoint xx="-1" yy="0" zz="0" />
+                        <controlpoint xx="0" yy="0" zz="-5" />
+                        <controlpoint xx="-10" yy="0" zz="-5" />
+
+                        <controlpoint xx="10" yy="0" zz="6" />
+                        <controlpoint xx="0" yy="0" zz="6" />
+                        <controlpoint xx="1" yy="0" zz="-2" />
+                        <controlpoint xx="0" yy="0" zz="-7" />
+                        <controlpoint xx="-10" yy="0" zz="-7" />
+                    </nurbs>
+                </primitive>
+            </children>
+        </node>
+
+        <node id="grass"> 
+            <transforms>
+				<translate value3="-23 0.49 0" />
+				<rotate value3="-90.0 0.0 0.0" />
+                <scale value3="30 40 10" />
+            </transforms> 
+
+            <materialref id ="grassMaterial" />
+
+            <children>             
+                <primitive>
+                    <rectangle xy1="-0.5 -0.5" xy2="0.5 0.5" /> 
+                </primitive>
+            </children> 
+        </node>
+
+        <node id="trunk">
+			<transforms>
+				<translate value3="0 1.7 0" />
+			</transforms> 
+			
+			<materialref id="wood" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="0.4" top="0.4" height="3" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg1">
+			<transforms>
+				<translate value3="0 2.7 0" />
+            </transforms> 
+			
+			<materialref id="tree" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="2" top="1" height="1.9" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg2">
+			<transforms>
+				<translate value3="0 4.6 0" />
+            </transforms> 
+			
+			<materialref id="tree" />
+			
+            <children>
+                <primitive >
+                    <cylinder base="1.5" top="0.75" height="2" slices="32" stacks="32" />
+                </primitive>
+            </children> 
+        </node>
+		
+		<node id="treeSeg3">
+			<transforms>
+				<translate value3="0 6.6 0" />
+            </transforms> 
+			
+			<materialref id= "tree" />
+			
+            <children>             
+                <primitive>
+                    <cylinder base="0.9" top="0" height="2" slices="32" stacks="32" />
+                </primitive>
+
+            </children> 
+        </node>
+		
+		<node id="tree">
+			<transforms>
+				<translate value3="-24 0.7 5" />
+				<rotate value3="0.0 0.0 0"/>
+            </transforms> 
+			
+            <children>             
+				<noderef id="trunk" />
+				<noderef id="treeSeg1" />
+				<noderef id="treeSeg2" />
+				<noderef id="treeSeg3" />
+                <lodref id="lod1"/>
+            </children> 
+        </node>
+
+        <node id="tree-box">
+            <transforms>
+				<translate value3="-24 4.7 5" />
+                <rotate value3="0 0 0" />
+                <scale value3="2 7 2" />
+            </transforms> 
+
+            <materialref id = "tree" />
+            <children>
+                <lodref id="lod1"/>
+                <primitive>
+                        <box xyz1="0 0 0" xyz2="1 1 1" />
+                </primitive>
+                <lodref id="lod1"/>
+            </children>
+
+        </node>
+
+        <node id="pentagon" receiveshadows="true" castshadows="true">
+            <transforms>
+                <translate value3="0 0 0" />
+            </transforms>
+
+            <children>
+                <primitive>
+                    <polygon radius="5" stacks="10" slices="5"
+                        color_c="10 10 10 1.0" color_p="0.0 0.0 0.0 1.0" />
+                </primitive>
+            </children>
+        </node>
+
+         <node id="triangle" receiveshadows="true" castshadows="true">
+            <transforms>
+                <translate value3="0 5 0" />
+            </transforms>
+
+            <children>
+                <primitive>
+                    <triangle xyz1 = "0 0 0" xyz2 = "5 0 0" xyz3 = "0 5 0" />
+                </primitive>
+            </children>
+        </node>
+
+        <lod id="lod1">
+            <noderef id="tree" mindist="0.0"/>
+            <noderef id="tree-box" mindist ="100.0"/>
+        </lod>
+    </graph> 
+</yaf> 

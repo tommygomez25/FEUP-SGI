@@ -7,6 +7,18 @@
 
     <fog color="1.0 1.0 1.0 1.0" near="0.0" far="100.0" />
 
+    <skybox
+       size="10 10 10"
+       center="0 0 0"
+       emissive="3.0 3.0 3.0 1.0"
+       intensity="2.0"
+       front="2.0"
+       back="4.0"
+       up="1.0"
+       down="2.3"
+       left="4.3"
+       right="2.7" />
+
     <cameras initial="cam1" > 
         <perspective id="cam1" 
             angle="60" 
@@ -28,15 +40,15 @@
 
     <!-- bloco de texturas. Este bloco tem de existir mas pode estar vazio, se nao forem usadas texturas --> 
     <textures>        
-        <texture id="leftWallTex" filepath="scenes/t01g01/textures/scratchedWall.jpg" />
-		<texture id="rightWallTex" filepath="scenes/t01g01/textures/bloodyWall.jpg" />
-		<texture id="floorTex" filepath="scenes/t01g01/textures/test1.jpg" />
-		<texture id="tableTex" filepath="scenes/t01g01/textures/table.png" />
-		<texture id="crimeWeaponTex" filepath="scenes/t01g01/textures/bloodyPrints.jpg" />
-		<texture id="tapeTex" filepath="scenes/t01g01/textures/pTape.jpg" />
-		<texture id="tapeSupportTex" filepath="scenes/t01g01/textures/lamp.png" />
-		<texture id="pineTex" filepath="scenes/t01g01/textures/pine.png" />
-		<texture id="vaseTex" filepath="scenes/t01g01/textures/vase.png" />
+        <texture id="leftWallTex" filepath="scenes/demo/textures/scratchedWall.jpg" />
+		<texture id="rightWallTex" filepath="scenes/demo/textures/bloodyWall.jpg" />
+		<texture id="floorTex" filepath="scenes/demo/textures/test1.jpg" />
+		<texture id="tableTex" filepath="scenes/demo/textures/table.png" />
+		<texture id="crimeWeaponTex" filepath="scenes/demo/textures/bloodyPrints.jpg" />
+		<texture id="tapeTex" filepath="scenes/demo/textures/pTape.jpg" />
+		<texture id="tapeSupportTex" filepath="scenes/demo/textures/lamp.png" />
+		<texture id="pineTex" filepath="scenes/demo/textures/pine.png" />
+		<texture id="vaseTex" filepath="scenes/demo/textures/vase.png" />
     </textures> 
 
     <materials> 
@@ -66,7 +78,7 @@
             specular="0 0 0 0" 
             shininess="0" 
             textureref="rightWallTex" 
-            texlength_s="15" 
+            texlength_s="15"    
             texlength_t="8"
             twosided = "true" />
 		
@@ -82,7 +94,7 @@
 		
 		<material id="crimeWeaponApp" 
             emissive="0.0 0.0 0.0 1" 
-           color="0.8 0.8 0.8 1.0"  
+            color="0.8 0.8 0.8 1.0"  
             specular="0 0 0 0" 
             shininess="0" 
             textureref="crimeWeaponTex" 
@@ -155,7 +167,7 @@
 
                 <pointlight id="light2" enabled="true" 
                     color="0.5 0.6 0.8 1" 
-                    intensity="1.0"
+                    intensity="100.0"
                     distance="1000"
                     decay="2.0"
                     castshadow="false"
@@ -187,12 +199,12 @@
                     color="1.0 1.0 1.0 1" 
                     intensity="1.0"
                     castshadow="true"
-                    position="2 2 4" 
+                    position="9 2 13" 
                 /> 
             </children> 
         </node>
 		
-		<node id="rectangle1"> 
+		<node id="rectangle1" castshadows="true" receiveshadows="true"> 
 
             <transforms>
 				<translate value3="0 0 -0.5" />
@@ -206,7 +218,7 @@
             </children> 
         </node>
 		
-		<node id="rectangle2"> 
+		<node id="rectangle2" castshadows="true" receiveshadows="true"> 
 
             <transforms>
 				<translate value3="0 0 0.5" />
@@ -219,7 +231,7 @@
             </children> 
         </node>
 		
-		<node id="rectangle3"> 
+		<node id="rectangle3" castshadows="true" receiveshadows="true"> 
 
             <transforms>
 				<translate value3="0 -0.5 0" />
@@ -233,7 +245,7 @@
             </children> 
         </node>
 		
-		<node id="rectangle4"> 
+		<node id="rectangle4" castshadows="true" receiveshadows="true"> 
 
             <transforms>
 				<translate value3="0 0.5 0" />
@@ -247,7 +259,7 @@
             </children> 
         </node>
 		
-		<node id="rectangle5"> 
+		<node id="rectangle5" castshadows="true" receiveshadows="true"> 
 
             <transforms>
 				<translate value3="-0.5 0 0" />
@@ -261,7 +273,7 @@
             </children> 
         </node>
 		
-		<node id="rectangle6"> 
+		<node id="rectangle6" castshadows="true" receiveshadows="true"> 
             <transforms>
 				<translate value3="0.5 0 0" />
 				<rotate value3="0.0 90.0 0.0" />
@@ -274,7 +286,7 @@
             </children> 
         </node>
 		
-		<node id="unitCube">
+		<node id="unitCube" castshadows="true" receiveshadows="true">
             <children>            
 				<!-- Back -->
                 <noderef id="rectangle1" /> 
@@ -291,7 +303,7 @@
             </children> 
         </node>
 		
-		<node id="leg">
+		<node id="leg" castshadows="true" receiveshadows="true">
 			<transforms>
 				<scale value3="0.06 0.92 0.06" />
             </transforms> 
@@ -301,7 +313,7 @@
             </children> 
         </node>
 		
-		<node id="leg1">
+		<node id="leg1" castshadows="true" receiveshadows="true">
 			<transforms>
 				<translate value3="0.45 0 0.42" />
             </transforms> 
@@ -311,7 +323,7 @@
             </children> 
         </node>
 		
-		<node id="leg2">
+		<node id="leg2" castshadows="true" receiveshadows="true">
 			<transforms>
 				<translate value3="0.45 0 -0.42" />
             </transforms> 
@@ -321,7 +333,7 @@
             </children> 
         </node>
 		
-		<node id="leg3">
+		<node id="leg3" castshadows="true" receiveshadows="true">
 			<transforms>
 				<translate value3="-0.45 0 0.42" />
             </transforms> 
@@ -331,7 +343,7 @@
             </children> 
         </node>
 		
-		<node id="leg4">
+		<node id="leg4"  castshadows="true" receiveshadows="true">
 			<transforms>
 				<translate value3="-0.45 0 -0.42" />
             </transforms> 
@@ -341,7 +353,7 @@
             </children> 
         </node>
 		
-		<node id="tableTop">
+		<node id="tableTop" castshadows ="true" receiveshadows="true">
 			<transforms>
 				<translate value3="0 0.48 0" />
 				<scale value3="1 0.08 1" />
@@ -352,7 +364,7 @@
             </children> 
         </node>
 		
-		<node id="table">
+		<node id="table" castshadows="true" receiveshadows="true">
 			<transforms>
 				<translate value3="7.5 0 10" />
 				<translate value3="0 1.5 0" />
@@ -590,7 +602,7 @@
 				<noderef id="treeSeg2" />
 				<noderef id="treeSeg3" />
                 <primitive>
-                    <nurbs degree_u="1" degree_v="1" parts_u="20" parts_v="20" >
+                    <nurbs degree_u="1" degree_v="1" parts_u="20" parts_v="20" distance="0.0">
                         <controlpoint xx="0" yy="0" zz="0" />
                         <controlpoint xx="0" yy="0" zz="1" />
                         <controlpoint xx="1" yy="0" zz="0" />

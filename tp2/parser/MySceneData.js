@@ -15,6 +15,7 @@ class MySceneData  {
 
     constructor() {
         this.options = null;
+        this.skyboxes = []
         this.fog = null;
 
         this.materials = []
@@ -26,6 +27,8 @@ class MySceneData  {
         
         this.nodes = [];
         this.rootId = null;
+
+        this.lods = [];
     
         this.descriptors = [];
 
@@ -45,7 +48,21 @@ class MySceneData  {
         this.descriptors["texture"] = [
 			{name: "id", type: "string" },
 			{name: "filepath", type: "string"},
-		]
+            {name: "isVideo", type: "boolean", required: false, default: false}, // a nice way to see if the texture is a video or not            
+            {name: "magFilter", type: "string", required: false, default: "LinearFilter"}, // to be used in later classes
+            {name: "minFilter", type: "string", required: false, default: "LinearMipmapLinearFilter"}, // to be used in later classes
+            {name: "mipmaps", type: "boolean", required: false, default: true}, // by default threejs generates mipmaps for you
+            {name: "anisotropy", type: "integer", required: false, default: 1}, // default is 1. A higher value gives a less blurry result than a basic mipmap, at the cost of more texture samples being used
+            {name: "mipmap0", type: "string", required: false, default: null}, //   mipmap level 0. Default null.
+            {name: "mipmap1", type: "string", required: false, default: null}, // mipmap level 1. Default null.
+            {name: "mipmap2", type: "string", required: false, default: null}, // mipmap level 2. Default null.
+            {name: "mipmap3", type: "string", required: false, default: null}, // mipmap level 3. Default null.
+            {name: "mipmap4", type: "string", required: false, default: null}, // mipmap level 4. Default null.
+            {name: "mipmap5", type: "string", required: false, default: null}, // mipmap level 5. Default null.
+            {name: "mipmap6", type: "string", required: false, default: null}, // mipmap level 6. Default null.
+            {name: "mipmap7", type: "string", required: false, default: null}, // mipmap level 7. Default null.
+        ]
+        
 
         this.descriptors["material"] = [
 			{name: "id", type: "string"},
@@ -55,10 +72,13 @@ class MySceneData  {
 			{name: "shininess", type: "float"},
 			{name: "wireframe", type: "boolean", required: false, default: false},
 			{name: "shading", type: "item", required: false, choices: ["none","flat","smooth"], default: "smooth"},
-			{name: "textureref", type: "string", required: false, default: null},
+			{name: "textureref", type: "string", required: false, default: null}, // The color map. May optionally include an alpha channel. The texture map color is modulated by the diffuse color. Default null.
 			{name: "texlength_s", type: "float", required: false, default: 1.0},
 			{name: "texlength_t", type: "float", required: false, default: 1.0},
             {name: "twosided", type: "boolean", required: false, default: false},
+            {name: "bumpref", type: "string", required: false, default: null}, // bump map is to be used in later classes
+            {name: "bumpscale", type: "float", required: false, default: 1.0},
+            {name: "specularref", type: "string", required: false, default: null}, // specular map is to be used in later classes
 		]
 
         this.descriptors["orthogonal"] = [
@@ -91,19 +111,31 @@ class MySceneData  {
             {name: "capsclose", type: "boolean", required: false, default: false},
             {name: "thetastart", type: "float", required: false, default: 0.0},
             {name: "thetalength", type: "float", required: false, default: 2 * Math.PI},
+            {name: "distance", type: "float", required: false, default: 0.0}, // The distance at which to display this level of detail. Default 0.0.  
 		]
 
+        /*
+            In the following primitives, distance is to be used with LODs (later classes)
+        */
 		this.descriptors["rectangle"] = [
 			{name: "xy1", type: "vector2"},
 			{name: "xy2", type: "vector2"},
             {name: "parts_x", type: "integer", required: false, default: 1},
 			{name: "parts_y", type: "integer", required: false, default: 1},
+            {name: "distance", type: "float", required: false, default: 0.0}, // The distance at which to display this level of detail. Default 0.0.  
 		]
 
 		this.descriptors["triangle"] = [
 			{name: "xyz1", type: "vector3"},
 			{name: "xyz2", type: "vector3"},
 			{name: "xyz3", type: "vector3"},
+            {name: "distance", type: "float", required: false, default: 0.0}, // The distance at which to display this level of detail. Default 0.0.  
+		]
+
+        // to be used in final classes of TP2 or in TP3
+        this.descriptors["model3d"] = [
+			{name: "filepath", type: "string"},
+            {name: "distance", type: "float", required: false, default: 0.0}, // The distance at which to display this level of detail. Default 0.0.  
 		]
 
 		this.descriptors["sphere"] = [
@@ -111,9 +143,10 @@ class MySceneData  {
 			{name: "slices", type: "integer"},
 			{name: "stacks", type: "integer"},
             {name: "thetastart", type: "float", required: false, default: 0.0},
-            {name: "thetalength", type: "float", required: false, default: 2 * Math.PI},
+            {name: "thetalength", type: "float", required: false, default: Math.PI},
             {name: "phistart", type: "float", required: false, default: 0.0},
             {name: "philength", type: "float", required: false, default: 2 * Math.PI},
+            {name: "distance", type: "float", required: false, default: 0.0}, // The distance at which to display this level of detail. Default 0.0.  
 		]
 
         this.descriptors["box"] = [
@@ -122,19 +155,43 @@ class MySceneData  {
 			{name: "parts_x", type: "integer", required: false, default: 1},
 			{name: "parts_y", type: "integer", required: false, default: 1},
             {name: "parts_z", type: "integer", required: false, default: 1},
+            {name: "distance", type: "float", required: false, default: 0.0}, // The distance at which to display this level of detail. Default 0.0.  
         ]
+        
 
         this.descriptors["nurbs"] = [
 			{name: "degree_u", type: "integer"},
 			{name: "degree_v", type: "integer"},
             {name: "parts_u", type: "integer"},
             {name: "parts_v", type: "integer"},
+            {name: "distance", type: "float", required: false, default: 0.0}, // The distance at which to display this level of detail. Default 0.0.  
 		]
 
         this.descriptors["controlpoint"] = [
 			{name: "xx", type: "float"},
 			{name: "yy", type: "float"},
             {name: "zz", type: "float"},
+		]
+
+        this.descriptors["skybox"] = [
+            {name: "size", type: "vector3" },
+			{name: "center", type: "vector3" },
+			{name: "emissive", type: "rgba" },
+            {name: "intensity", type: "float" },
+			{name: "up", type: "string"}, 
+			{name: "down", type: "string"},
+			{name: "left", type: "string"},
+            {name: "right", type: "string"},
+			{name: "front", type: "string"},
+			{name: "back", type: "string"}, 
+        ]
+
+        this.descriptors["polygon"] = [
+			{name: "radius", type: "float"},
+			{name: "stacks", type: "integer"},
+			{name: "slices", type: "integer"},
+            {name: "color_c", type: "rgba"},
+            {name: "color_p", type: "rgba"} 
 		]
 
 		this.descriptors["spotlight"] = [
@@ -181,9 +238,9 @@ class MySceneData  {
             {name: "shadowmapsize", type: "integer", required: false, default: 512},
 		]
 
-        this.primaryNodeIds = ["globals", "fog" ,"textures", "materials", "cameras", "graph"]
+        this.primaryNodeIds = ["globals", "fog", "skybox" ,"textures", "materials", "cameras", "graph"]
 
-        this.primitiveIds = ["cylinder", "rectangle", "triangle", "sphere", "nurbs" , "box"]
+        this.primitiveIds = ["cylinder", "rectangle", "triangle", "sphere", "nurbs" , "box", "model3d", "skybox", "lod", "polygon" ]
     }
 
     createCustomAttributeIfNotExists(obj) {
@@ -198,6 +255,19 @@ class MySceneData  {
 
     getOptions() {
         return this.options;
+    }
+
+    setSkybox(skybox) {
+        if (skybox.id === undefined) {
+            skybox.id = "default"
+        }
+        this.skyboxes[skybox.id] = skybox;
+        this.createCustomAttributeIfNotExists(skybox)
+        console.debug("added skybox " + JSON.stringify(skybox));
+    }
+
+    getSkybox() {
+        return this.skyboxes["default"]
     }
 
     setFog(fog) {
@@ -301,7 +371,7 @@ class MySceneData  {
             throw new Error("inconsistency: a node with id " + id + " already exists!");		
         }
 
-		obj = {id: id, transformations: [], materialIds : [], children: [], loaded: false, type:"node"};
+		obj = {id: id, transformations: [], materialIds : [], children: [], loaded: false, type:"node", castShadows: false, receiveShadows: false};
         this.addNode(obj);
         return obj;
 	}
@@ -351,6 +421,34 @@ class MySceneData  {
         
         // TODO: continue consolidation checks
     }
+
+    getLOD(id) {	
+        let value = this.lods[id];
+        if (value === undefined) return null
+        return value
+    }
+
+    createEmptyLOD(id) {
+        let obj = this.getLOD(id) 
+        if (obj !== null && obj !== undefined) {
+            throw new Error("inconsistency: a LOD with id " + id + " already exists!");		
+        }
+
+		obj = {id: id, children: [], loaded: false, type:"lod"};
+        this.addLOD(obj);
+        return obj;
+	}
+
+
+    addLOD(lod) {
+        let obj = this.getLOD(lod.id) 
+        if (obj !== null && obj !== undefined) {
+            throw new Error("inconsistency: a LOD with id " + lod.id + " already exists!");		
+        }
+        this.lods[lod.id] = lod;
+        this.createCustomAttributeIfNotExists(lod)
+        console.debug("added lod " + JSON.stringify(lod));
+    };
 }
 export { MySceneData };
 

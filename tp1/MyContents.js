@@ -85,7 +85,7 @@ class MyContents  {
        
         if (this.axis === null) {
             this.axis = new MyAxis(this)
-            //this.app.scene.add(this.axis)
+            this.app.scene.add(this.axis)
         }
 
         //curves
@@ -106,7 +106,7 @@ class MyContents  {
         light1.shadow.camera.top = 15;
         this.app.scene.add( light1 );
 
-        this.spotLight = new THREE.SpotLight(0xffffff, 100, 20, Math.PI / 4, 0.5);
+        this.spotLight = new THREE.SpotLight(0xffffff, 50, 20, Math.PI / 4, 0.5);
         this.spotLight.position.set(4, 3, 1);
         this.spotLight.castShadow = true;
         this.spotLight.shadow.mapSize.width = this.mapSize;

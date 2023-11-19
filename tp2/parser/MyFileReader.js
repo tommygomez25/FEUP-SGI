@@ -52,7 +52,7 @@ class MyFileReader  {
 			this.xmlhttp.onload = this.onStateChange;
 			this.xmlhttp.reader = this;
 			this.xmlfilename = xmlfile;
- 			this.xmlhttp.open("GET", xmlfile, true); //  (httpMethod,  URL,  asynchronous)			
+ 			this.xmlhttp.open("GET", xmlfile, false); //  (httpMethod,  URL,  asynchronous)			
 			this.xmlhttp.setRequestHeader("Content-Type", "text/xml");
 			this.xmlhttp.send(null);
 		}
@@ -120,6 +120,7 @@ class MyFileReader  {
 			this.checkForUnknownNodes(rootElement, this.data.primaryNodeIds)
 
 			this.loadGlobals(rootElement);
+			this.loadSkybox(rootElement);
 			this.loadFog(rootElement);
 			this.loadTextures(rootElement);
 			this.loadMaterials(rootElement);
@@ -223,7 +224,15 @@ class MyFileReader  {
 		for (let i=0; i<4; i++) {
 			rgba.push(parseFloat(temp[i]));
 		}	
-		return new THREE.Color(rgba[0], rgba[1], rgba[2], rgba[3]);
+		let color = new THREE.Color(rgba[0], rgba[1], rgba[2])
+		// NOTE: 20231117 this is injected in the object because students are 
+		// using it for transparency.
+		// the a has no effect in the threejs platform
+		// TODO: to be removed in 2024-2025
+		if (rgba[3] !== null) {
+			color.a = rgba[3]
+		}
+		return color
 	}
 
 	/**
@@ -432,7 +441,7 @@ class MyFileReader  {
 	 */
 	getBoolean(element, attributeName, required) {
 		
-		if (required == undefined) required = true;
+		if (required === undefined) required = true;
 		
 		let value = this.getItem(element, attributeName, ["true", "t", "1", "false", "f", "0"], required);
 		if (value == null && required)  {
@@ -440,7 +449,8 @@ class MyFileReader  {
 		}
 
 		if (value == "1" || value=="true" || value == "t") return true;
-		return false;		
+		if (value == "0" || value=="false" || value == "f") return false;
+		return null;		
 	}
 	
 	/**
@@ -628,12 +638,22 @@ class MyFileReader  {
 	}
 
 	/*
+	 * Load skybox element
+	 * 
+	 */
+	loadSkybox(rootElement) {
+		let elem = this.getAndCheck(rootElement, 'skybox')
+		this.data.setSkybox(this.loadXmlItem({elem: elem, descriptor: this.data.descriptors["skybox"], extras: [["type", "skybox"]]}))
+	}
+
+	/*
 	 * Load fog element
 	 * 
 	 */
 	loadFog(rootElement) {
 		let elem = this.getAndCheck(rootElement, 'fog', 0, 1)
-		this.data.setFog(this.loadXmlItem({elem: elem, descriptor: this.data.descriptors["fog"], extras: [["type", "fog"]]}))
+		if (elem !== null && elem !== undefined)
+			this.data.setFog(this.loadXmlItem({elem: elem, descriptor: this.data.descriptors["fog"], extras: [["type", "fog"]]}))
 	}
 
 	/**
@@ -697,6 +717,8 @@ class MyFileReader  {
 			throw new Error("at least one node is required in the data.")
 		}
 		
+		let lodElements =  graphs[0].getElementsByTagName('lod');
+
 		let graph = graphs[0];
 		let rootId = this.getString(graph, "rootid");
 		
@@ -707,6 +729,14 @@ class MyFileReader  {
 			let nodeElement = nodeElements[i];
 			this.loadNode(nodeElement);
 		}
+
+		// load lod elements if present. There can be no LOD items
+		if (lodElements !== null && lodElements !== undefined) {
+			for (let i=0; i < lodElements.length; i++) {
+				let lodElement = lodElements[i];
+				this.loadLOD(lodElement);
+			}	
+		}
 	}
 	
 	/**
@@ -716,22 +746,28 @@ class MyFileReader  {
 	loadNode(nodeElement) {
 	
 		let id = this.getString(nodeElement, "id");
-		
+
 		// get if node previously added (for instance because it was a child ref in other node)
-		let obj = this.data.getNode(id);
+		let obj = this.data.getNode(id)
 		if (obj == null) {
 			// otherwise add a new node
-			obj = this.data.createEmptyNode(id);			
+			obj = this.data.createEmptyNode(id)		
 		}
 		
+		let castshadows = this.getBoolean(nodeElement, "castshadows", false)
+		let receiveShadows = this.getBoolean(nodeElement, "receiveshadows", false)
+
+		obj.castShadows = (castshadows !== null ? castshadows : false)
+		obj.receiveShadows = (receiveShadows !== null ? receiveShadows : false)
+
 		// load transformations
-		let transforms =  nodeElement.getElementsByTagName('transforms');
+		let transforms =  nodeElement.getElementsByTagName('transforms')
 		if (transforms !== null && transforms.length > 0) {
-			this.loadTransforms(obj, transforms[0]);
+			this.loadTransforms(obj, transforms[0])
 		}
 	
 		// load material refeences
-		let materialsRef =  nodeElement.getElementsByTagName('materialref');
+		let materialsRef =  nodeElement.getElementsByTagName('materialref')
 		if (materialsRef != null && materialsRef.length > 0) {
 			if (materialsRef.length != 1) {
 				throw new Error("in node " + id + ", " + materialsRef.length  + " materialref nodes found. Only one materialref is allowed.");
@@ -826,6 +862,19 @@ class MyFileReader  {
 					// reference it.
 					this.data.addChildToNode(nodeObj, reference)
 				}
+				else
+				if (id == "lodref") {
+					let id = this.getString(child, "id");
+					// add a lod ref: if the lod does not exist
+					// create an empty one and reference it.
+					let reference = this.data.getLOD(id);
+					if (reference === null) {
+						// does not exist, yet. create it!
+						reference = this.data.createEmptyLOD(id);
+					}
+					// reference it.
+					this.data.addChildToNode(nodeObj, reference)
+				}
 				else {
 					throw new Error("unrecognized child type '" + id + "'.");
 				}
@@ -871,6 +920,50 @@ class MyFileReader  {
 			throw new Error ("primitive element has no recognized primitive instances")
 		} 
 		primitiveObj.loaded = true
+	}
+
+	/**
+	 * Load the data for a particular lod elemment
+	 * @param {*} lodElement the xml lod element
+	 */
+	loadLOD(lodElement) {
+	
+		// get the id of the LOD
+		let id = this.getString(lodElement, "id");
+
+		// get if LOD previously added (for instance because it was a  ref in other part of the file)
+		let obj = this.data.getLOD(id);
+		if (obj == null) {
+			// otherwise add a new LOD
+			obj = this.data.createEmptyLOD(id);			
+		}
+
+		// load LOD noderef (children) elements
+		let noderefs = lodElement.getElementsByTagName('noderef');
+		if (noderefs === null || noderefs === undefined) {
+			throw new Error("in LOD " + id + ", a noderef is required");
+		}
+		if (noderefs.length == 0) {
+			throw new Error("in LOD " + id + ", at least one noderef is required");
+		}
+
+		// for each noderef
+		for (let i=0; i < noderefs.length; i++) {
+			let noderef = noderefs[i]
+			let id = this.getString(noderef, "id")
+			let mindist = this.getFloat(noderef, "mindist")
+
+			// find node by id. if not present create a new one
+			let node = this.data.getNode(id)
+			if (node == null) {
+				// otherwise add a new node
+				node = this.data.createEmptyNode(id);			
+			}
+			// store the node as child of this LOD
+			obj.children.push({ node: node, mindist: mindist, type: "lodnoderef" })
+		}
+		// set the LOD as loaded
+		obj.loaded = true;
 	}
 }
 
