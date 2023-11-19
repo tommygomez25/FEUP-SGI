@@ -347,7 +347,7 @@
 
             <children>
                 <noderef id="road-light-reference" />
-                <spotlight id="spotLight" enabled="false" 
+                <spotlight id="spotLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
                     intensity="50.0"
                     distance="50"
@@ -371,7 +371,7 @@
 
             <children>
                 <noderef id="road-light-reference" />
-                <spotlight id="spotLight" enabled="false" 
+                <spotlight id="spotLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
                     intensity="50.0"
                     distance="50"
@@ -395,7 +395,7 @@
 
             <children>
                 <noderef id="road-light-reference" />
-                <spotlight id="spotLight" enabled="false" 
+                <spotlight id="spotLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
                     intensity="50.0"
                     distance="50"
@@ -419,7 +419,7 @@
 
             <children>
                 <noderef id="road-light-reference" />
-                <spotlight id="spotLight" enabled="false" 
+                <spotlight id="spotLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
                     intensity="50.0"
                     distance="50"

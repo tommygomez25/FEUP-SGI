@@ -29,14 +29,17 @@
 - Nice neighborhood with a house, a car, one big sidewalk all the way from the house to the street. There is also a car parked on the side of the house.
 - The street has 2 sidewalks, one on each side, and a road in the middle. There are also some trees on the side of the road and some street lights.
 - House:
-  - The house has a door, 5 windows and a roof.
-  - The door has a door knob.
-  - There is a sidewalk all the way from the door to the street.
-  - We used mipmapping to make the side textures look better.
-  - We also used bump textures on the house, roof and sidewalk to make them look more realistic.
+  - The house is composed of 6 rectangles, forming a cube. This way, we could add different textures to each side of the house.
+  - The house front wall has bump texture and mipmaps.
+  - We also used bump textures on the house, roof and sidewalk.
+- Additional functionalities:
+  - Triangle geometry
+  - Buffer geometry
+  - UI to change cameras
+
 
 - Tree:
-  - We used lods for the tree.
+  - We used lods for the tree. When the camera is far away, the tree is represented by a simple box. When the camera is closer, the tree is represented by a more complex model.
 
 - Lights:
   - We used spotlights for the street lights to better represent reality.
