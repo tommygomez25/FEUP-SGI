@@ -22,7 +22,7 @@
             angle="60" 
             near="0.1" 
             far="1000" 
-            location="15 15 15" 
+            location="20 5 0" 
             target="0.0 0.0 0.0" /> 
         
         <perspective id="cam3"
@@ -49,23 +49,23 @@
         <texture id="walkwayTex" filepath="scenes/t07g08/textures/walkway.jpg" />
         <texture id="walkwaybumpTex" filepath="scenes/t07g08/textures/walkwaybump.jpg" />
         <texture id="walkwayspecTex" filepath="scenes/t07g08/textures/walkwayspec.jpg" />
-        <texture id="houseTex" filepath="scenes/t07g08/textures/house-dif.jpg" />
+        <texture id="houseTex" filepath="scenes/t07g08/textures/house-dif.jpg" mipmaps="false" mipmap0="scenes/t07g08/textures/house-dif-256.jpg" mipmap1="scenes/t07g08/textures/house-dif-128.jpg" mipmap2="scenes/t07g08/textures/house-dif-64.jpg"/>
         <texture id="houseSideTex" filepath="scenes/t07g08/textures/house-side.jpg"/>
         <texture id="roofTex" filepath="scenes/t07g08/textures/roof.jpg"/>
-        <texture id="doorTex" filepath="scenes/t07g08/textures/door.jpg"/>
         <texture id ="pathTex" filepath="scenes/t07g08/textures/path.jpg"/>
         <texture id ="grassTex" filepath="scenes/t07g08/textures/grass.jpg"/>
         <texture id="treeTex" filepath="scenes/t07g08/textures/treeTex.jpg" />
-        
+        <texture id="woodTex" filepath="scenes/t07g08/textures/wood.jpg" />
         
     </textures> 
 
     <materials> 
         <material id="carMaterial" 
-            color="1 0 0 1.0" 
+            color="1 1 1 1.0" 
             emissive="0.0 0.0 0.0 1.0" 
 			specular="0.5 0.5 0.5 1.0" 
-            shininess="10"/>
+            shininess="10"
+            textureref= "carTex"/>
         
         <material id = "roadMaterial" 
             color="1 1 1 1.0" 
@@ -148,10 +148,20 @@
 
         <material id="tree" 
             emissive="0.0 0.0 0.0 1" 
-            color="0.8 0.8 0.8 1.0"  
+            color="1 1 1 1.0"  
             specular="0 0 0 0" 
             shininess="0" 
             textureref="treeTex" 
+            texlength_s="5" 
+            texlength_t="1"
+            shading = "flat" />
+
+        <material id="wood" 
+            emissive="0.0 0.0 0.0 1" 
+            color="0.8 0.8 0.8 1.0"  
+            specular="0 0 0 0" 
+            shininess="0" 
+            textureref="woodTex" 
             texlength_s="1" 
             texlength_t="1"
             shading = "flat" />
@@ -174,6 +184,7 @@
                 <noderef id ="path" />
                 <noderef id ="grass" />
                 <noderef id="tree" />
+                <noderef id="car" />
 
                 <directionallight id="dirLight" enabled="true" 
                     color="1.0 1.0 1.0 1" 
@@ -210,17 +221,17 @@
             </children> 
         </node>
 
-        <node id="audi">
+        <node id="car">
             <transforms>
-                <translate value3="-2 0 0" />
-                <rotate value3="0 0 0" />
-                <scale value3="1 1 1" />
+                <translate value3="-20 0.5 -15" />
+                <rotate value3="-90 0 90" />
+                <scale value3="0.04 0.04 0.04" />
             </transforms>
 
             <materialref id ="carMaterial" />
             <children>
                 <primitive>
-                    <model3d filepath="scenes/t07g08/textures/audi.obj"/>
+                    <model3d filepath="scenes/t07g08/textures/car.obj"/>
                 </primitive>
             </children>
         </node>
@@ -626,7 +637,7 @@
 				<translate value3="0 1.7 0" />
 			</transforms> 
 			
-			<materialref id="tableApp" />
+			<materialref id="wood" />
 			
             <children>             
                 <primitive>
@@ -680,7 +691,7 @@
 		
 		<node id="tree">
 			<transforms>
-				<translate value3="2 0.7 2" />
+				<translate value3="-24 0.7 5" />
 				<rotate value3="0.0 0.0 0"/>
             </transforms> 
 			
@@ -689,8 +700,31 @@
 				<noderef id="treeSeg1" />
 				<noderef id="treeSeg2" />
 				<noderef id="treeSeg3" />
+                <lodref id="lod1"/>
             </children> 
         </node>
 
+        <node id="tree-box">
+            <transforms>
+				<translate value3="-24 4.7 5" />
+                <rotate value3="0 0 0" />
+                <scale value3="2 7 2" />
+            </transforms> 
+
+            <materialref id = "tree" />
+            <children>
+                <lodref id="lod1"/>
+                <primitive>
+                        <box xyz1="0 0 0" xyz2="1 1 1" />
+                </primitive>
+                <lodref id="lod1"/>
+            </children>
+
+        </node>
+
+        <lod id="lod1">
+            <noderef id="tree" mindist="0.0"/>
+            <noderef id="tree-box" mindist ="100.0"/>
+        </lod>
     </graph> 
 </yaf> 
