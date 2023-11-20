@@ -30,10 +30,6 @@ class MyApp  {
         this.gui = null
         this.axis = null
         this.contents == null
-        this.light1 = 50
-        this.light2 = 50
-        this.light3 = 50
-        this.light4 = 50
     }
     /**
      * initializes the application
@@ -209,7 +205,7 @@ class MyApp  {
         
         streetLightsFolder.close()
 
-        const ambientLightFolder = this.gui.datgui.addFolder('Ambient Light')
+        const ambientLightFolder = this.gui.datgui.addFolder('Ambient Lights')
 
         const ambientLight1Folder = ambientLightFolder.addFolder('Ambient Light 1')
         ambientLight1Folder.add(this.contents.sceneGraph.sceneLights[0], 'intensity', 0, 10).name("Light Intensity")

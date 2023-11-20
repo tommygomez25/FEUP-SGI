@@ -25,22 +25,23 @@
             location="15 10 0" 
             target="0.0 0.0 0.0" /> 
         
+        <orthogonal id="cam2" 
+            near="0.1" 
+            far="1000" 
+            location="25 15 -15" 
+            target="0.0 0.0 0.0" 
+            left="-25" 
+            right="25" 
+            bottom="-25" 
+            top="25" /> 
+            
         <perspective id="cam3"
             angle = "60"
             near = "0.1"
             far = "1000"
-            location = "0 15 0"
+            location = "-10 4 30"
             target = "0.0 0.0 0.0" />
 
-        <orthogonal id="cam2" 
-            near="0.1" 
-            far="1000" 
-            location="15 15 15" 
-            target="0.0 0.0 0.0" 
-            left="-5" 
-            right="5" 
-            bottom="-5" 
-            top="5" /> 
     </cameras> 
 
     <textures>        
