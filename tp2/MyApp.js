@@ -174,11 +174,50 @@ class MyApp  {
      */
     setGui(gui) {   
         this.gui = gui
-                // adds a folder to the gui interface for the camera
-                const cameraFolder = this.gui.datgui.addFolder('Camera')
-                console.log("active camera name "+ this.activeCameraName)
-                cameraFolder.add(this, 'activeCameraName',Object.keys(this.cameras)).name("active camera");
-                cameraFolder.open() 
+
+        // adds a folder to the gui interface for the camera
+        const cameraFolder = this.gui.datgui.addFolder('Cameras')
+        console.log("active camera name "+ this.activeCameraName)
+        cameraFolder.add(this, 'activeCameraName',Object.keys(this.cameras)).name("active camera");
+        cameraFolder.close() 
+
+        const streetLightsFolder = this.gui.datgui.addFolder('Street Lights')
+
+        const streetLight1Folder = streetLightsFolder.addFolder('Street Light 1')
+        streetLight1Folder.add(this.contents.sceneGraph.sceneLights[2], 'intensity', 0, 100).name("Light Intensity")
+        streetLight1Folder.add(this.contents.sceneGraph.sceneLights[2], 'visible',).name("Visible")
+        streetLight1Folder.close()
+
+        const streetLight2Folder = streetLightsFolder.addFolder('Street Light 2')
+        streetLight2Folder.add(this.contents.sceneGraph.sceneLights[3], 'intensity', 0, 100).name("Light Intensity")
+        streetLight2Folder.add(this.contents.sceneGraph.sceneLights[3], 'visible',).name("Visible")
+        streetLight2Folder.close()
+
+        const streetLight3Folder = streetLightsFolder.addFolder('Street Light 3')
+        streetLight3Folder.add(this.contents.sceneGraph.sceneLights[4], 'intensity', 0, 100).name("Light Intensity")
+        streetLight3Folder.add(this.contents.sceneGraph.sceneLights[4], 'visible',).name("Visible")
+        streetLight3Folder.close()
+
+        const streetLight4Folder = streetLightsFolder.addFolder('Street Light 4')
+        streetLight4Folder.add(this.contents.sceneGraph.sceneLights[5], 'intensity', 0, 100).name("Light Intensity")
+        streetLight4Folder.add(this.contents.sceneGraph.sceneLights[5], 'visible',).name("Visible")
+        streetLight4Folder.close()
+        
+        streetLightsFolder.close()
+
+        const ambientLightFolder = this.gui.datgui.addFolder('Ambient Lights')
+
+        const ambientLight1Folder = ambientLightFolder.addFolder('Ambient Light 1')
+        ambientLight1Folder.add(this.contents.sceneGraph.sceneLights[0], 'intensity', 0, 10).name("Light Intensity")
+        ambientLight1Folder.add(this.contents.sceneGraph.sceneLights[0], 'visible',).name("Visible")
+        ambientLight1Folder.close()
+
+        const ambientLight2Folder = ambientLightFolder.addFolder('Ambient Light 2')
+        ambientLight2Folder.add(this.contents.sceneGraph.sceneLights[1], 'intensity', 0, 10).name("Light Intensity")
+        ambientLight2Folder.add(this.contents.sceneGraph.sceneLights[1], 'visible',).name("Visible")
+        ambientLight2Folder.close()
+
+        ambientLightFolder.close()
     }
 
     /**
