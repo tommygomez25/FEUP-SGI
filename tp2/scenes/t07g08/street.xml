@@ -19,10 +19,10 @@
 
     <cameras initial="cam1" > 
         <perspective id="cam1" 
-            angle="60" 
+            angle="90" 
             near="0.1" 
             far="1000" 
-            location="20 5 0" 
+            location="15 10 0" 
             target="0.0 0.0 0.0" /> 
         
         <perspective id="cam3"

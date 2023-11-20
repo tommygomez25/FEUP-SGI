@@ -180,12 +180,10 @@ class MyApp  {
         this.gui = gui
 
         // adds a folder to the gui interface for the camera
-        const cameraFolder = this.gui.datgui.addFolder('Camera')
+        const cameraFolder = this.gui.datgui.addFolder('Cameras')
         console.log("active camera name "+ this.activeCameraName)
         cameraFolder.add(this, 'activeCameraName',Object.keys(this.cameras)).name("active camera");
-        cameraFolder.open() 
-
-
+        cameraFolder.close() 
 
         const streetLightsFolder = this.gui.datgui.addFolder('Street Lights')
 
