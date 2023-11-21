@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<yaf> 
+	
+    <globals background="1 1 1 1" ambient="0.2 0.2 0.2 1" /> 
+
+    <fog color="1.0 1.0 1.0 1.0" near="0.0" far="10000.0" />
+
+    <skybox
+       size="1000 1000 1000"
+       center="0 0 0"
+       emissive="0 0 0 1.0"
+       intensity="3"
+       front="textures/vz_sinister_front.png"
+       back="textures/vz_sinister_back.png"
+       up="textures/vz_sinister_up.png"
+       down="textures/vz_sinister_down.png"
+       left="textures/vz_sinister_left.png"
+       right="textures/vz_sinister_right.png" />
+
+    <cameras initial="cam1" > 
+        <perspective id="cam1" 
+            angle="90" 
+            near="0.1" 
+            far="1000" 
+            location="1 150 0" 
+            target="0.0 0.0 0.0" /> 
+        
+        <orthogonal id="cam2" 
+            near="0.1" 
+            far="1000" 
+            location="25 15 -15" 
+            target="0.0 0.0 0.0" 
+            left="-25" 
+            right="25" 
+            bottom="-25" 
+            top="25" /> 
+            
+        <perspective id="cam3"
+            angle = "60"
+            near = "0.1"
+            far = "1000"
+            location = "-10 4 30"
+            target = "0.0 0.0 0.0" />
+
+    </cameras> 
+
+    <textures>                
+    </textures> 
+
+    <materials> 
+            <material id = "roadlightMaterial" 
+            color="0.5 0.5 0.5 1.0" 
+            emissive="0.0 0.0 0.0 0.0" 
+			specular="0 0 0 0" 
+            shininess="10" />
+    </materials> 
+
+    <graph rootid="scene"> 
+		
+		<node id="scene"> 
+            <children> 
+                <noderef id="road-light-1" />
+                <noderef id="road-light-2" />
+                <noderef id="road-light-3" />
+                <noderef id="road-light-4" />
+
+                <directionallight id="dirLight" enabled="true" 
+                    color="0.1 0.1 0.1 1" 
+                    intensity="2"
+                    castshadow="true"
+                    position="0 100 0" 
+                    shadowright="20"
+                    shadowleft="-20"
+                />
+            </children> 
+        </node>
+
+        <node id="rect-light"> 
+
+            <transforms>
+				<translate value3="6 44 0" />
+                <rotate value3="0 0 -40" />
+            </transforms> 
+            
+            <materialref id="lightMaterial" />
+            <children>   
+                <primitive>          
+                    <box xyz1="0 0 0" xyz2="0.5 7 1.5"/>
+                </primitive> 
+            </children> 
+        </node>
+        <node id="road-light-base">
+            <transforms>
+				<translate value3="0 0 0" />
+                <rotate value3="0 0 0" />
+            </transforms> 
+            <children>
+                <primitive>
+                    <cylinder base="5.6" top="2.3" height="10" slices="8" stacks="1"/>
+                </primitive>
+            </children>
+        </node>
+
+        <node id="road-light-rect">
+            <transforms>
+				<translate value3="0 20 0" />
+                <rotate value3="0 0 0" />
+            </transforms> 
+            <children>
+                <primitive>
+                    <box xyz1="0 0 0" xyz2="2 40 2"/>
+                </primitive>
+            </children>
+
+        </node>
+
+        <node id="road-light-arm">
+            <transforms>
+				<translate value3="3.85 44 0" />
+                <rotate value3="0 0 -40" />
+            </transforms> 
+
+
+            <children>
+                <primitive>
+                    <box xyz1="0 0 0" xyz2="2 13 2"/>
+                </primitive>
+            </children>
+
+        </node>
+
+        <node id="road-light-reference">
+            <transforms>
+				<translate value3="0 2 0" />
+                <rotate value3="0 0 0" />
+                <scale value3="0.7 0.7 0.7" />
+            </transforms> 
+
+            <materialref id="roadlightMaterial" />
+
+            <children>
+                <noderef id="road-light-base" />
+                <noderef id="road-light-rect" />
+                <noderef id="road-light-arm" />
+                <noderef id="rect-light" />
+            </children>
+
+        </node>
+
+        <node id="road-light-1">
+            <transforms>
+				<translate value3="0 0 38" />
+                <rotate value3="0 90 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 24.4 0" 
+                    target="0 0 -100"
+                    penumbra="1.0"
+                    angle="90.0" 
+                /> 
+            </children>
+
+        </node>
+
+
+        <node id="road-light-2">
+            <transforms>
+				<translate value3="-150 0 -50" />
+                <rotate value3="0 0 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 24.4 0" 
+                    target="0 0 -16"
+                    penumbra="1.0"
+                    angle="90.0" 
+                /> 
+            </children>
+
+        </node>
+
+        <node id="road-light-3">
+            <transforms>
+				<translate value3="0 0 -65" />
+                <rotate value3="0 -90 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 24.4 0" 
+                    target="0 0 100"
+                    penumbra="1.0"
+                    angle="90.0" 
+                /> 
+            </children>
+
+        </node>
+
+
+        <node id="road-light-4">
+            <transforms>
+				<translate value3="148 0 -48" />
+                <rotate value3="0 180 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 24.4 0" 
+                    target="0 0 -50"
+                    penumbra="1.0"
+                    angle="90.0" 
+                /> 
+            </children>
+
+        </node>
+
+        
+    </graph> 
+</yaf> 
