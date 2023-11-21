@@ -98,6 +98,9 @@ class Car {
         this.carFrontWheels.castShadow = true;
         this.carFrontWheels.receiveShadow = true;
         this.carMesh.add(this.carFrontWheels); 
+
+        this.carMesh.castShadow = true;
+        this.carMesh.receiveShadow = true;
     }
 
     createCarBackWheels() {
@@ -175,7 +178,7 @@ class Car {
         }
 
         if (this.keysPressed["s"] == true) {
-            
+
             this.carMesh.position.x += this.xSpeed * Math.sin(this.carMesh.rotation.y);
             this.carMesh.position.z += this.xSpeed * Math.cos(this.carMesh.rotation.y);
             this.actualVelocity-= 0.01
