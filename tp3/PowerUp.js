@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 class PowerUp {
-    constructor(app, x, y, z, radius, widthSegments, heightSegments) {
+    constructor(app, x, y, z, radius, widthSegments, heightSegments, type) {
         this.app = app;
         this.x = x;
         this.y = y;
@@ -9,12 +9,22 @@ class PowerUp {
         this.radius = radius;
         this.widthSegments = widthSegments;
         this.heightSegments = heightSegments;
+        this.type = type;
 
-        this.powerUpTexture = new THREE.TextureLoader().load('textures/power-base.jpg');
-        this.powerUpDisplacementMap = new THREE.TextureLoader().load('textures/power-height.png');
-        this.powerUpNormalMap = new THREE.TextureLoader().load('textures/power-normal.jpg');
-        this.powerUpAOMap = new THREE.TextureLoader().load('textures/power-ao.jpg');
-        this.powerUpRoughnessMap = new THREE.TextureLoader().load('textures/power-roughness.jpg');
+        if (this.type === "Type1") {
+            this.powerUpTexture = new THREE.TextureLoader().load('textures/power-base.jpg');
+            this.powerUpDisplacementMap = new THREE.TextureLoader().load('textures/power-height.png');
+            this.powerUpNormalMap = new THREE.TextureLoader().load('textures/power-normal.jpg');
+            this.powerUpAOMap = new THREE.TextureLoader().load('textures/power-ao.jpg');
+            this.powerUpRoughnessMap = new THREE.TextureLoader().load('textures/power-roughness.jpg');
+        }
+        else if (this.type === "Type2") {
+            this.powerUpTexture = new THREE.TextureLoader().load('textures/power-2-base.jpg');
+            this.powerUpDisplacementMap = new THREE.TextureLoader().load('textures/power-2-height.png');
+            this.powerUpNormalMap = new THREE.TextureLoader().load('textures/power-2-normal.jpg');
+            this.powerUpAOMap = new THREE.TextureLoader().load('textures/power-2-ao.jpg');
+            this.powerUpRoughnessMap = new THREE.TextureLoader().load('textures/power-2-roughness.jpg');
+        }
 
         this.powerUpMesh = null;
 
@@ -53,6 +63,15 @@ class PowerUp {
 
         const verticalOffset = amplitude * Math.sin(this.animationTime * frequency);
         this.powerUpMesh.position.y = this.y + verticalOffset;
+    }
+
+    applyEffect(car) {
+        if (this.type === "Type1") { // speed boost
+            car.applySpeedBoost(1.5,5);
+        }
+        else if (this.type === "Type2") { // redução do tempo total de uma parcela a definir ??
+            car.applyTimeReduction();
+        }
     }
 }
 

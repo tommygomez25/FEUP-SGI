@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 class Obstacle {
-    constructor(app, x, y, z, radius, widthSegments, heightSegments) {
+    constructor(app, x, y, z, radius, widthSegments, heightSegments, type) {
         this.app = app;
         this.x = x;
         this.y = y;
@@ -9,13 +9,23 @@ class Obstacle {
         this.radius = radius;
         this.widthSegments = widthSegments;
         this.heightSegments = heightSegments;
+        this.type = type;
 
-        this.obstacleTexture = new THREE.TextureLoader().load('textures/lava-base.jpg');
-        this.obstacleDisplacementMap = new THREE.TextureLoader().load('textures/lava-height.png');
-        this.obstacleNormalMap = new THREE.TextureLoader().load('textures/lava-normal.jpg');
-        this.obstacleAOMap = new THREE.TextureLoader().load('textures/lava-ao.jpg');
-        this.obstacleRoughnessMap = new THREE.TextureLoader().load('textures/lava-roughness.jpg');
-    
+        if (this.type === "Type1") {
+            this.obstacleTexture = new THREE.TextureLoader().load('textures/lava-base.jpg');
+            this.obstacleDisplacementMap = new THREE.TextureLoader().load('textures/lava-height.png');
+            this.obstacleNormalMap = new THREE.TextureLoader().load('textures/lava-normal.jpg');
+            this.obstacleAOMap = new THREE.TextureLoader().load('textures/lava-ao.jpg');
+            this.obstacleRoughnessMap = new THREE.TextureLoader().load('textures/lava-roughness.jpg');
+        }
+        else if (this.type === "Type2") {
+            this.obstacleTexture = new THREE.TextureLoader().load('textures/metal-base.jpg');
+            this.obstacleDisplacementMap = new THREE.TextureLoader().load('textures/metal-height.png');
+            this.obstacleNormalMap = new THREE.TextureLoader().load('textures/metal-normal.jpg');
+            this.obstacleAOMap = new THREE.TextureLoader().load('textures/metal-ao.jpg');
+            this.obstacleRoughnessMap = new THREE.TextureLoader().load('textures/metal-roughness.jpg');
+        }
+
 
         this.obstacleMesh = null;
 
@@ -53,6 +63,10 @@ class Obstacle {
 
         const verticalOffset = amplitude * Math.sin(this.animationTime * frequency);
         this.obstacleMesh.position.y = this.y + verticalOffset;
+    }
+
+    applyEffect(car) {
+        
     }
 }
 

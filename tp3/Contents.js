@@ -126,7 +126,7 @@ class Contents  {
 
         this.reader = new Reader(this.app);
 
-        this.car = new Car(this.app, 0, 2, 10, this.app.cameras['Chase']);
+        this.car = new Car(this.app, 0, 2, 0, this.app.cameras['Chase']);
     }
 
     initGlobals(data) {
@@ -350,6 +350,8 @@ class Contents  {
         for (var powerUp in this.reader.powerUps) {
             this.reader.powerUps[powerUp].update(deltaTime);
         }
+
+        this.car.update(deltaTime);
     }
 }
 

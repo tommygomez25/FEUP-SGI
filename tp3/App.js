@@ -228,8 +228,6 @@ class App  {
         // subsequent async calls to the render loop
         requestAnimationFrame( this.render.bind(this) );
 
-        this.contents.car.executeMovement(deltaTime)
-
         this.lastCameraName = this.activeCameraName
 
         this.lastRenderTime = currentTime;

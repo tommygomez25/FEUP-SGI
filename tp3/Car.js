@@ -7,17 +7,14 @@ class Car {
         this.y = y;
         this.z = z;
 
-        this.carMesh = new THREE.Group();
-        this.carPivot = new THREE.Object3D();
+        this.carBox = new THREE.Object3D();
 
-        this.xSpeed = 1;
-        this.ySpeed = 0.001;
-
-        this.maxVelocity = 0.5;
+        this.maxVelocity = 50;
         this.actualVelocity = 0;
 
         this.steeringAngle = 0;
         this.maxSteeringAngle = Math.PI / 4;
+        this.angularSpeed = 0.01;
 
         this.wheelRotationSpeed = 0.5;
 
@@ -36,15 +33,17 @@ class Car {
         this.createCarBody();
         this.createCarFrontWheels();
         this.createCarBackWheels();
-        this.carMesh.position.set(this.x, this.y, this.z);
-        this.carMesh.rotation.y = Math.PI / 2;
-        this.carMesh.scale.set(5,5,5);
 
-        this.app.scene.add(this.carMesh);
+        this.carBox.position.set(this.x, this.y, this.z);
+        this.carBox.scale.set(5, 5, 5);
+        this.carBox.castShadow = true;
+        this.carBox.receiveShadow = true;   
+        
+        this.app.scene.add(this.carBox);
     }
 
     createCarBody() {
-        this.carBody = new THREE.Mesh(
+        this.carBodyMesh = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 2),
             new THREE.MeshStandardMaterial({
                 color: 0x0000ff,
@@ -53,15 +52,15 @@ class Car {
             })
         );
 
-        this.carBody.position.set(0, 0, 0);
-        this.carBody.castShadow = true;
-        this.carBody.receiveShadow = true;
+        this.carBodyMesh.position.set(0, 0, 1);
+        this.carBodyMesh.castShadow = true;
+        this.carBodyMesh.receiveShadow = true;
+        
+        this.carBox.add(this.carBodyMesh);
 
-        this.carMesh.add(this.carBody);
     }
 
     createCarFrontWheels() {
-        this.carFrontWheels = new THREE.Group();
 
         var carFrontWheelLeftGeometry = new THREE.CylinderGeometry(0.33, 0.33, 0.2);
         carFrontWheelLeftGeometry.rotateZ(Math.PI / 2)
@@ -69,13 +68,13 @@ class Car {
         this.carFrontWheelLeft = new THREE.Mesh(
             carFrontWheelLeftGeometry,
             new THREE.MeshStandardMaterial({
+                color: 0x000000,
                 roughness: 0.5,
                 metalness: 0.5,
-                map: this.wheelTexture
             })
         );
 
-        this.carFrontWheelLeft.position.set(-1, 0, -1);
+        this.carFrontWheelLeft.position.set(1, 0, 1);
 
         var carFrontWheelRightGeometry = new THREE.CylinderGeometry(0.33, 0.33, 0.2);
         carFrontWheelRightGeometry.rotateZ(Math.PI / 2);
@@ -89,22 +88,14 @@ class Car {
             })
         );
 
-        this.carFrontWheelRight.position.set(1, 0, -1);
+        this.carFrontWheelRight.position.set(-1, 0, 1);
+        
+        this.carBodyMesh.add(this.carFrontWheelRight);
+        this.carBodyMesh.add(this.carFrontWheelLeft);
 
-        this.carFrontWheels.add(this.carFrontWheelLeft);
-        this.carFrontWheels.add(this.carFrontWheelRight);
-
-        this.carFrontWheels.position.set(0, 0, 0);
-        this.carFrontWheels.castShadow = true;
-        this.carFrontWheels.receiveShadow = true;
-        this.carMesh.add(this.carFrontWheels); 
-
-        this.carMesh.castShadow = true;
-        this.carMesh.receiveShadow = true;
     }
 
     createCarBackWheels() {
-        this.carBackWheels = new THREE.Group();
 
         var carBackWheelLeftGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.33);
         carBackWheelLeftGeometry.rotateZ(Math.PI / 2);
@@ -118,7 +109,7 @@ class Car {
             })
         );
 
-        this.carBackWheelLeft.position.set(-1, 0, 1);
+        this.carBackWheelLeft.position.set(1, 0, -1);
 
         var carBackWheelRightGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.33);
         carBackWheelRightGeometry.rotateZ(Math.PI / 2);
@@ -132,15 +123,10 @@ class Car {
             })
         );
 
-        this.carBackWheelRight.position.set(1, 0, 1);
-
-        this.carBackWheels.add(this.carBackWheelLeft);
-        this.carBackWheels.add(this.carBackWheelRight);
-
-        this.carBackWheels.position.set(0, 0, 0);
-        this.carBackWheels.castShadow = true;
-        this.carBackWheels.receiveShadow = true;
-        this.carMesh.add(this.carBackWheels); 
+        this.carBackWheelRight.position.set(-1, 0, -1);
+        
+        this.carBodyMesh.add(this.carBackWheelRight);
+        this.carBodyMesh.add(this.carBackWheelLeft);
 
     }
 
@@ -156,57 +142,81 @@ class Car {
         
     }
 
-    executeMovement() {
+    
+    update(deltaTime) {
+        
         if (this.keysPressed["a"] == true) {
-            this.steeringAngle = Math.max(this.steeringAngle - this.ySpeed, -this.maxSteeringAngle);
+            this.steeringAngle += this.angularSpeed
+            this.steeringAngle = Math.min(this.steeringAngle, this.maxSteeringAngle);
+            this.carBox.rotation.y += this.steeringAngle * this.actualVelocity * 0.01
         }
 
         else if (this.keysPressed["d"] == true) {
-            this.steeringAngle = Math.min(this.steeringAngle + this.ySpeed, this.maxSteeringAngle);
+            this.steeringAngle -= this.angularSpeed
+            this.steeringAngle = Math.max(this.steeringAngle, -this.maxSteeringAngle);
+            this.carBox.rotation.y += this.steeringAngle * this.actualVelocity * 0.01
         } 
 
         else {
             this.steeringAngle = 0;
         }
 
-        this.carFrontWheels.rotation.y = this.steeringAngle;
-        this.carMesh.rotation.y -= this.steeringAngle;
+        this.carFrontWheelLeft.rotation.y = this.steeringAngle;
+        this.carFrontWheelRight.rotation.y = this.steeringAngle;
+        
+        // ---------------------- // 
+
 
         if (!this.keysPressed["w"] && !this.keysPressed["s"]) {
-            const dampingFactor = 0.005;
-            this.actualVelocity -= dampingFactor;
+            const dampingFactor = 1;
+            if (this.actualVelocity > 0 ) { this.actualVelocity -= dampingFactor; }
+            if (this.actualVelocity < 0 ) { this.actualVelocity += dampingFactor; }
+            this.moveForward(this.actualVelocity, deltaTime);
         }
 
         if (this.keysPressed["s"] == true) {
-
-            this.carMesh.position.x += this.xSpeed * Math.sin(this.carMesh.rotation.y);
-            this.carMesh.position.z += this.xSpeed * Math.cos(this.carMesh.rotation.y);
-            this.actualVelocity-= 0.01
-
-            this.chaseCamera.position.copy(this.carMesh.position);
-            this.chaseCamera.position.y += 10;
-            this.chaseCamera.position.x += 10; 
-            this.chaseCamera.lookAt(this.carMesh.position);
+            this.actualVelocity -= 1
+            if (this.actualVelocity < 0) {this.moveForward(this.actualVelocity, deltaTime); }
         }
 
         if (this.keysPressed["w"] == true) {
-            this.carMesh.position.x -= this.xSpeed * Math.sin(this.carMesh.rotation.y);
-            this.carMesh.position.z -= this.xSpeed * Math.cos(this.carMesh.rotation.y);
-            this.actualVelocity+= 0.01
-
-            this.chaseCamera.position.copy(this.carMesh.position);
-            this.chaseCamera.position.y += 10;
-            this.chaseCamera.position.x += 10;
-            this.chaseCamera.lookAt(this.carMesh.position);
+            this.actualVelocity += 1
+            if (this.actualVelocity > 0 ) {this.moveForward(this.actualVelocity, deltaTime)}
         }
 
-        this.actualVelocity = Math.max(0, Math.min(this.actualVelocity, this.maxVelocity));
+        if (this.actualVelocity > this.maxVelocity) {
+            this.actualVelocity = this.maxVelocity;
+        }
 
+        if (this.actualVelocity < -this.maxVelocity) {
+            this.actualVelocity = -this.maxVelocity;
+        }
+        
         this.carFrontWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
         this.carFrontWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
         this.carBackWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
         this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+        
 
+    }
+
+    moveForward(speed, deltaTime) {
+        var delta_x = speed * deltaTime * Math.sin(this.carBox.rotation.y);
+        var delta_z = speed * deltaTime * Math.cos(this.carBox.rotation.y);
+
+        this.carBox.position.x += delta_x;
+        this.carBox.position.z += delta_z;
+
+        this.chaseCamera.position.copy(this.carBox.position);
+        this.chaseCamera.lookAt(this.carBox.position);
+
+    }
+
+    applySpeedBoost(boost, duration) {
+        this.maxVelocity = this.maxVelocity * boost;
+        setTimeout(() => {
+            this.maxVelocity = this.maxVelocity / boost;
+        }, duration * 1000);
     }
 }
 

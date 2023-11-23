@@ -63,32 +63,35 @@ class Reader {
         this.reader.add(this.ground.groundMesh);
 
         this.obstacles = [];
+        
+        for (var i = 0; i < 4; i++) {
+            const randomLength = Math.random() ;
 
-        const obstaclePoints = [
-            new THREE.Vector3(-100, 5, 3),
-            new THREE.Vector3(25, 5, -45),
-            new THREE.Vector3(80, 5, 8),
-        ]
-
-        for (var i = 0; i < obstaclePoints.length; i++) {
-            this.obstacles[i] = new Obstacle(this.app, obstaclePoints[i].x, obstaclePoints[i].y, obstaclePoints[i].z, 3,32,16);
-            this.reader.add(this.obstacles[i].obstacleMesh);
-        }  
+            const positionOnTrack = this.track.trackCurve.getPointAt(randomLength);
+            const randomX = positionOnTrack.x + this.track.shapeWidth / 2 
+            const randomZ = positionOnTrack.z + this.track.shapeLength / 2
+            const obstacle = new Obstacle(this.app, randomX, 5, randomZ, 3,32,16);
+            this.obstacles.push(obstacle);
+            this.reader.add(obstacle.obstacleMesh);
+        }
 
         this.powerUps = [];
 
-        const powerUpPoints = [
-            new THREE.Vector3(-95, 5, 6),
-            new THREE.Vector3(5, 5, -40),
-            new THREE.Vector3(105, 5, 0),
-        ]
 
-        for (var i = 0; i < powerUpPoints.length; i++) {
-            this.powerUps[i] = new PowerUp(this.app, powerUpPoints[i].x, powerUpPoints[i].y, powerUpPoints[i].z, 3,32,16);
-            this.reader.add(this.powerUps[i].powerUpMesh);
+        for (var i = 0; i < 4; i++) {
+            const randomLength = Math.random() ;
+
+            const positionOnTrack = this.track.trackCurve.getPointAt(randomLength);
+            const randomX = positionOnTrack.x + this.track.shapeWidth / 2 
+            const randomZ = positionOnTrack.z + this.track.shapeLength / 2
+            const randomType = Math.random() < 0.5 ? "Type1" : "Type2";
+            const powerUp = new PowerUp(this.app, randomX, 5, randomZ, 3,32,16, randomType);
+            this.powerUps.push(powerUp);
+            this.reader.add(powerUp.powerUpMesh);
         }
         
         this.reader.position.set(0,0,0);
+        this.reader.rotation.y = Math.PI / 2;
         this.app.scene.add(this.reader);
     }
 

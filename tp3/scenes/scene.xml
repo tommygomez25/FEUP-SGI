@@ -65,13 +65,14 @@
                 <noderef id="road-light-4" />
 
                 <directionallight id="dirLight" enabled="true" 
-                    color="0.1 0.1 0.1 1" 
-                    intensity="2"
+                    color="1 1 1 1" 
+                    intensity="0.1"
                     castshadow="true"
                     position="0 100 0" 
                     shadowright="20"
                     shadowleft="-20"
                 />
+
             </children> 
         </node>
 
@@ -149,8 +150,33 @@
 
         <node id="road-light-1">
             <transforms>
-				<translate value3="0 0 38" />
-                <rotate value3="0 90 0" />
+				<translate value3="30 0 130" />
+                <rotate value3="0 135 0" />
+                <scale value3="1 1 1" />
+            </transforms> 
+
+            <children>
+                <noderef id="road-light-reference" />
+                <spotlight id="spotLight" enabled="true" 
+                    color="1.0 1.0 1.0 1" 
+                    intensity="50.0"
+                    distance="50"
+                    decay="1"
+                    castshadow="true"
+                    position="0.7 24.4 0" 
+                    target="-100 0 0"
+                    penumbra="1.0"
+                    angle="90.0" 
+                /> 
+            </children>
+
+        </node>
+
+
+        <node id="road-light-2">
+            <transforms>
+				<translate value3="30 0 -130" />
+                <rotate value3="0 -135 0" />
                 <scale value3="1 1 1" />
             </transforms> 
 
@@ -171,34 +197,9 @@
 
         </node>
 
-
-        <node id="road-light-2">
-            <transforms>
-				<translate value3="-150 0 -50" />
-                <rotate value3="0 0 0" />
-                <scale value3="1 1 1" />
-            </transforms> 
-
-            <children>
-                <noderef id="road-light-reference" />
-                <spotlight id="spotLight" enabled="true" 
-                    color="1.0 1.0 1.0 1" 
-                    intensity="50.0"
-                    distance="50"
-                    decay="1"
-                    castshadow="true"
-                    position="0.7 24.4 0" 
-                    target="0 0 -16"
-                    penumbra="1.0"
-                    angle="90.0" 
-                /> 
-            </children>
-
-        </node>
-
         <node id="road-light-3">
             <transforms>
-				<translate value3="0 0 -65" />
+				<translate value3="-130 0 -130" />
                 <rotate value3="0 -90 0" />
                 <scale value3="1 1 1" />
             </transforms> 
@@ -223,8 +224,8 @@
 
         <node id="road-light-4">
             <transforms>
-				<translate value3="148 0 -48" />
-                <rotate value3="0 180 0" />
+				<translate value3="-130 0 130" />
+                <rotate value3="0 45 0" />
                 <scale value3="1 1 1" />
             </transforms> 
 
