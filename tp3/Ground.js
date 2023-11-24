@@ -9,27 +9,27 @@ class Ground {
         this.width = width;
         this.height = height;
 
-        this.quartzTexture = new THREE.TextureLoader().load('textures/quartz-base.jpg');
-        this.quartzDisplacementMap = new THREE.TextureLoader().load('textures/quartz-height.jpg');
-        this.quartzNormalMap = new THREE.TextureLoader().load('textures/quartz-normal.jpg');
-        this.quartzAOMap = new THREE.TextureLoader().load('textures/quartz-ao.jpg');
-        this.quartzRoughnessMap = new THREE.TextureLoader().load('textures/quartz-roughness.jpg');
+        this.groundTexture = new THREE.TextureLoader().load('textures/ground-base.jpg');
+        this.groundDisplacementMap = new THREE.TextureLoader().load('textures/ground-height.png');
+        this.groundNormalMap = new THREE.TextureLoader().load('textures/ground-normal.jpg');
+        this.groundAOMap = new THREE.TextureLoader().load('textures/ground-ao.jpg');
+        this.groundRoughnessMap = new THREE.TextureLoader().load('textures/ground-roughness.jpg');
 
-        this.quartzTexture.wrapS = this.quartzTexture.wrapT = THREE.RepeatWrapping;
-        this.quartzTexture.repeat.set( 5,5);
-        this.quartzTexture.needsUpdate = true;
+        this.groundTexture.wrapS = this.groundTexture.wrapT = THREE.RepeatWrapping;
+        this.groundTexture.repeat.set( 5,5);
+        this.groundTexture.needsUpdate = true;
 
-        this.quartzDisplacementMap.wrapS = this.quartzDisplacementMap.wrapT = THREE.RepeatWrapping;
-        this.quartzDisplacementMap.repeat.set( 5,5);
-        this.quartzDisplacementMap.needsUpdate = true;
+        this.groundDisplacementMap.wrapS = this.groundDisplacementMap.wrapT = THREE.RepeatWrapping;
+        this.groundDisplacementMap.repeat.set( 5,5);
+        this.groundDisplacementMap.needsUpdate = true;
 
-        this.quartzNormalMap.wrapS = this.quartzNormalMap.wrapT = THREE.RepeatWrapping;
-        this.quartzNormalMap.repeat.set( 5,5);
-        this.quartzNormalMap.needsUpdate = true;
+        this.groundNormalMap.wrapS = this.groundNormalMap.wrapT = THREE.RepeatWrapping;
+        this.groundNormalMap.repeat.set( 5,5);
+        this.groundNormalMap.needsUpdate = true;
 
-        this.quartzAOMap.wrapS = this.quartzAOMap.wrapT = THREE.RepeatWrapping;
-        this.quartzAOMap.repeat.set( 5,5);
-        this.quartzAOMap.needsUpdate = true;
+        this.groundAOMap.wrapS = this.groundAOMap.wrapT = THREE.RepeatWrapping;
+        this.groundAOMap.repeat.set( 5,5);
+        this.groundAOMap.needsUpdate = true;
 
         this.groundMesh = null;
 
@@ -39,14 +39,14 @@ class Ground {
     createGround() {
         const geometry = new THREE.PlaneGeometry(this.width, this.height);
         const material = new THREE.MeshStandardMaterial({
-            map: this.quartzTexture,
-            displacementMap: this.quartzDisplacementMap,
+            map: this.groundTexture,
+            displacementMap: this.groundDisplacementMap,
             displacementScale: 0.1,
-            normalMap: this.quartzNormalMap,
+            normalMap: this.groundNormalMap,
             normalScale: new THREE.Vector2(1, 1),
-            roughnessMap: this.quartzRoughnessMap,
+            roughnessMap: this.groundRoughnessMap,
             roughness: 1,
-            aoMap: this.quartzAOMap,
+            aoMap: this.groundAOMap,
             aoMapIntensity: 1,
         })
         this.groundMesh = new THREE.Mesh(geometry, material);

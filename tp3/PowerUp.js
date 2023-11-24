@@ -26,9 +26,11 @@ class PowerUp {
             this.powerUpRoughnessMap = new THREE.TextureLoader().load('textures/power-2-roughness.jpg');
         }
 
-        this.powerUpMesh = null;
+        this.mesh = null;
 
         this.animationTime = 0;
+
+        this.id = Math.random() * 1000000;
 
         this.createPowerUp();
     }
@@ -46,12 +48,12 @@ class PowerUp {
             aoMap: this.powerUpAOMap,
             aoMapIntensity: 1,
         })
-        this.powerUpMesh= new THREE.Mesh(geometry, material);
+        this.mesh= new THREE.Mesh(geometry, material);
 
-        this.powerUpMesh.position.set(this.x, this.y, this.z);
+        this.mesh.position.set(this.x, this.y, this.z);
 
-        this.powerUpMesh.castShadow = true;
-        this.powerUpMesh.receiveShadow = true;
+        this.mesh.castShadow = true;
+        this.mesh.receiveShadow = true;
 
     }
 
@@ -62,7 +64,7 @@ class PowerUp {
         const frequency = 5;
 
         const verticalOffset = amplitude * Math.sin(this.animationTime * frequency);
-        this.powerUpMesh.position.y = this.y + verticalOffset;
+        this.mesh.position.y = this.y + verticalOffset;
     }
 
     applyEffect(car) {

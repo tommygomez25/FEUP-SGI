@@ -10,6 +10,8 @@ class Reader {
         this.app = app;
         this.reader = new THREE.Group();
 
+        this.objects = []
+
         this.instantiateTrack();
     }
 
@@ -62,37 +64,45 @@ class Reader {
         this.ground = new Ground(this.app, 0, -2.1, 0, 350, 350);
         this.reader.add(this.ground.groundMesh);
 
-        this.obstacles = [];
-        
-        for (var i = 0; i < 4; i++) {
-            const randomLength = Math.random() ;
+        this.obstaclePoints = [
+            new THREE.Vector3(14, 5, 50),
+            new THREE.Vector3(-50, 5,120),
+            new THREE.Vector3(-35, 5, 25),
+            new THREE.Vector3(-105, 5, -75),
+        ]
 
-            const positionOnTrack = this.track.trackCurve.getPointAt(randomLength);
-            const randomX = positionOnTrack.x + this.track.shapeWidth / 2 
-            const randomZ = positionOnTrack.z + this.track.shapeLength / 2
-            const obstacle = new Obstacle(this.app, randomX, 5, randomZ, 3,32,16);
-            this.obstacles.push(obstacle);
-            this.reader.add(obstacle.obstacleMesh);
-        }
+        this.createObject(Obstacle, 3, this.obstaclePoints);
 
-        this.powerUps = [];
+        this.powerUpPoints = [
+            new THREE.Vector3(30, 5, 50),
+            new THREE.Vector3(-80, 5, 130),
+            new THREE.Vector3(-45, 5, 25),	
+            new THREE.Vector3(30, 5, -75),
+        ]
 
-
-        for (var i = 0; i < 4; i++) {
-            const randomLength = Math.random() ;
-
-            const positionOnTrack = this.track.trackCurve.getPointAt(randomLength);
-            const randomX = positionOnTrack.x + this.track.shapeWidth / 2 
-            const randomZ = positionOnTrack.z + this.track.shapeLength / 2
-            const randomType = Math.random() < 0.5 ? "Type1" : "Type2";
-            const powerUp = new PowerUp(this.app, randomX, 5, randomZ, 3,32,16, randomType);
-            this.powerUps.push(powerUp);
-            this.reader.add(powerUp.powerUpMesh);
-        }
+        this.createObject(PowerUp, 3, this.powerUpPoints);
         
         this.reader.position.set(0,0,0);
-        this.reader.rotation.y = Math.PI / 2;
         this.app.scene.add(this.reader);
+    }   
+
+    createObject(objectType, count, pointsArray) {
+
+        var i = 0;
+        while ( i < count) {
+            const randomIndex = Math.floor(Math.random() * pointsArray.length);
+            const randomPoint = pointsArray[randomIndex];
+            const randomType = Math.random() < 0.5 ? "Type1" : "Type2";
+            const object = new objectType(this.app, randomPoint.x,randomPoint.y, randomPoint.z, 3,32,16, randomType);
+            if (this.objects[object.id] === undefined) {
+                this.objects[object.id] = object;
+                this.reader.add(object.mesh);
+                i++;
+            }
+            else {
+                continue;
+            }
+        }
     }
 
     

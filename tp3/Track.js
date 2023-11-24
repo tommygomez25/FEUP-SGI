@@ -13,19 +13,20 @@ class Track {
         this.y = y
         this.z = z
 
+
         this.controlPoints = [
             new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(-100, 0, 0),
-            new THREE.Vector3(-100, 0, -100),
-            new THREE.Vector3(-50, 0, -100),
+            new THREE.Vector3(0, 0, 100),
+            new THREE.Vector3(-100, 0, 100),
+            new THREE.Vector3(-100, 0, 50),
+            new THREE.Vector3(-50, 0, 50),
+            new THREE.Vector3(-25, 0, 0),
             new THREE.Vector3(-50, 0, -50),
-            new THREE.Vector3(0, 0, -25),
-            new THREE.Vector3(50, 0, -50),
-            new THREE.Vector3(50, 0, -100),
-            new THREE.Vector3(100, 0, -100),
-            new THREE.Vector3(100, 0, 0),
+            new THREE.Vector3(-100, 0, -50),
+            new THREE.Vector3(-100, 0, -100),
+            new THREE.Vector3(0, 0,-100),
             new THREE.Vector3(0, 0, 0),
-          ];
+        ];
 
         this.trackCurve = new THREE.CatmullRomCurve3(this.controlPoints);
 

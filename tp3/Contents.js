@@ -4,6 +4,7 @@ import { FileReader } from './parser/FileReader.js';
 import { Reader } from './Reader.js';
 import {SceneGraph} from './SceneGraph.js';
 import { Car } from './Car.js';
+import Parking from './Parking.js';
 
 
 /**
@@ -127,6 +128,8 @@ class Contents  {
         this.reader = new Reader(this.app);
 
         this.car = new Car(this.app, 0, 2, 0, this.app.cameras['Chase']);
+        this.parking1 = new Parking(this.app, 100, 2, -60, 3, 30, 10, 30, 3);
+        this.parking2 = new Parking(this.app, 100, 2, 20, 3, 30, 10, 30, 3);
     }
 
     initGlobals(data) {
@@ -343,12 +346,9 @@ class Contents  {
     }
 
     update(deltaTime) {
-        for (var obstacle in this.reader.obstacles) {
-            this.reader.obstacles[obstacle].update(deltaTime);
-        }
-
-        for (var powerUp in this.reader.powerUps) {
-            this.reader.powerUps[powerUp].update(deltaTime);
+        
+        for (var object in this.reader.objects) {
+            this.reader.objects[object].update(deltaTime);
         }
 
         this.car.update(deltaTime);

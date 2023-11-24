@@ -27,9 +27,11 @@ class Obstacle {
         }
 
 
-        this.obstacleMesh = null;
+        this.mesh = null;
 
         this.animationTime = 0;
+
+        this.id = Math.random() * 1000000;
 
         this.createObstacle();
     }
@@ -47,12 +49,12 @@ class Obstacle {
             aoMap: this.obstacleAOMap,
             aoMapIntensity: 1,
         });
-        this.obstacleMesh = new THREE.Mesh(geometry, material);
+        this.mesh = new THREE.Mesh(geometry, material);
 
-        this.obstacleMesh.position.set(this.x, this.y, this.z);
+        this.mesh.position.set(this.x, this.y, this.z);
 
-        this.obstacleMesh.castShadow = true;
-        this.obstacleMesh.receiveShadow = true;
+        this.mesh.castShadow = true;
+        this.mesh.receiveShadow = true;
     }
 
     update(deltaTime) {
@@ -62,7 +64,7 @@ class Obstacle {
         const frequency = 5;
 
         const verticalOffset = amplitude * Math.sin(this.animationTime * frequency);
-        this.obstacleMesh.position.y = this.y + verticalOffset;
+        this.mesh.position.y = this.y + verticalOffset;
     }
 
     applyEffect(car) {
