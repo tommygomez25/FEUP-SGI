@@ -228,8 +228,8 @@ class Car {
         this.carBox.position.x += delta_x;
         this.carBox.position.z += delta_z;
 
-        this.chaseCamera.position.copy(this.carBox.position);
-        this.chaseCamera.lookAt(this.carBox.position);
+        //this.chaseCamera.position.copy(this.carBox.position);
+        //this.chaseCamera.lookAt(this.carBox.position);
 
     }
 
