@@ -24,6 +24,8 @@ class Parking {
         this.parking = new THREE.Group();
         this.createParkingLot();
 
+        this.parking.rotation.y = Math.PI / 2;
+        
         this.app.scene.add(this.parking);
     }
 
@@ -137,7 +139,6 @@ class ParkingDelimiter {
         this.mesh.position.set(this.initialParkingDelimPos.x, this.initialParkingDelimPos.y, this.initialParkingDelimPos.z);
 
         this.mesh.rotation.x = -Math.PI / 2;
-
         
     }
 }

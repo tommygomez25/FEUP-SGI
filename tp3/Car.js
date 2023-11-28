@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 
 class Car {
-    constructor(app, x, y, z, chaseCamera) {
+    constructor(app, x, y, z, chaseCamera, name,color, layer) {
         this.app = app;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.name = name;
+        this.layer = layer;
+        this.color= color;
 
         this.carBox = new THREE.Object3D();
 
@@ -16,13 +19,13 @@ class Car {
         this.maxSteeringAngle = Math.PI / 4;
         this.angularSpeed = 0.01;
 
-        this.wheelRotationSpeed = 0.5;
+        this.wheelRotationSpeed = 0.01;
 
         this.keysPressed = [];
 
         this.chaseCamera = chaseCamera;
 
-        this.wheelTexture = new THREE.TextureLoader().load('textures/road-base.jpg');
+        this.wheelTexture = new THREE.TextureLoader().load('textures/lava-base.jpg');
 
         this.createCar();
 
@@ -46,7 +49,7 @@ class Car {
         this.carBodyMesh = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 2),
             new THREE.MeshStandardMaterial({
-                color: 0x0000ff,
+                color: this.color,
                 roughness: 0.5,
                 metalness: 0.5
             })
@@ -55,12 +58,16 @@ class Car {
         this.carBodyMesh.position.set(0, 0, 1);
         this.carBodyMesh.castShadow = true;
         this.carBodyMesh.receiveShadow = true;
+
+        this.carBodyMesh.name = this.name;
+        this.carBodyMesh.layers.enable(this.layer);
         
         this.carBox.add(this.carBodyMesh);
 
     }
 
     createCarFrontWheels() {
+        
 
         var carFrontWheelLeftGeometry = new THREE.CylinderGeometry(0.33, 0.33, 0.2);
         carFrontWheelLeftGeometry.rotateZ(Math.PI / 2)
@@ -68,13 +75,15 @@ class Car {
         this.carFrontWheelLeft = new THREE.Mesh(
             carFrontWheelLeftGeometry,
             new THREE.MeshStandardMaterial({
-                color: 0x000000,
-                roughness: 0.5,
-                metalness: 0.5,
+                //color: 0x000000,
+                //roughness: 0.5,
+                //metalness: 0.5,
+                map: this.wheelTexture
             })
         );
 
         this.carFrontWheelLeft.position.set(1, 0, 1);
+        this.carFrontWheelLeft.rotation.order = "YXZ";
 
         var carFrontWheelRightGeometry = new THREE.CylinderGeometry(0.33, 0.33, 0.2);
         carFrontWheelRightGeometry.rotateZ(Math.PI / 2);
@@ -82,13 +91,15 @@ class Car {
         this.carFrontWheelRight = new THREE.Mesh(
             carFrontWheelRightGeometry,
             new THREE.MeshStandardMaterial({
-                color: 0x000000,
-                roughness: 0.5,
-                metalness: 0.5
+                //color: 0x000000,
+                //roughness: 0.5,
+                //metalness: 0.5
+                map: this.wheelTexture
             })
         );
 
         this.carFrontWheelRight.position.set(-1, 0, 1);
+        this.carFrontWheelRight.rotation.order = "YXZ";
         
         this.carBodyMesh.add(this.carFrontWheelRight);
         this.carBodyMesh.add(this.carFrontWheelLeft);
@@ -103,9 +114,10 @@ class Car {
         this.carBackWheelLeft = new THREE.Mesh(
             carBackWheelLeftGeometry,
             new THREE.MeshStandardMaterial({
-                color: 0x000000,
-                roughness: 0.5,
-                metalness: 0.5
+                //color: 0x000000,
+                //roughness: 0.5,
+                //metalness: 0.5
+                map: this.wheelTexture
             })
         );
 
@@ -117,9 +129,10 @@ class Car {
         this.carBackWheelRight = new THREE.Mesh(
             carBackWheelRightGeometry,
             new THREE.MeshStandardMaterial({
-                color: 0x000000,
-                roughness: 0.5,
-                metalness: 0.5
+                //color: 0x000000,
+                //roughness: 0.5,
+                //metalness: 0.5
+                map: this.wheelTexture
             })
         );
 
@@ -191,11 +204,19 @@ class Car {
         if (this.actualVelocity < -this.maxVelocity) {
             this.actualVelocity = -this.maxVelocity;
         }
-        
-        this.carFrontWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-        this.carFrontWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-        this.carBackWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-        this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+
+        if (this.actualVelocity == 0) {
+            this.carFrontWheelLeft.rotation.x = 0;
+            this.carFrontWheelRight.rotation.x = 0;
+            this.carBackWheelLeft.rotation.x = 0;
+            this.carBackWheelRight.rotation.x = 0;
+        }
+        else {            
+            this.carFrontWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+            this.carFrontWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+            this.carBackWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+            this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity   
+        }
         
 
     }

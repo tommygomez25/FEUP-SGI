@@ -128,6 +128,11 @@ class App  {
         this.activeCameraName = cameraName
         this.activeCamera = this.cameras[this.activeCameraName]
     }
+    
+
+    getActiveCamera() {
+        return this.activeCamera
+    }
 
     /**
      * updates the active camera if required

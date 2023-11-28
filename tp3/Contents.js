@@ -5,6 +5,7 @@ import { Reader } from './Reader.js';
 import {SceneGraph} from './SceneGraph.js';
 import { Car } from './Car.js';
 import Parking from './Parking.js';
+import { Picking } from './Picking.js';
 
 
 /**
@@ -21,8 +22,13 @@ class Contents  {
         this.axis = null
 
         this.reader = new FileReader(app, this, this.onSceneLoaded);
-		this.reader.open("scenes/scene.xml");		
+		this.reader.open("scenes/scene.xml");	
         
+        this.picking = new Picking(this.app);
+
+        this.app.pickingOwnCar = true;
+        this.app.pickingOtherCar = false;
+
     }
 
     /**
@@ -127,9 +133,33 @@ class Contents  {
 
         this.reader = new Reader(this.app);
 
-        this.car = new Car(this.app, 0, 2, 0, this.app.cameras['Chase']);
-        this.parking1 = new Parking(this.app, 100, 2, -60, 3, 30, 10, 30, 3);
-        this.parking2 = new Parking(this.app, 100, 2, 20, 3, 30, 10, 30, 3);
+        this.myCars = [];
+        this.otherCars = [];
+
+        this.parking1 = new Parking(this.app, 75, 0.1, 60, 3, 30, 15, 30, 5);
+        this.parking2 = new Parking(this.app, 0, 0.1, 60, 3, 30, 15, 30, 5);
+
+        this.createMyCars();
+        this.createOtherCars();
+    }
+
+    createMyCars() {
+        const carNames = ["myCar1", "myCar2", "myCar3"];
+        const colors = [0xff0000, 0xff00ff, 0x0000ff];
+        for (var i = 0; i < 3; i++) {
+            var car = new Car(this.app, this.parking1.parkingSpaces[i].mesh.position.z , 2, -this.parking1.x, this.app.cameras['Perspective'], carNames[i],colors[i], 1);
+            console.log(car)
+            this.myCars[carNames[i]] = car;
+        }
+    }
+    
+    createOtherCars() {
+        const carNames = ["otherCar1", "otherCar2", "otherCar3"];
+        const colors = [0x000000, 0xffff00, 0xffa500];
+        for (var i = 0; i < 3; i++) {
+            var car = new Car(this.app, this.parking2.parkingSpaces[i].mesh.position.z , 2,this.parking2.x, this.app.cameras['Perspective'], carNames[i],colors[i], 2);
+            this.otherCars[carNames[i]] = car;
+        }
     }
 
     initGlobals(data) {
@@ -351,7 +381,8 @@ class Contents  {
             this.reader.objects[object].update(deltaTime);
         }
 
-        this.car.update(deltaTime);
+        // update only the selected car
+        if (this.selectedCar !== undefined) {this.selectedCar.update(deltaTime);}
     }
 }
 
