@@ -1,14 +1,15 @@
 import * as THREE from 'three';
 
 class Car {
-    constructor(app, x, y, z, chaseCamera, name,color, layer) {
+    constructor(app, x, y, z, chaseCamera, name, color, layer, styling) {
         this.app = app;
         this.x = x;
         this.y = y;
         this.z = z;
         this.name = name;
-        this.layer = layer;
         this.color= color;
+        this.layer = layer;
+        this.styling = styling;
 
         this.carBox = new THREE.Object3D();
 
@@ -47,7 +48,7 @@ class Car {
 
     createCarBody() {
         this.carBodyMesh = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 2),
+            new THREE.BoxGeometry(1.5, 0.8, 2.5),
             new THREE.MeshStandardMaterial({
                 color: this.color,
                 roughness: 0.5,
@@ -55,15 +56,65 @@ class Car {
             })
         );
 
+        // Add car roof
+        const carRoofGeometry = new THREE.BoxGeometry(1.5, 0.2, 2.5);
+        const carRoofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const carRoofMesh = new THREE.Mesh(carRoofGeometry, carRoofMaterial);
+        carRoofMesh.position.set(0, 1, 0);
+        this.carBodyMesh.add(carRoofMesh);
+
+        // Add headlights
+        const headlightGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        const headlightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const headlightLeft = new THREE.Mesh(headlightGeometry, headlightMaterial);
+        const headlightRight = new THREE.Mesh(headlightGeometry, headlightMaterial);
+        headlightLeft.position.set(0.6, 0.2, 1.25);
+        headlightRight.position.set(-0.6, 0.2, 1.25);
+        this.carBodyMesh.add(headlightLeft);
+        this.carBodyMesh.add(headlightRight);
+
+        // Add taillights
+        const taillightGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        const taillightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        const taillightLeft = new THREE.Mesh(taillightGeometry, taillightMaterial);
+        const taillightRight = new THREE.Mesh(taillightGeometry, taillightMaterial);
+        taillightLeft.position.set(0.6, 0.2, -1.25);
+        taillightRight.position.set(-0.6, 0.2, -1.25);
+        this.carBodyMesh.add(taillightLeft);
+        this.carBodyMesh.add(taillightRight);
+
+        // Add windows
+        const windowGeometry = new THREE.BoxGeometry(1.4, 1.6, 2.4);
+        const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, transparent: true, opacity: 0.5 });
+        const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+        windowMesh.position.set(0, 0.2, 0);
+        this.carBodyMesh.add(windowMesh);
+
+        // Add spoiler
+        const spoilerGeometry = new THREE.BoxGeometry(1.5, 0.1, 0.5);
+        const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const spoilerMesh = new THREE.Mesh(spoilerGeometry, spoilerMaterial);
+        spoilerMesh.position.set(0, 1.45, -1.25);
+        this.carBodyMesh.add(spoilerMesh);
+
+        // Add spoiler support
+        const supportGeometry = new THREE.BoxGeometry(0.1, 0.5, 0.1);
+        const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const supportMesh1 = new THREE.Mesh(supportGeometry, supportMaterial);
+        const supportMesh2 = new THREE.Mesh(supportGeometry, supportMaterial);
+        supportMesh1.position.set(0.6, 1.2, -1.25);
+        supportMesh2.position.set(-0.6, 1.2, -1.25);
+        this.carBodyMesh.add(supportMesh1);
+        this.carBodyMesh.add(supportMesh2);
+
         this.carBodyMesh.position.set(0, 0, 1);
         this.carBodyMesh.castShadow = true;
         this.carBodyMesh.receiveShadow = true;
 
         this.carBodyMesh.name = this.name;
         this.carBodyMesh.layers.enable(this.layer);
-        
-        this.carBox.add(this.carBodyMesh);
 
+        this.carBox.add(this.carBodyMesh);
     }
 
     createCarFrontWheels() {
