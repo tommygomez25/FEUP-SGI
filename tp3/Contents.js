@@ -147,7 +147,7 @@ class Contents  {
         const carNames = ["myCar1", "myCar2", "myCar3"];
         const colors = [0xff0000, 0xff00ff, 0x0000ff];
         for (var i = 0; i < 3; i++) {
-            var car = new Car(this.app, this.parking1.parkingSpaces[i].mesh.position.z , 2, -this.parking1.x, this.app.cameras['Perspective'], carNames[i],colors[i], 1, i);
+            var car = new Car(this.app, this.parking1.parkingSpaces[i].mesh.position.z , 2, -this.parking1.x, this.app.cameras['Perspective'], carNames[i],colors[i], 1, true);
             console.log(car)
             this.myCars[carNames[i]] = car;
         }
@@ -157,7 +157,7 @@ class Contents  {
         const carNames = ["otherCar1", "otherCar2", "otherCar3"];
         const colors = [0x000000, 0xffff00, 0xffa500];
         for (var i = 0; i < 3; i++) {
-            var car = new Car(this.app, this.parking2.parkingSpaces[i].mesh.position.z , 2,this.parking2.x, this.app.cameras['Perspective'], carNames[i],colors[i], 2, i);
+            var car = new Car(this.app, this.parking2.parkingSpaces[i].mesh.position.z , 2,this.parking2.x, this.app.cameras['Perspective'], carNames[i],colors[i], 2, false);
             this.otherCars[carNames[i]] = car;
         }
     }

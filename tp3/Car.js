@@ -26,7 +26,7 @@ class Car {
 
         this.chaseCamera = chaseCamera;
 
-        this.wheelTexture = new THREE.TextureLoader().load('textures/lava-base.jpg');
+        this.wheelTexture = styling == false ? new THREE.TextureLoader().load('textures/lava-base.jpg') : new THREE.TextureLoader().load('textures/marble.png');
 
         this.createCar();
 
@@ -56,56 +56,10 @@ class Car {
             })
         );
 
-        // Add car roof
-        const carRoofGeometry = new THREE.BoxGeometry(1.5, 0.2, 2.5);
-        const carRoofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        const carRoofMesh = new THREE.Mesh(carRoofGeometry, carRoofMaterial);
-        carRoofMesh.position.set(0, 1, 0);
-        this.carBodyMesh.add(carRoofMesh);
-
-        // Add headlights
-        const headlightGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-        const headlightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        const headlightLeft = new THREE.Mesh(headlightGeometry, headlightMaterial);
-        const headlightRight = new THREE.Mesh(headlightGeometry, headlightMaterial);
-        headlightLeft.position.set(0.6, 0.2, 1.25);
-        headlightRight.position.set(-0.6, 0.2, 1.25);
-        this.carBodyMesh.add(headlightLeft);
-        this.carBodyMesh.add(headlightRight);
-
-        // Add taillights
-        const taillightGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-        const taillightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-        const taillightLeft = new THREE.Mesh(taillightGeometry, taillightMaterial);
-        const taillightRight = new THREE.Mesh(taillightGeometry, taillightMaterial);
-        taillightLeft.position.set(0.6, 0.2, -1.25);
-        taillightRight.position.set(-0.6, 0.2, -1.25);
-        this.carBodyMesh.add(taillightLeft);
-        this.carBodyMesh.add(taillightRight);
-
-        // Add windows
-        const windowGeometry = new THREE.BoxGeometry(1.4, 1.6, 2.4);
-        const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, transparent: true, opacity: 0.5 });
-        const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
-        windowMesh.position.set(0, 0.2, 0);
-        this.carBodyMesh.add(windowMesh);
-
-        // Add spoiler
-        const spoilerGeometry = new THREE.BoxGeometry(1.5, 0.1, 0.5);
-        const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        const spoilerMesh = new THREE.Mesh(spoilerGeometry, spoilerMaterial);
-        spoilerMesh.position.set(0, 1.45, -1.25);
-        this.carBodyMesh.add(spoilerMesh);
-
-        // Add spoiler support
-        const supportGeometry = new THREE.BoxGeometry(0.1, 0.5, 0.1);
-        const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        const supportMesh1 = new THREE.Mesh(supportGeometry, supportMaterial);
-        const supportMesh2 = new THREE.Mesh(supportGeometry, supportMaterial);
-        supportMesh1.position.set(0.6, 1.2, -1.25);
-        supportMesh2.position.set(-0.6, 1.2, -1.25);
-        this.carBodyMesh.add(supportMesh1);
-        this.carBodyMesh.add(supportMesh2);
+        this.createCarRoof();
+        this.createCarLights();
+        this.createCarWindows();
+        this.createCarSpoiler();
 
         this.carBodyMesh.position.set(0, 0, 1);
         this.carBodyMesh.castShadow = true;
@@ -118,8 +72,6 @@ class Car {
     }
 
     createCarFrontWheels() {
-        
-
         var carFrontWheelLeftGeometry = new THREE.CylinderGeometry(0.33, 0.33, 0.2);
         carFrontWheelLeftGeometry.rotateZ(Math.PI / 2)
 
@@ -128,7 +80,7 @@ class Car {
             new THREE.MeshStandardMaterial({
                 //color: 0x000000,
                 //roughness: 0.5,
-                //metalness: 0.5,
+                //metalness: 0.5,x
                 map: this.wheelTexture
             })
         );
@@ -158,7 +110,6 @@ class Car {
     }
 
     createCarBackWheels() {
-
         var carBackWheelLeftGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.33);
         carBackWheelLeftGeometry.rotateZ(Math.PI / 2);
 
@@ -194,6 +145,64 @@ class Car {
 
     }
 
+    createCarRoof() {
+        const carRoofGeometry = new THREE.BoxGeometry(1.5, 0.2, 2.5);
+        const carRoofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const carRoofMesh = new THREE.Mesh(carRoofGeometry, carRoofMaterial);
+        carRoofMesh.position.set(0, 1, 0);
+        this.carBodyMesh.add(carRoofMesh);
+    }
+
+    createCarLights() {
+        // Add headlights
+        const headlightGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        const headlightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const headlightLeft = new THREE.Mesh(headlightGeometry, headlightMaterial);
+        const headlightRight = new THREE.Mesh(headlightGeometry, headlightMaterial);
+        headlightLeft.position.set(0.6, 0.2, 1.25);
+        headlightRight.position.set(-0.6, 0.2, 1.25);
+        this.carBodyMesh.add(headlightLeft);
+        this.carBodyMesh.add(headlightRight);
+
+        // Add taillights
+        const taillightGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        const taillightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        const taillightLeft = new THREE.Mesh(taillightGeometry, taillightMaterial);
+        const taillightRight = new THREE.Mesh(taillightGeometry, taillightMaterial);
+        taillightLeft.position.set(0.6, 0.2, -1.25);
+        taillightRight.position.set(-0.6, 0.2, -1.25);
+        this.carBodyMesh.add(taillightLeft);
+        this.carBodyMesh.add(taillightRight);
+    }
+
+    createCarWindows() {
+        // Add windows
+        const windowGeometry = new THREE.BoxGeometry(1.4, 1.6, 2.4);
+        const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, transparent: true, opacity: 0.5 });
+        const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+        windowMesh.position.set(0, 0.2, 0);
+        this.carBodyMesh.add(windowMesh);
+    }
+
+    createCarSpoiler() {
+        // Add spoiler
+        const spoilerGeometry = new THREE.BoxGeometry(1.5, 0.1, 0.5);
+        const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const spoilerMesh = new THREE.Mesh(spoilerGeometry, spoilerMaterial);
+        spoilerMesh.position.set(0, 1.45, -1.25);
+        this.carBodyMesh.add(spoilerMesh);
+
+        // Add spoiler support
+        const supportGeometry = new THREE.BoxGeometry(0.1, 0.5, 0.1);
+        const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const supportMesh1 = new THREE.Mesh(supportGeometry, supportMaterial);
+        const supportMesh2 = new THREE.Mesh(supportGeometry, supportMaterial);
+        supportMesh1.position.set(0.6, 1.2, -1.25);
+        supportMesh2.position.set(-0.6, 1.2, -1.25);
+        this.carBodyMesh.add(supportMesh1);
+        this.carBodyMesh.add(supportMesh2);
+    }
+
     setupKeyControls() {
 
         document.addEventListener('keydown', (event) => {
@@ -208,6 +217,9 @@ class Car {
 
     
     update(deltaTime) {
+
+        const accelerationFactor = 1;
+        const decelerationFactor = 1;
         
         if (this.keysPressed["a"] == true) {
             this.steeringAngle += this.angularSpeed
@@ -231,21 +243,21 @@ class Car {
         // ---------------------- // 
 
 
-        if (!this.keysPressed["w"] && !this.keysPressed["s"]) {
+        if (!this.keysPressed["w"] && !this.keysPressed["s"] && this.actualVelocity != 0) {
             const dampingFactor = 1;
-            if (this.actualVelocity > 0 ) { this.actualVelocity -= dampingFactor; }
-            if (this.actualVelocity < 0 ) { this.actualVelocity += dampingFactor; }
+            if (this.actualVelocity > 0) this.actualVelocity -= dampingFactor;
+            else if (this.actualVelocity < 0) this.actualVelocity += dampingFactor;
             this.moveForward(this.actualVelocity, deltaTime);
         }
 
-        if (this.keysPressed["s"] == true) {
-            this.actualVelocity -= 1
-            if (this.actualVelocity < 0) {this.moveForward(this.actualVelocity, deltaTime); }
+        if (this.keysPressed["s"]) {
+            this.actualVelocity -= decelerationFactor;
+            this.moveForward(this.actualVelocity, deltaTime);
         }
 
-        if (this.keysPressed["w"] == true) {
-            this.actualVelocity += 1
-            if (this.actualVelocity > 0 ) {this.moveForward(this.actualVelocity, deltaTime)}
+        if (this.keysPressed["w"]) {
+            this.actualVelocity += accelerationFactor;
+            this.moveForward(this.actualVelocity, deltaTime);
         }
 
         if (this.actualVelocity > this.maxVelocity) {
@@ -256,20 +268,13 @@ class Car {
             this.actualVelocity = -this.maxVelocity;
         }
 
-        if (this.actualVelocity == 0) {
-            this.carFrontWheelLeft.rotation.x = 0;
-            this.carFrontWheelRight.rotation.x = 0;
-            this.carBackWheelLeft.rotation.x = 0;
-            this.carBackWheelRight.rotation.x = 0;
-        }
-        else {            
-            this.carFrontWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-            this.carFrontWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-            this.carBackWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-            this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity   
-        }
-        
-
+        if(Math.abs(this.actualVelocity) < 0.08)
+            this.actualVelocity = 0;
+ 
+        this.carFrontWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+        this.carFrontWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+        this.carBackWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+        this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity   
     }
 
     moveForward(speed, deltaTime) {
