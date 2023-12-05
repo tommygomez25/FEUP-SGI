@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import { Animation } from './Animation.js';
 
 class Car {
-    constructor(app, x, y, z, chaseCamera, name, color, layer, styling) {
+    constructor(app, x, y, z, chaseCamera, name, color, layer, styling, routePoints = null, rotationPoints = null) {
         this.app = app;
         this.x = x;
         this.y = y;
@@ -28,9 +29,16 @@ class Car {
 
         this.wheelTexture = styling == false ? new THREE.TextureLoader().load('textures/lava-base.jpg') : new THREE.TextureLoader().load('textures/marble.png');
 
+        this.routePoints = routePoints;
+        this.rotationPoints = rotationPoints;
+
         this.createCar();
 
         this.setupKeyControls();
+
+        if (this.layer === 2) {
+            this.animation = new Animation(this.app, this.routePoints , this.rotationPoints, 15, this.carBox);
+        }
     }
 
     createCar() {
@@ -220,61 +228,70 @@ class Car {
 
         const accelerationFactor = 1;
         const decelerationFactor = 1;
-        
-        if (this.keysPressed["a"] == true) {
-            this.steeringAngle += this.angularSpeed
-            this.steeringAngle = Math.min(this.steeringAngle, this.maxSteeringAngle);
-            this.carBox.rotation.y += this.steeringAngle * this.actualVelocity * 0.01
+
+        if (this.layer === 1) { // player car
+            if (this.keysPressed["a"] == true) {
+                this.steeringAngle += this.angularSpeed
+                this.steeringAngle = Math.min(this.steeringAngle, this.maxSteeringAngle);
+                this.carBox.rotation.y += this.steeringAngle * this.actualVelocity * 0.01
+            }
+    
+            else if (this.keysPressed["d"] == true) {
+                this.steeringAngle -= this.angularSpeed
+                this.steeringAngle = Math.max(this.steeringAngle, -this.maxSteeringAngle);
+                this.carBox.rotation.y += this.steeringAngle * this.actualVelocity * 0.01
+            } 
+    
+            else {
+                this.steeringAngle = 0;
+            }
+    
+            this.carFrontWheelLeft.rotation.y = this.steeringAngle;
+            this.carFrontWheelRight.rotation.y = this.steeringAngle;
+            
+            // ---------------------- // 
+    
+
+            if (!this.keysPressed["w"] && !this.keysPressed["s"] && this.actualVelocity != 0) {
+                const dampingFactor = 1;
+                if (this.actualVelocity > 0) this.actualVelocity -= dampingFactor;
+                else if (this.actualVelocity < 0) this.actualVelocity += dampingFactor;
+                this.moveForward(this.actualVelocity, deltaTime);
+            }
+    
+            if (this.keysPressed["s"]) {
+                this.actualVelocity -= decelerationFactor;
+                this.moveForward(this.actualVelocity, deltaTime);
+            }
+    
+            if (this.keysPressed["w"]) {
+                this.actualVelocity += accelerationFactor;
+                this.moveForward(this.actualVelocity, deltaTime);
+            }
+    
+            if (this.actualVelocity > this.maxVelocity) {
+                this.actualVelocity = this.maxVelocity;
+            }
+    
+            if (this.actualVelocity < -this.maxVelocity) {
+                this.actualVelocity = -this.maxVelocity;
+            }
+    
+            if(Math.abs(this.actualVelocity) < 0.08)
+                this.actualVelocity = 0;
+
+            this.carFrontWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+            this.carFrontWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+            this.carBackWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
+            this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity   
+
         }
+        else if (this.layer === 2) { // bot car
 
-        else if (this.keysPressed["d"] == true) {
-            this.steeringAngle -= this.angularSpeed
-            this.steeringAngle = Math.max(this.steeringAngle, -this.maxSteeringAngle);
-            this.carBox.rotation.y += this.steeringAngle * this.actualVelocity * 0.01
-        } 
+            this.animation.update();
 
-        else {
-            this.steeringAngle = 0;
+            console.log("rotation: " + this.carBox.rotation.y)
         }
-
-        this.carFrontWheelLeft.rotation.y = this.steeringAngle;
-        this.carFrontWheelRight.rotation.y = this.steeringAngle;
-        
-        // ---------------------- // 
-
-
-        if (!this.keysPressed["w"] && !this.keysPressed["s"] && this.actualVelocity != 0) {
-            const dampingFactor = 1;
-            if (this.actualVelocity > 0) this.actualVelocity -= dampingFactor;
-            else if (this.actualVelocity < 0) this.actualVelocity += dampingFactor;
-            this.moveForward(this.actualVelocity, deltaTime);
-        }
-
-        if (this.keysPressed["s"]) {
-            this.actualVelocity -= decelerationFactor;
-            this.moveForward(this.actualVelocity, deltaTime);
-        }
-
-        if (this.keysPressed["w"]) {
-            this.actualVelocity += accelerationFactor;
-            this.moveForward(this.actualVelocity, deltaTime);
-        }
-
-        if (this.actualVelocity > this.maxVelocity) {
-            this.actualVelocity = this.maxVelocity;
-        }
-
-        if (this.actualVelocity < -this.maxVelocity) {
-            this.actualVelocity = -this.maxVelocity;
-        }
-
-        if(Math.abs(this.actualVelocity) < 0.08)
-            this.actualVelocity = 0;
- 
-        this.carFrontWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-        this.carFrontWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-        this.carBackWheelLeft.rotation.x += this.wheelRotationSpeed * this.actualVelocity
-        this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity   
     }
 
     moveForward(speed, deltaTime) {
