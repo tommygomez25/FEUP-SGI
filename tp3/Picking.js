@@ -163,7 +163,7 @@ class Picking {
     applyPickedObject(obj) {
         if (this.app.pickingOwnCar === true) {
             // move the father of the obj to 0,0,0
-            obj.parent.position.set(7, 2, 0)
+            obj.parent.position.set(21, 2, 0)
             // find the car name in the app.contents.mycars
             const carName = obj.name
             const car = this.app.contents.myCars[carName]
@@ -176,8 +176,14 @@ class Picking {
         }   
 
         else if (this.app.pickingOtherCar === true) {
-            // move the father of the obj to 0,0,0
-            obj.parent.position.set(21, 2, 0)
+
+            obj.parent.position.set(7, 2, 0)
+
+            const carName = obj.name
+            const car = this.app.contents.otherCars[carName]
+
+            this.app.contents.selectedBotCar = car
+
             this.app.pickingOtherCar = false
             this.selectedLayer = 3
             this.updateSelectedLayer()

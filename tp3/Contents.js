@@ -6,6 +6,8 @@ import {SceneGraph} from './SceneGraph.js';
 import { Car } from './Car.js';
 import Parking from './Parking.js';
 import { Picking } from './Picking.js';
+import { PowerUp } from './PowerUp.js';
+import { Animation } from './Animation.js';
 
 
 /**
@@ -21,8 +23,8 @@ class Contents  {
         this.app = app
         this.axis = null
 
-        this.reader = new FileReader(app, this, this.onSceneLoaded);
-		this.reader.open("scenes/scene.xml");	
+        this.fileReader = new FileReader(app, this, this.onSceneLoaded);
+		this.fileReader.open("scenes/scene.xml");	
         
         this.picking = new Picking(this.app);
 
@@ -135,19 +137,23 @@ class Contents  {
 
         this.myCars = [];
         this.otherCars = [];
+        this.pickingPowerUps = [];
 
         this.parking1 = new Parking(this.app, 75, 0.1, 60, 3, 30, 15, 30, 5);
         this.parking2 = new Parking(this.app, 0, 0.1, 60, 3, 30, 15, 30, 5);
+        this.parking3 = new Parking(this.app, -75, 0.1, 60, 3, 30, 15, 30, 5);
 
         this.createMyCars();
         this.createOtherCars();
+        this.createPickingPowerUps();
+
     }
 
     createMyCars() {
         const carNames = ["myCar1", "myCar2", "myCar3"];
         const colors = [0xff0000, 0xff00ff, 0x0000ff];
         for (var i = 0; i < 3; i++) {
-            var car = new Car(this.app, this.parking1.parkingSpaces[i].mesh.position.z , 2, -this.parking1.x, this.app.cameras['Perspective'], carNames[i],colors[i], 1);
+            var car = new Car(this.app, this.parking1.parkingSpaces[i].mesh.position.z , 2, -this.parking1.parkingSpaces[i].mesh.position.x, this.app.cameras['Perspective'], carNames[i],colors[i], 1);
             console.log(car)
             this.myCars[carNames[i]] = car;
         }
@@ -157,8 +163,30 @@ class Contents  {
         const carNames = ["otherCar1", "otherCar2", "otherCar3"];
         const colors = [0x000000, 0xffff00, 0xffa500];
         for (var i = 0; i < 3; i++) {
-            var car = new Car(this.app, this.parking2.parkingSpaces[i].mesh.position.z , 2,this.parking2.x, this.app.cameras['Perspective'], carNames[i],colors[i], 2);
+            var car = new Car(this.app, 
+                this.parking2.parkingSpaces[i].mesh.position.z , 
+                2,
+                -this.parking2.parkingSpaces[i].mesh.position.x, 
+                this.app.cameras['Perspective'],
+                carNames[i],colors[i], 
+                2,
+                this.reader.route,
+                this.reader.rotationRoute ); // TODO: CAHNGE ROUTES ACCORDING TO PARKING
+            
             this.otherCars[carNames[i]] = car;
+        }
+    }
+
+    createPickingPowerUps() {
+        const powerUpNames = ["powerUp1", "powerUp2", "powerUp3"];
+        const types = ["Type1", "Type2"]
+        for (var i = 0; i < 3; i++) {
+            const randomType = Math.random() < 0.5 ? "Type1" : "Type2";
+            // TODO : Add layer to pick ..
+            var powerUp = new PowerUp(this.app, this.parking3.parkingSpaces[i].mesh.position.z , 4, -this.parking3.parkingSpaces[i].mesh.position.x, 3, 32, 16, randomType);
+            this.pickingPowerUps[powerUpNames[i]] = powerUp;
+            this.app.scene.add(powerUp.mesh);
+            powerUp.mesh.layers.enable(3)
         }
     }
 
@@ -383,6 +411,8 @@ class Contents  {
 
         // update only the selected car
         if (this.selectedCar !== undefined) {this.selectedCar.update(deltaTime);}
+
+        if (this.selectedBotCar !== undefined) {this.selectedBotCar.update(deltaTime);}
     }
 }
 
