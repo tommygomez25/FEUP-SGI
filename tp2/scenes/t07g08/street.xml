@@ -186,6 +186,8 @@
                 <noderef id ="grass" />
                 <noderef id="tree" />
                 <noderef id="car" />
+                <noderef id="pentagon" />
+                <noderef id="triangle" />
 
 
                 <directionallight id="dirLight" enabled="true" 
