@@ -312,6 +312,25 @@ class Car {
             this.maxVelocity = this.maxVelocity / boost;
         }, duration * 1000);
     }
+
+    checkCollisions() {
+        checkOutsideTrack();
+        checkObjectCollisions();
+        checkCarCollisions();
+    }
+
+    checkOutsideTrack() {
+
+    }
+
+    checkObjectCollisions() {
+
+    }
+
+    checkCarCollisions() {
+        
+    }
 }
+
 
 export { Car };
