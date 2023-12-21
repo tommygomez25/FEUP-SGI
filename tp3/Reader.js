@@ -10,7 +10,7 @@ class Reader {
         this.app = app;
         this.reader = new THREE.Group();
 
-        this.objects = []
+        this.objects = {}
 
         this.routes = []
 
@@ -75,6 +75,22 @@ class Reader {
                 continue;
             }
         }
+    }
+
+    getTrack() {
+        return this.track;
+    }
+
+    getReader() {
+        return this.reader;
+    }
+
+    getRoutes() {
+        return this.routes;
+    }
+
+    getObjects() {
+        return this.objects;
     }
 
     

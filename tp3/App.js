@@ -117,6 +117,10 @@ class App  {
 
         this.cameras['Chase'] = chaseCam
 
+        
+        this.clock = new THREE.Clock()
+        this.clock.start()
+
     }
 
 

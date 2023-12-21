@@ -417,9 +417,12 @@ class Contents  {
         }
 
         // update only the selected car
-        if (this.selectedCar !== undefined) {this.selectedCar.update(deltaTime); 
+        if (this.selectedCar !== undefined) {
+            this.selectedCar.update(deltaTime); 
             console.log("jskdhbfkjsbdfkjb");
-            this.HUD.update(this.selectedCar.actualVelocity);}
+            this.HUD.update(this.selectedCar.actualVelocity);
+            this.selectedCar.checkCollisions();
+        }
 
         if (this.selectedBotCar !== undefined) {this.selectedBotCar.update(deltaTime);}
 
