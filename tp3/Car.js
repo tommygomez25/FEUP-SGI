@@ -14,7 +14,7 @@ class Car {
 
         this.carBox = new THREE.Object3D();
 
-        this.maxVelocity = 50;
+        this.maxVelocity = 60;
         this.actualVelocity = 0;
 
         this.steeringAngle = 0;
