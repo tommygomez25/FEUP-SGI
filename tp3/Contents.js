@@ -419,12 +419,16 @@ class Contents  {
         // update only the selected car
         if (this.selectedCar !== undefined) {
             this.selectedCar.update(deltaTime); 
-            console.log("jskdhbfkjsbdfkjb");
-            this.HUD.update(this.selectedCar.actualVelocity);
             this.selectedCar.checkCollisions();
         }
 
-        if (this.selectedBotCar !== undefined) {this.selectedBotCar.update(deltaTime);}
+        if (this.selectedBotCar !== undefined) {
+            this.selectedBotCar.update(deltaTime);
+        }
+
+        //When both cars are selected, remove welcome message
+        if(this.selectedCar && this.selectedBotCar)
+            this.HUD.delete();
 
         
     }

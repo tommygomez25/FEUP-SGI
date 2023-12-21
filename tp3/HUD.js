@@ -14,19 +14,21 @@ class HUD {
         this.hudCamera = new THREE.OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 1, 1000);
         this.hudCamera.position.z = 10;
 
+        this.hudTextMesh = null;
+
         // Initialize HUD elements
-        this.initHUD();
+        this.init("Have a great race!");
     }
 
-    initHUD() {
+    init(text) {
         var loader = new FontLoader();
         var self = this; // Store reference to the current context
 
         loader.load('./fonts/helvetiker_regular.typeface.json', function (font) {
-            var textGeometry = new TextGeometry("Select a car", {
+            var textGeometry = new TextGeometry(text, {
                 font: font,
                 size: 20,
-                height: 10,
+                height: 2,
                 curveSegments: 12,
                 bevelThickness: 1,
                 bevelSize: 1,
@@ -34,62 +36,23 @@ class HUD {
             });
 
             var textMaterial = new THREE.MeshPhongMaterial(
-                { color: 0xff0000, specular: 0xffffff }
+                { color: 0x00ff00, specular: 0xffffff }
             );
 
             var mesh = new THREE.Mesh(textGeometry, textMaterial);
             mesh.rotation.y = Math.PI; // Rotate the text by 180 degrees
+            mesh.position.set(75, 50, 150); // Move text to the center of the screen
 
             // Use 'self' to refer to the correct context
             self.app.scene.add(mesh);
             self.hudTextMesh = mesh;
         });
     }
-    
 
-    update(speed) {
-        // Update the HUD text with the car speed
-        if (this.hudTextMesh) {
-            this.hudTextMesh.geometry = new TextGeometry("Speed: " + speed, {
-                // Update the text with the car speed, rounded to two decimal places
-                font: this.hudTextMesh.geometry.parameters.font,
-                size: 20,
-                height: 10,
-                curveSegments: 12,
-                bevelThickness: 1,
-                bevelSize: 1,
-                bevelEnabled: true
-            });
-
-            this.app.scene.add(this.hudTextMesh);
-        }
-
-        // Your other update logic goes here
-
-        // Call the next frame
-        requestAnimationFrame(() => this.update());
+    delete() {
+        this.app.scene.remove(this.hudTextMesh);
     }
 }
-
-
-// Example usage:
-
-// Create a Three.js scene and camera
-// const scene = new THREE.Scene();
-// const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-// camera.position.z = 5;
-
-// Create a WebGLRenderer
-// const renderer = new THREE.WebGLRenderer();
-// renderer.setSize(window.innerWidth, window.innerHeight);
-// document.body.appendChild(renderer.domElement);
-
-// Create a HUD instance
-// const hud = new HUD(scene, camera, window.innerWidth, window.innerHeight);
-// hud.renderer = renderer; // Set the renderer property for HUD
-
-
-// animate();
 
 
 export { HUD } 
