@@ -411,7 +411,11 @@ class Contents  {
         }
 
         // update only the selected car
-        if (this.selectedCar !== undefined) {this.selectedCar.update(deltaTime);}
+        if (this.selectedCar !== undefined) 
+        {
+            this.selectedCar.update(deltaTime);
+            this.selectedCar.checkCollisions();
+        }
 
         if (this.selectedBotCar !== undefined) {this.selectedBotCar.update(deltaTime);}
     }

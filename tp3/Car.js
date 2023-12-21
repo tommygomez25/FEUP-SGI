@@ -11,8 +11,16 @@ class Car {
         this.color= color;
         this.layer = layer;
         this.styling = styling;
-
+        this.withBoost = false;
+        
         this.carBox = new THREE.Object3D();
+        this.carBounding = new THREE.Box3();
+        this.carBoundingMesh = new THREE.Mesh( new THREE.SphereGeometry( 1, 32, 32 ), new THREE.MeshBasicMaterial( {color: 0xffff00} ) );
+        this.carBoundingMesh.geometry.computeBoundingBox();
+        this.carBoundingMesh.visible = false;
+
+        this.carBox.add(this.carBoundingMesh);
+        
 
         this.maxVelocity = 50;
         this.actualVelocity = 0;
@@ -226,8 +234,18 @@ class Car {
     
     update(deltaTime) {
 
+        this.carBounding.copy(this.carBoundingMesh.geometry.boundingBox).applyMatrix4(this.carBoundingMesh.matrixWorld); // needed to update bounding box that will be used for collision detection
+
         const accelerationFactor = 1;
         const decelerationFactor = 1;
+
+        if (this.notInTrack) {
+            if ((this.maxVelocity == 50 && !this.withBoost) || (this.maxVelocity == 100 && this.withBoost) ) {this.maxVelocity  = this.maxVelocity * 0.5;} // this if is to avoid the maxVelocity to be reduced more than once
+        }
+        else {
+            if (!this.withBoost) { this.maxVelocity = 50;}
+            else if (this.withBoost) {this.maxVelocity = 100;}
+        }
 
         if (this.layer === 1) { // player car
             if (this.keysPressed["a"] == true) {
@@ -276,6 +294,9 @@ class Car {
             if (this.actualVelocity < -this.maxVelocity) {
                 this.actualVelocity = -this.maxVelocity;
             }
+
+            console.log("velocity: " + this.actualVelocity)
+            console.log("max vle:" + this.maxVelocity)
     
             if(Math.abs(this.actualVelocity) < 0.08)
                 this.actualVelocity = 0;
@@ -307,28 +328,67 @@ class Car {
     }
 
     applySpeedBoost(boost, duration) {
+        // velocity of car stays at maxVelocity * boost for duration seconds
+
         this.maxVelocity = this.maxVelocity * boost;
+
+        this.withBoost = true;
+
         setTimeout(() => {
             this.maxVelocity = this.maxVelocity / boost;
+            this.withBoost = false;
         }, duration * 1000);
+
     }
 
     checkCollisions() {
-        checkOutsideTrack();
-        checkObjectCollisions();
-        checkCarCollisions();
-    }
+        this.notInTrack = this.outsideTrack();
 
-    checkOutsideTrack() {
+        this.objectCollision();
 
-    }
-
-    checkObjectCollisions() {
+        this.carCollision()
 
     }
 
-    checkCarCollisions() {
+    outsideTrack() {
+        const raycaster = new THREE.Raycaster();
+        const carPosition = this.carBox.position.clone();
+
+        carPosition.y += 1;
+
+        raycaster.set(carPosition, new THREE.Vector3(0, -1, 0));
+
+        const meshes = []
         
+        const trackMesh = this.app.contents.reader.getTrack().trackMesh
+
+        meshes.push(trackMesh)
+
+        const intersections = raycaster.intersectObjects(meshes)
+
+        return intersections.length === 0;
+
+    }
+
+    objectCollision() {
+        const carBoundingBox = this.carBounding;
+
+        const objects = this.app.contents.reader.objects;
+
+        for (const objectId in objects) {
+            if (objects.hasOwnProperty(objectId)) {
+                var object = objects[objectId];
+            }
+            if (carBoundingBox.intersectsBox(object.boundingBox)) {
+                console.log("collision with object")
+                if (!this.withBoost) {object.applyEffect(this);}    
+                return true;
+            }
+        }
+    }
+
+    carCollision() {
+
     }
 }
 
