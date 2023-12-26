@@ -8,6 +8,7 @@ import Parking from './Parking.js';
 import { Picking } from './Picking.js';
 import { PowerUp } from './PowerUp.js';
 import { Animation } from './Animation.js';
+import { Firework } from './Firework.js';
 
 
 /**
@@ -30,6 +31,8 @@ class Contents  {
 
         this.app.pickingOwnCar = true;
         this.app.pickingOtherCar = false;
+
+        this.fireworks = []
 
     }
 
@@ -418,6 +421,25 @@ class Contents  {
         }
 
         if (this.selectedBotCar !== undefined) {this.selectedBotCar.update(deltaTime);}
+
+        // add new fireworks every 5% of the calls
+        if(Math.random()  < 0.01 ) {
+            this.fireworks.push(new Firework(this.app, this))
+            console.log("firework added")
+        }
+
+        // for each fireworks 
+        for( let i = 0; i < this.fireworks.length; i++ ) {
+            // is firework finished?
+            if (this.fireworks[i].done) {
+                // remove firework 
+                this.fireworks.splice(i,1) 
+                console.log("firework removed")
+                continue 
+            }
+            // otherwise upsdate  firework
+            this.fireworks[i].update()
+        }
     }
 }
 
