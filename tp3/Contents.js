@@ -422,8 +422,9 @@ class Contents  {
 
         if (this.selectedBotCar !== undefined) {this.selectedBotCar.update(deltaTime);}
 
+        
         // add new fireworks every 5% of the calls
-        if(Math.random()  < 0.01 ) {
+        if(Math.random()  < 0.05 ) {
             this.fireworks.push(new Firework(this.app, this))
             console.log("firework added")
         }
