@@ -9,6 +9,7 @@ import { Picking } from './Picking.js';
 import { PowerUp } from './PowerUp.js';
 import { Animation } from './Animation.js';
 import { HUD } from './HUD.js';
+import { Firework } from './Firework.js';
 
 
 /**
@@ -31,6 +32,8 @@ class Contents  {
 
         this.app.pickingOwnCar = true;
         this.app.pickingOtherCar = false;
+
+        this.fireworks = []
     }
 
     /**
@@ -429,6 +432,25 @@ class Contents  {
         //When both cars are selected, remove welcome message
         if(this.selectedCar && this.selectedBotCar)
             this.HUD.delete();
+
+        // add new fireworks every 5% of the calls
+        if(Math.random()  < 0.01 ) {
+            this.fireworks.push(new Firework(this.app, this))
+            console.log("firework added")
+        }
+
+        // for each fireworks 
+        for( let i = 0; i < this.fireworks.length; i++ ) {
+            // is firework finished?
+            if (this.fireworks[i].done) {
+                // remove firework 
+                this.fireworks.splice(i,1) 
+                console.log("firework removed")
+                continue 
+            }
+            // otherwise upsdate  firework
+            this.fireworks[i].update()
+        }
 
         
     }
