@@ -8,6 +8,7 @@ import Parking from './Parking.js';
 import { Picking } from './Picking.js';
 import { PowerUp } from './PowerUp.js';
 import { Animation } from './Animation.js';
+import { HUD } from './HUD.js';
 import { Firework } from './Firework.js';
 
 
@@ -33,7 +34,6 @@ class Contents  {
         this.app.pickingOtherCar = false;
 
         this.fireworks = []
-
     }
 
     /**
@@ -141,6 +141,7 @@ class Contents  {
         this.myCars = [];
         this.otherCars = [];
         this.pickingPowerUps = [];
+        this.HUD = null;
 
         this.parking1 = new Parking(this.app, 75, 0.1, 60, 3, 30, 15, 30, 5);
         this.parking2 = new Parking(this.app, 0, 0.1, 60, 3, 30, 15, 30, 5);
@@ -149,6 +150,7 @@ class Contents  {
         this.createMyCars();
         this.createOtherCars();
         this.createPickingPowerUps();
+        this.createHUD();
 
     }
 
@@ -192,6 +194,10 @@ class Contents  {
             this.app.scene.add(powerUp.mesh);
             powerUp.mesh.layers.enable(3)
         }
+    }
+
+    createHUD(){
+        this.HUD = new HUD(this.app, this.app.activeCamera, window.innerWidth, window.innerHeight, this.app.renderer);
     }
 
     initGlobals(data) {
@@ -414,13 +420,18 @@ class Contents  {
         }
 
         // update only the selected car
-        if (this.selectedCar !== undefined) 
-        {
-            this.selectedCar.update(deltaTime);
+        if (this.selectedCar !== undefined) {
+            this.selectedCar.update(deltaTime); 
             this.selectedCar.checkCollisions();
         }
 
-        if (this.selectedBotCar !== undefined) {this.selectedBotCar.update(deltaTime);}
+        if (this.selectedBotCar !== undefined) {
+            this.selectedBotCar.update(deltaTime);
+        }
+
+        //When both cars are selected, remove welcome message
+        if(this.selectedCar && this.selectedBotCar)
+            this.HUD.delete();
 
         
         // add new fireworks every 5% of the calls
@@ -441,6 +452,8 @@ class Contents  {
             // otherwise upsdate  firework
             this.fireworks[i].update()
         }
+
+        
     }
 }
 

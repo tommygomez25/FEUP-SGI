@@ -22,7 +22,7 @@ class Car {
         this.carBox.add(this.carBoundingMesh);
         
 
-        this.maxVelocity = 50;
+        this.maxVelocity = 60;
         this.actualVelocity = 0;
 
         this.steeringAngle = 0;
@@ -240,10 +240,10 @@ class Car {
         const decelerationFactor = 1;
 
         if (this.notInTrack) {
-            if ((this.maxVelocity == 50 && !this.withBoost) || (this.maxVelocity == 100 && this.withBoost) ) {this.maxVelocity  = this.maxVelocity * 0.5;} // this if is to avoid the maxVelocity to be reduced more than once
+            if ((this.maxVelocity == 60 && !this.withBoost) || (this.maxVelocity == 100 && this.withBoost) ) {this.maxVelocity  = this.maxVelocity * 0.5;} // this if is to avoid the maxVelocity to be reduced more than once
         }
         else {
-            if (!this.withBoost) { this.maxVelocity = 50;}
+            if (!this.withBoost) { this.maxVelocity = 60;}
             else if (this.withBoost) {this.maxVelocity = 100;}
         }
 
