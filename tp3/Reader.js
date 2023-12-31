@@ -37,18 +37,18 @@ class Reader {
         this.reader.add(this.ground.groundMesh);
 
         this.obstaclePoints = [
-            new THREE.Vector3(14, 5, 50),
+            new THREE.Vector3(9, 5, -50),
             new THREE.Vector3(-50, 5,120),
             new THREE.Vector3(-35, 5, 25),
-            new THREE.Vector3(-105, 5, -75),
+            new THREE.Vector3(-110, 5, -75),
         ]
 
         this.createObject(Obstacle, 3, this.obstaclePoints);
 
         this.powerUpPoints = [
             new THREE.Vector3(30, 5, 50),
-            new THREE.Vector3(-80, 5, 130),
-            new THREE.Vector3(-45, 5, 25),	
+            new THREE.Vector3(-100, 5, 125),
+            new THREE.Vector3(-45, 5, -35),	
             new THREE.Vector3(30, 5, -75),
         ]
 

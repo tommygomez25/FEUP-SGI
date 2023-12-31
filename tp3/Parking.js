@@ -4,7 +4,7 @@ class Parking {
     constructor(app, x, y, z, numRows, spaceWidth, spaceLength, spaceDelimiterWidth, spaceDelimiterLength) {
         this.app = app;
 
-        this.parkingMesh = null;
+        this.mesh = null;
 
         this.x = x;
         this.y = y;

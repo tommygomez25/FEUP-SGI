@@ -22,7 +22,7 @@
             angle="90" 
             near="0.1" 
             far="1000" 
-            location="0 50 -150" 
+            location="0 200 -30" 
             target="0.0 0.0 0.0" /> 
         
         <orthogonal id="cam2" 

@@ -27,7 +27,7 @@ class Car {
 
         this.steeringAngle = 0;
         this.maxSteeringAngle = Math.PI / 4;
-        this.angularSpeed = 0.01;
+        this.angularSpeed = 0.005;
 
         this.wheelRotationSpeed = 0.01;
 
@@ -40,12 +40,30 @@ class Car {
         this.routePoints = routePoints;
         this.rotationPoints = rotationPoints;
 
+        this.difficulty = null;
+
+        this.halvedSpeed = false;
+
+        this.withEffect = false;
+        this.effectTimer = null;
+
+        this.prevCarPosition = new THREE.Vector3();
+
+        this.laps = 0;
+
         this.createCar();
 
         this.setupKeyControls();
+    }
 
-        if (this.layer === 2) {
-            this.animation = new Animation(this.app, this.routePoints , this.rotationPoints, 15, this.carBox);
+    createAnimation() {
+        if (this.routePoints != null && this.rotationPoints != null) {
+            if (this.difficulty === "EASY") {
+                this.animation = new Animation(this.app, this.routePoints , this.rotationPoints, 15, this.carBox);
+            }
+            else if (this.difficulty === "HARD") {
+                this.animation = new Animation(this.app, this.routePoints , this.rotationPoints, 10, this.carBox);
+            }
         }
     }
 
@@ -240,14 +258,20 @@ class Car {
         const decelerationFactor = 1;
 
         if (this.notInTrack) {
-            if ((this.maxVelocity == 60 && !this.withBoost) || (this.maxVelocity == 100 && this.withBoost) ) {this.maxVelocity  = this.maxVelocity * 0.5;} // this if is to avoid the maxVelocity to be reduced more than once
-        }
-        else {
-            if (!this.withBoost) { this.maxVelocity = 60;}
-            else if (this.withBoost) {this.maxVelocity = 100;}
+            if (!this.halvedSpeed) {
+                this.maxVelocity /= 2;
+                this.halvedSpeed = true;
+            }
+        } else {
+            // If the car is back on track, reset its speed
+            if (this.halvedSpeed) {
+                this.maxVelocity *= 2;
+                this.halvedSpeed = false;
+            }
         }
 
-        if (this.layer === 1) { // player car
+
+        if (this.routePoints === null && this.rotationPoints === null) { // player car
             if (this.keysPressed["a"] == true) {
                 this.steeringAngle += this.angularSpeed
                 this.steeringAngle = Math.min(this.steeringAngle, this.maxSteeringAngle);
@@ -295,8 +319,8 @@ class Car {
                 this.actualVelocity = -this.maxVelocity;
             }
 
-            console.log("velocity: " + this.actualVelocity)
-            console.log("max vle:" + this.maxVelocity)
+            //console.log("velocity: " + this.actualVelocity)
+            //console.log("max vle:" + this.maxVelocity)
     
             if(Math.abs(this.actualVelocity) < 0.08)
                 this.actualVelocity = 0;
@@ -307,12 +331,18 @@ class Car {
             this.carBackWheelRight.rotation.x += this.wheelRotationSpeed * this.actualVelocity   
 
         }
-        else if (this.layer === 2) { // bot car
+        else if (this.routePoints !== null && this.rotationPoints !== null) { // bot car
 
-            this.animation.update();
+            if (this.animation !== undefined) {
+                this.animation.update();
+            }
 
-            console.log("rotation: " + this.carBox.rotation.y)
+            //console.log("rotation: " + this.carBox.rotation.y)
         }
+    }
+
+    pauseAnimation() {
+        this.animation.pauseAnimation();
     }
 
     moveForward(speed, deltaTime) {
@@ -334,10 +364,30 @@ class Car {
 
         this.withBoost = true;
 
+        this.app.contents.game.startCountdown(duration);
+
         setTimeout(() => {
             this.maxVelocity = this.maxVelocity / boost;
             this.withBoost = false;
         }, duration * 1000);
+
+    }
+
+    applyTimeEffect(time) {
+        // time to complete a lap is reduced by time seconds
+        
+        if (this.withEffect) {
+            console.log("It was with effect already")
+            return;
+        }
+        else {
+            if (this.app.contents.game.elapsedTime + time < 0) {
+                this.app.contents.game.elapsedTime = 0;
+            }
+            else {
+                this.app.contents.game.elapsedTime += time;
+            }
+        }
 
     }
 
@@ -346,7 +396,7 @@ class Car {
 
         this.objectCollision();
 
-        this.carCollision()
+        this.lapCollision();
 
     }
 
@@ -360,7 +410,7 @@ class Car {
 
         const meshes = []
         
-        const trackMesh = this.app.contents.reader.getTrack().trackMesh
+        const trackMesh = this.app.contents.game.reader.getTrack().trackMesh
 
         meshes.push(trackMesh)
 
@@ -373,23 +423,68 @@ class Car {
     objectCollision() {
         const carBoundingBox = this.carBounding;
 
-        const objects = this.app.contents.reader.objects;
+        const objects = this.app.contents.game.reader.objects;
 
         for (const objectId in objects) {
             if (objects.hasOwnProperty(objectId)) {
                 var object = objects[objectId];
             }
+            
             if (carBoundingBox.intersectsBox(object.boundingBox)) {
                 console.log("collision with object")
-                if (!this.withBoost) {object.applyEffect(this);}    
+                console.log("boost? " + this.withBoost)
+                if (!this.withBoost && !this.withEffect) {
+                    console.log("WITH EFFECT: " + this.withEffect)
+                    console.log("APPLY EFFECT")
+                    object.applyEffect(this);
+                    this.withEffect = true;
+
+                    this.effectTimer = setTimeout(() => {
+                        this.withEffect = false;
+                        console.log("Effect timer expired. Resetting withEffect to false.");
+                    }, 5000);
+                }    
                 return true;
             }
+           
         }
+
+        return false;
     }
 
-    carCollision() {
+    lapCollision() {
+        const carPosition = this.carBox.position.clone();
 
-    }
+        // Check if the car has crossed the finish line
+        if (
+            this.routePoints === null &&
+            this.rotationPoints === null &&
+            carPosition.z > -0.1 &&
+            carPosition.z < 0.5 &&
+            carPosition.x > 0 &&
+            carPosition.x < 30
+        ) {
+
+            if (this.prevCarPosition.z < -0.1 ) {
+                this.laps += 1;
+                console.log("Lap completed. Total laps: " + this.laps);
+            }
+        }
+
+
+
+        if (this.routePoints !== null && this.rotationPoints !== null) { // bot car
+            if (this.animation !== undefined) {
+                if (this.animation.checkLap()) {
+                    this.laps += 1;
+                    console.log("Lap completed. Total laps: " + this.laps);
+                    
+                }
+            }
+        }
+
+        this.prevCarPosition.copy(carPosition);
+        }
 }
 
 

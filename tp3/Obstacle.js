@@ -105,10 +105,11 @@ class Obstacle {
 
     applyEffect(car) {
         if (this.type === "Type1") { // speed boost
+            console.log("Speed Boost");
             car.applySpeedBoost(0.5,5);
         }
-        else if (this.type === "Type2") { // aumento do tempo total ??
-            //car.applyTimeReduction();
+        else if (this.type === "Type2") { // aumento do tempo total 
+            car.applyTimeEffect(3);
         }
     }
 

@@ -20,6 +20,8 @@ class Animation {
         
         this.clock = new THREE.Clock();
 
+        this.lapUpdateTime = 0;
+
         this.init();
     }
 
@@ -125,6 +127,30 @@ class Animation {
 
         this.checkAnimationStateIsPause();
         this.checkTracksEnabled();
+    }
+
+    pauseAnimation() {
+        this.mixerPause = true;
+    }
+
+    resumeAnimation() {
+        this.mixerPause = false;
+    }
+
+    checkLap() {
+        // Verifica se o tempo passado desde a última atualização é maior que 5 segundos
+        const currentTime = Date.now();
+        const timeSinceLastUpdate = currentTime - this.lapUpdateTime;
+
+        if (timeSinceLastUpdate > 5000) {  
+
+            if (this.mesh.position.distanceTo(this.keyPoints[this.keyPoints.length - 2]) < 1) {
+                this.lapUpdateTime = currentTime;  
+                return true;
+            }
+        }
+
+        return false;
     }
 } 
 

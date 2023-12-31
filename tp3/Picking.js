@@ -6,7 +6,7 @@ class Picking {
 
         this.raycaster = new THREE.Raycaster()
         this.raycaster.near = 1
-        this.raycaster.far = 200
+        this.raycaster.far = 300
 
         this.pointer = new THREE.Vector2()
         this.intersectedObj = null
@@ -111,7 +111,7 @@ class Picking {
     transverseRaycastProperties(intersects) {
         for (var i = 0; i < intersects.length; i++) {
 
-            console.log(intersects[i]);
+            //console.log(intersects[i]);
 
             /*
             An intersection has the following properties :
@@ -161,32 +161,49 @@ class Picking {
     }
 
     applyPickedObject(obj) {
-        if (this.app.pickingOwnCar === true) {
-            // move the father of the obj to 0,0,0
-            obj.parent.position.set(21, 2, 0)
-            // find the car name in the app.contents.mycars
-            const carName = obj.name
-            const car = this.app.contents.myCars[carName]
-            console.log(car)
-            this.app.contents.selectedCar = car
-            this.app.pickingOwnCar = false
-            this.app.pickingOtherCar = true
-            this.selectedLayer = 2
-            this.updateSelectedLayer()
-        }   
 
-        else if (this.app.pickingOtherCar === true) {
+        //console.log("Picked object: " + obj.name)
 
-            obj.parent.position.set(7, 2, 0)
+
+
+        if (this.app.contents.game.myCars[obj.name] !== undefined) { // if the picked object is a car of the player
 
             const carName = obj.name
-            const car = this.app.contents.otherCars[carName]
+            const car = this.app.contents.game.myCars[carName]
 
-            this.app.contents.selectedBotCar = car
+            this.app.contents.game.selectedCar = car
 
-            this.app.pickingOtherCar = false
-            this.selectedLayer = 3
-            this.updateSelectedLayer()
+            //console.log("Selected car: " + carName)
+
+            //obj.parent.position.set(21, 2, 0)
+        } 
+
+        else if (this.app.contents.game.otherCars[obj.name] !== undefined) { // if the picked object is an AI car
+
+            //obj.parent.position.set(7, 2, 0)
+
+            const carName = obj.name
+            const car = this.app.contents.game.otherCars[carName]
+
+            this.app.contents.game.selectedBotCar = car
+
+            //console.log("Selected bot car: " + carName)
+        }
+
+        else if (obj.name == "EASY") {
+            this.app.contents.game.selectedDifficulty = "EASY"
+        }
+        else if (obj.name == "HARD") {
+            this.app.contents.game.selectedDifficulty = "HARD"
+        }  
+
+        else if (obj.name == "START GAME") {
+            if (this.app.contents.game.selectedCar !== undefined && this.app.contents.game.selectedBotCar !== undefined && this.app.contents.game.selectedDifficulty !== undefined)
+                {   
+                    this.app.contents.game.selectedCar.layer = 2
+                    this.app.contents.game.selectedBotCar.layer = 2
+                    this.app.contents.game.startGame()
+                }            
         }
 
     }

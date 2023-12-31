@@ -1,15 +1,8 @@
 import * as THREE from 'three';
 import { Axis } from './Axis.js';
 import { FileReader } from './parser/FileReader.js';
-import { Reader } from './Reader.js';
 import {SceneGraph} from './SceneGraph.js';
-import { Car } from './Car.js';
-import Parking from './Parking.js';
-import { Picking } from './Picking.js';
-import { PowerUp } from './PowerUp.js';
-import { Animation } from './Animation.js';
-import { HUD } from './HUD.js';
-import { Firework } from './Firework.js';
+import { Game } from './Game.js';
 
 
 /**
@@ -27,13 +20,7 @@ class Contents  {
 
         this.fileReader = new FileReader(app, this, this.onSceneLoaded);
 		this.fileReader.open("scenes/scene.xml");	
-        
-        this.picking = new Picking(this.app);
-
-        this.app.pickingOwnCar = true;
-        this.app.pickingOtherCar = false;
-
-        this.fireworks = []
+    
     }
 
     /**
@@ -136,68 +123,8 @@ class Contents  {
         this.sceneGraph.loadLods(data)
         this.sceneGraph.traverse(data)
 
-        this.reader = new Reader(this.app);
+        this.game = new Game(this.app)
 
-        this.myCars = [];
-        this.otherCars = [];
-        this.pickingPowerUps = [];
-        this.HUD = null;
-
-        this.parking1 = new Parking(this.app, 75, 0.1, 60, 3, 30, 15, 30, 5);
-        this.parking2 = new Parking(this.app, 0, 0.1, 60, 3, 30, 15, 30, 5);
-        this.parking3 = new Parking(this.app, -75, 0.1, 60, 3, 30, 15, 30, 5);
-
-        this.createMyCars();
-        this.createOtherCars();
-        this.createPickingPowerUps();
-        this.createHUD();
-
-    }
-
-    createMyCars() {
-        const carNames = ["myCar1", "myCar2", "myCar3"];
-        const colors = [0xff0000, 0xff00ff, 0x0000ff];
-        for (var i = 0; i < 3; i++) {
-            var car = new Car(this.app, this.parking1.parkingSpaces[i].mesh.position.z , 2, -this.parking1.parkingSpaces[i].mesh.position.x, this.app.cameras['Perspective'], carNames[i],colors[i], 1, true);
-            console.log(car)
-            this.myCars[carNames[i]] = car;
-        }
-    }
-    
-    createOtherCars() {
-        const carNames = ["otherCar1", "otherCar2", "otherCar3"];
-        const colors = [0x000000, 0xffff00, 0xffa500];
-        for (var i = 0; i < 3; i++) {
-            var car = new Car(this.app, 
-                this.parking2.parkingSpaces[i].mesh.position.z , 
-                2,
-                -this.parking2.parkingSpaces[i].mesh.position.x, 
-                this.app.cameras['Perspective'],
-                carNames[i],colors[i], 
-                2,
-                false,
-                this.reader.route,
-                this.reader.rotationRoute ); // TODO: CAHNGE ROUTES ACCORDING TO PARKING
-            
-            this.otherCars[carNames[i]] = car;
-        }
-    }
-
-    createPickingPowerUps() {
-        const powerUpNames = ["powerUp1", "powerUp2", "powerUp3"];
-        const types = ["Type1", "Type2"]
-        for (var i = 0; i < 3; i++) {
-            const randomType = Math.random() < 0.5 ? "Type1" : "Type2";
-            // TODO : Add layer to pick ..
-            var powerUp = new PowerUp(this.app, this.parking3.parkingSpaces[i].mesh.position.z , 4, -this.parking3.parkingSpaces[i].mesh.position.x, 3, 32, 16, randomType);
-            this.pickingPowerUps[powerUpNames[i]] = powerUp;
-            this.app.scene.add(powerUp.mesh);
-            powerUp.mesh.layers.enable(3)
-        }
-    }
-
-    createHUD(){
-        this.HUD = new HUD(this.app, this.app.activeCamera, window.innerWidth, window.innerHeight, this.app.renderer);
     }
 
     initGlobals(data) {
@@ -414,46 +341,7 @@ class Contents  {
     }
 
     update(deltaTime) {
-        
-        for (var object in this.reader.objects) {
-            this.reader.objects[object].update(deltaTime);
-        }
-
-        // update only the selected car
-        if (this.selectedCar !== undefined) {
-            this.selectedCar.update(deltaTime); 
-            this.selectedCar.checkCollisions();
-        }
-
-        if (this.selectedBotCar !== undefined) {
-            this.selectedBotCar.update(deltaTime);
-        }
-
-        //When both cars are selected, remove welcome message
-        if(this.selectedCar && this.selectedBotCar)
-            this.HUD.delete();
-
-        
-        // add new fireworks every 5% of the calls
-        if(Math.random()  < 0.05 ) {
-            this.fireworks.push(new Firework(this.app, this))
-            console.log("firework added")
-        }
-
-        // for each fireworks 
-        for( let i = 0; i < this.fireworks.length; i++ ) {
-            // is firework finished?
-            if (this.fireworks[i].done) {
-                // remove firework 
-                this.fireworks.splice(i,1) 
-                console.log("firework removed")
-                continue 
-            }
-            // otherwise upsdate  firework
-            this.fireworks[i].update()
-        }
-
-        
+        this.game.update(deltaTime);
     }
 }
 

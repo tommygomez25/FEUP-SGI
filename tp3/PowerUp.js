@@ -108,10 +108,10 @@ class PowerUp {
 
     applyEffect(car) {
         if (this.type === "Type1") { // speed boost
-            car.applySpeedBoost(2,5);
+            car.applySpeedBoost(1.3,5);
         }
         else if (this.type === "Type2") { // redução do tempo total de uma parcela a definir ??
-            //car.applyTimeReduction();
+            car.applyTimeEffect(-3);
         }
     }
     waitForShaders() {
