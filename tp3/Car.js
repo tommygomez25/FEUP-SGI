@@ -459,15 +459,16 @@ class Car {
         if (
             this.routePoints === null &&
             this.rotationPoints === null &&
-            carPosition.z > -0.1 &&
-            carPosition.z < 0.5 &&
+            carPosition.z > -0.9 &&
+            carPosition.z < 1 &&
             carPosition.x > 0 &&
             carPosition.x < 30
         ) {
 
-            if (this.prevCarPosition.z < -0.1 ) {
-                this.laps += 1;
+            if (this.prevCarPosition.z < -1 ) {
+                if(this.laps < 3) {this.laps += 1;
                 console.log("Lap completed. Total laps: " + this.laps);
+                }
             }
         }
 

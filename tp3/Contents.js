@@ -341,7 +341,8 @@ class Contents  {
     }
 
     update(deltaTime) {
-        this.game.update(deltaTime);
+        if (this.game !== undefined)
+            this.game.update(deltaTime);
     }
 }
 

@@ -45,6 +45,7 @@ class Obstacle {
         normalizationFactor: {type: 'f', value: 1 },
         blendScale: {type: 'f', value: 1.0 },
         timeFactor: {type: 'f', value: 0.0 },
+        color : {type: 'v3', value: new THREE.Vector3(1.0, 1.0, 1.0) },
         })
         );
 

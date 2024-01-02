@@ -137,6 +137,10 @@ class Animation {
         this.mixerPause = false;
     }
 
+    stopAnimation() {
+        this.mixer.stopAllAction();
+    }
+
     checkLap() {
         // Verifica se o tempo passado desde a última atualização é maior que 5 segundos
         const currentTime = Date.now();

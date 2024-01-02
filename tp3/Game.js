@@ -16,7 +16,7 @@ class Game {
         this.myCars = [];
         this.otherCars = [];
         this.pickingPowerUps = [];
-        this.HUD = null;
+        this.pickedPowerUp = null;
         this.reader = null;
 
         this.picking = new Picking(this.app);
@@ -35,6 +35,8 @@ class Game {
 
         this.numbersMeshes = [];
         this.stateMeshes = [];
+
+        this.alreadyCompletedLaps = false;
         
         this.createNumberMeshes();
         this.createStateMeshes();
@@ -159,7 +161,6 @@ class Game {
         const colors = [0xff0000, 0xff00ff, 0x0000ff];
         for (var i = 0; i < 3; i++) {
             var car = new Car(this.app, this.parking1.parkingSpaces[i].mesh.position.z , 2, -this.parking1.parkingSpaces[i].mesh.position.x, this.app.cameras['Perspective'], carNames[i],colors[i], 1, true);
-            console.log(car)
             this.myCars[carNames[i]] = car;
         }
     }
@@ -189,9 +190,9 @@ class Game {
         for (var i = 0; i < 3; i++) {
             const randomType = Math.random() < 0.5 ? "Type1" : "Type2";
             var powerUp = new PowerUp(this.app, this.parking3.parkingSpaces[i].mesh.position.z , 4, -this.parking3.parkingSpaces[i].mesh.position.x, 3, 32, 16, randomType);
-            this.pickingPowerUps[powerUpNames[i]] = powerUp;
+            this.pickingPowerUps[powerUp.mesh.id] = powerUp;
             this.app.scene.add(powerUp.mesh);
-            powerUp.mesh.layers.enable(3)
+            powerUp.mesh.layers.enable(2)
         }
     }
 
@@ -276,14 +277,67 @@ class Game {
             this.selectedBotCar.animation.resumeAnimation();
         }
 
-        if (this.selectedCar.laps === 3 || this.selectedBotCar.laps === 3) {
-            if (this.selectedCar.laps === 3) {
-                this.winner = this.selectedCar;
+        if (this.selectedCar.laps === 3) {
+
+            if (this.alreadyCompletedLaps === false) { // this is to prevent creating meshes over and over
+                this.finalElapsedTime = this.elapsedTime;
+    
+                this.finalElapsedTimeHUD = new HUD(this.app, this.app.activeCamera, window.innerWidth, window.innerHeight, this.app.renderer, "Final time: ", 140, 0 ,-75,Math.PI/2,Math.PI,0, 5, 0xffffff);
+                this.finalElapsedTimeHUDNameDigits = [];
+    
+                const finalElapsedTimeString = this.getDigits(this.finalElapsedTime);
+                
+                const nDigitsFinalElapsedTime = finalElapsedTimeString.meshes.length;
+    
+                for (let i = 0; i < nDigitsFinalElapsedTime; i++) {
+                    var finalElapsedTimeHUDName = finalElapsedTimeString.meshes[i].clone();
+                    finalElapsedTimeHUDName.position.set(70 - 5 * i, 0, -75);
+                    finalElapsedTimeHUDName.rotation.set(Math.PI / 2, Math.PI, 0);
+                    this.app.scene.add(finalElapsedTimeHUDName);
+                    this.finalElapsedTimeHUDNameDigits.push(finalElapsedTimeHUDName);
+                }
+                this.alreadyCompletedLaps = true;
             }
-            else {
+        }
+        
+
+        if (this.selectedBotCar.laps === 3) {
+            this.selectedBotCar.animation.stopAnimation();
+        }
+
+
+        if (this.selectedCar.laps === 3 && this.selectedBotCar.laps === 3) {
+
+            if (this.selectedBotCar.animation.animationMaxDuration * this.selectedBotCar.laps < this.finalElapsedTime) {
                 this.winner = this.selectedBotCar;
             }
+            else {
+                this.winner = this.selectedCar;
+            }
+
             this.winnerHUD = new HUD(this.app, this.app.activeCamera, window.innerWidth, window.innerHeight, this.app.renderer, this.winner.name + " won!", 0, 0 ,0,Math.PI/2,Math.PI,0, 15, 0xffffff);
+            this.timeElapsedBotHUD = new HUD(this.app, this.app.activeCamera, window.innerWidth, window.innerHeight, this.app.renderer, "Time elapsed AI car: ", 140, 0 ,-35,Math.PI/2,Math.PI,0, 5, 0xffffff);
+            this.timeElapsedBotHUDNameDigits = [];
+    
+            const timeElapsedBotString = this.getDigits(this.selectedBotCar.animation.animationMaxDuration * this.selectedBotCar.laps);
+    
+            const nDigitsTimeElapsedBot = timeElapsedBotString.meshes.length;
+    
+            for (let i = 0; i < nDigitsTimeElapsedBot; i++) {
+                var timeElapsedBotHUDName = timeElapsedBotString.meshes[i].clone();
+                timeElapsedBotHUDName.position.set(70 - 5 * i, 0, -35);
+                timeElapsedBotHUDName.rotation.set(Math.PI / 2, Math.PI, 0);
+                this.app.scene.add(timeElapsedBotHUDName);
+                this.timeElapsedBotHUDNameDigits.push(timeElapsedBotHUDName);
+            }
+
+            this.newGameHUD = new HUD(this.app, this.app.activeCamera, window.innerWidth, window.innerHeight, this.app.renderer, "Start a New Game", 150, 0 ,120,Math.PI/2,Math.PI,0, 15, 0xffffff);
+            this.newGameBox = new THREE.Mesh(new THREE.BoxGeometry(150, 5, 20), new THREE.MeshBasicMaterial({ visible:false }));
+            this.newGameBox.layers.enable(1);
+            this.newGameBox.position.set(90,-3,130);
+            this.newGameBox.name = "NEW GAME"
+            this.app.scene.add(this.newGameBox);
+
             this.endGame();
         }
     }
@@ -299,6 +353,7 @@ class Game {
         this.gameStateHUDName.position.set(90, 0, 50);
         this.gameStateHUDName.rotation.set(Math.PI / 2, Math.PI, 0);
         this.app.scene.add(this.gameStateHUDName);
+
     }
 
     newCarSelected(type) {
@@ -470,7 +525,7 @@ class Game {
         // time elapsed display already there
 
         // time elapsed bot car display
-
+        
         // winner display
         
         // firework
@@ -493,6 +548,12 @@ class Game {
             this.fireworks[i].update()
         }
 
+        // TODO : BUTTON OF RESTART 
+
+
+
+        // TODO : BUTTON OF EXIT
+
        
 
 
@@ -503,7 +564,8 @@ class Game {
     handleKeyDown(event) {
         switch (event.key) {
             case 'Escape':
-                this.endGame();
+                // TODO - INITAL STATE, NOT END STATE
+                if (this.state == "playing") {this.newGame();}
                 break;
             case ' ':
                 this.togglePause();
@@ -515,12 +577,22 @@ class Game {
         this.state = "end";
     }
 
+    newGame() {
+        this.dispose();
+        //location.reload();
+
+    }
+
     togglePause() {
         if (this.state === "playing") {
             this.state = "paused";
+            this.picking.selectedLayer = 2;
+            this.picking.updateSelectedLayer();
         }
         else if (this.state === "paused") {
             this.state = "playing";
+            this.picking.selectedLayer = 1;
+            this.picking.updateSelectedLayer();
         }
     }
 
@@ -549,6 +621,27 @@ class Game {
             this.countdownTimer = null;
             this.countdownTime = 0;
         }
+    }
+
+    dispose() {
+
+        /* NOT WORKING 
+
+        this.app.contents.game = null;
+
+        let scene = this.app.scene;
+        let obj;
+
+        while (scene.children.length)
+            {
+                scene.remove(scene.children[0]);
+            }
+
+        let newGame = new Game(this.app);
+        this.app.contents.game = newGame;
+        */
+
+        location.reload();
     }
 
 }

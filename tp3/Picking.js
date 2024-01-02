@@ -39,11 +39,11 @@ class Picking {
     */
     updateSelectedLayer() {
         this.raycaster.layers.enableAll()
-        console.log("Selected layer: " + this.selectedLayer)
+        //console.log("Selected layer: " + this.selectedLayer)
         if (this.selectedLayer !== 'none') {
             const selectedIndex = this.availableLayers[parseInt(this.selectedLayer)]
             this.raycaster.layers.set(selectedIndex)
-            console.log("Selected layer: " + selectedIndex)
+            //console.log("Selected layer: " + selectedIndex)
         }
     }
 
@@ -63,10 +63,21 @@ class Picking {
     changeColorOfFirstPickedObj(obj) {
         if (this.lastPickedObj != obj) {
             if (this.lastPickedObj)
-                this.lastPickedObj.material.color.setHex(this.lastPickedObj.currentHex);
+                if (this.lastPickedObj.material.isShaderMaterial === true)
+                    this.lastPickedObj.material.uniforms.color.value.set(this.lastPickedObj.currentHex);
+                else {
+                    this.lastPickedObj.material.color.setHex(this.lastPickedObj.currentHex);
+                }
             this.lastPickedObj = obj;
-            this.lastPickedObj.currentHex = this.lastPickedObj.material.color.getHex();
-            this.lastPickedObj.material.color.setHex(this.pickingColor);
+            if (this.lastPickedObj.material.isShaderMaterial === true)
+            {
+                this.lastPickedObj.currentHex = this.lastPickedObj.material.uniforms.color.value;
+                this.lastPickedObj.material.uniforms.color.value.set(this.pickingColor);
+            }
+            else {
+                this.lastPickedObj.currentHex = this.lastPickedObj.material.color.getHex();
+                this.lastPickedObj.material.color.setHex(this.pickingColor);
+            }
         }
     }
 
@@ -77,7 +88,10 @@ class Picking {
      */
     restoreColorOfFirstPickedObj() {
         if (this.lastPickedObj)
-            this.lastPickedObj.material.color.setHex(this.lastPickedObj.currentHex);
+            if (this.lastPickedObj.material.isShaderMaterial === true)
+                this.lastPickedObj.material.uniforms.color.value.set(this.lastPickedObj.currentHex);
+            else
+                this.lastPickedObj.material.color.setHex(this.lastPickedObj.currentHex);
         this.lastPickedObj = null;
     }
 
@@ -155,6 +169,23 @@ class Picking {
 
             if (intersects.length > 0 ) {
                 const obj = intersects[0].object
+
+                const screenPosition = new THREE.Vector2(event.clientX, event.clientY)
+
+                const worldPosition = new THREE.Vector3()
+                worldPosition.copy(obj.position)
+                worldPosition.project(this.app.getActiveCamera())
+                
+                const widthHalf = window.innerWidth / 2;
+                const heightHalf = window.innerHeight / 2;
+
+                worldPosition.x = (screenPosition.x - widthHalf) / widthHalf;
+                worldPosition.y = -(screenPosition.y - heightHalf) / heightHalf;
+
+                worldPosition.unproject(this.app.getActiveCamera())
+
+                this.worldPosition = worldPosition
+
                 this.applyPickedObject(obj)
             }
         }
@@ -164,48 +195,75 @@ class Picking {
 
         //console.log("Picked object: " + obj.name)
 
+        if (this.selectedLayer == 1) {
+            if (this.app.contents.game.myCars[obj.name] !== undefined) { // if the picked object is a car of the player
 
-
-        if (this.app.contents.game.myCars[obj.name] !== undefined) { // if the picked object is a car of the player
-
-            const carName = obj.name
-            const car = this.app.contents.game.myCars[carName]
-
-            this.app.contents.game.selectedCar = car
-
-            //console.log("Selected car: " + carName)
-
-            //obj.parent.position.set(21, 2, 0)
-        } 
-
-        else if (this.app.contents.game.otherCars[obj.name] !== undefined) { // if the picked object is an AI car
-
-            //obj.parent.position.set(7, 2, 0)
-
-            const carName = obj.name
-            const car = this.app.contents.game.otherCars[carName]
-
-            this.app.contents.game.selectedBotCar = car
-
-            //console.log("Selected bot car: " + carName)
+                const carName = obj.name
+                const car = this.app.contents.game.myCars[carName]
+    
+                this.app.contents.game.selectedCar = car
+    
+                //console.log("Selected car: " + carName)
+    
+                //obj.parent.position.set(21, 2, 0)
+            } 
+    
+            else if (this.app.contents.game.otherCars[obj.name] !== undefined) { // if the picked object is an AI car
+    
+                //obj.parent.position.set(7, 2, 0)
+    
+                const carName = obj.name
+                const car = this.app.contents.game.otherCars[carName]
+    
+                this.app.contents.game.selectedBotCar = car
+    
+                //console.log("Selected bot car: " + carName)
+            }
+    
+            else if (obj.name == "EASY") {
+                this.app.contents.game.selectedDifficulty = "EASY"
+            }
+            else if (obj.name == "HARD") {
+                this.app.contents.game.selectedDifficulty = "HARD"
+            }  
+    
+            else if (obj.name == "START GAME") {
+                if (this.app.contents.game.selectedCar !== undefined && this.app.contents.game.selectedBotCar !== undefined && this.app.contents.game.selectedDifficulty !== undefined)
+                    {   
+                        this.app.contents.game.selectedCar.layer = 2
+                        this.app.contents.game.selectedBotCar.layer = 2
+                        this.app.contents.game.startGame()
+                    }            
+            }
+            else if (obj.name == "NEW GAME") {
+                this.app.contents.game.newGame()
+            }
+    
         }
 
-        else if (obj.name == "EASY") {
-            this.app.contents.game.selectedDifficulty = "EASY"
-        }
-        else if (obj.name == "HARD") {
-            this.app.contents.game.selectedDifficulty = "HARD"
-        }  
+        else if (this.selectedLayer == 2) {
+            console.log("Picked object: " + obj.id)
+            var pickedPowerUp = this.app.contents.game.pickingPowerUps[obj.id];
+            console.log(pickedPowerUp);
+            this.app.contents.game.pickedPowerUp = pickedPowerUp;
 
-        else if (obj.name == "START GAME") {
-            if (this.app.contents.game.selectedCar !== undefined && this.app.contents.game.selectedBotCar !== undefined && this.app.contents.game.selectedDifficulty !== undefined)
-                {   
-                    this.app.contents.game.selectedCar.layer = 2
-                    this.app.contents.game.selectedBotCar.layer = 2
-                    this.app.contents.game.startGame()
-                }            
+            this.selectedLayer = 3;
+            this.updateSelectedLayer();
+            this.app.contents.game.reader.track.trackMesh.layers.enable(3);
         }
 
+        else if (this.selectedLayer == 3) {
+            console.log("Picked object: " + obj.id)
+
+            var pickedPowerUp = this.app.contents.game.pickedPowerUp;
+            this.app.contents.game.reader.objects[pickedPowerUp.id] = pickedPowerUp;
+            pickedPowerUp.mesh.position.set(this.worldPosition.x, this.worldPosition.y, this.worldPosition.z);
+
+            this.selectedLayer = 1;
+            this.updateSelectedLayer();
+        }   
+
+        
     }
 
 
