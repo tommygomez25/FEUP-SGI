@@ -47,6 +47,17 @@
 
 ----
 
-### [TP3 - ...](tp3)
-- (items briefly describing main strong points)
+### [TP3](tp3)
+- Our scene is a night race around a sand circuit. [README](tp3/README.md) with screenshots.
+- The user chooses their car and the bot car to play against.
+- The user can also choose the difficulty of the bot car (Easy / Hard ).
+- To control the car, the user can use the arrow keys or the WASD keys.
+  - W - Accelerate
+  - S - Brake
+  - A - Turn left
+  - D - Turn right
+  - Space - Pause the game at any time
 
+- There are some power ups on the circuit that the user can collect to get an advantage over the bot car.
+- If the user leaves the circuit, the car will slowdown in order to penalize the user.
+- If the user pauses the game, there is the option to add new power-ups to the circuit, anywhere the user wants.
